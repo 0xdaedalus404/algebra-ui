@@ -18,6 +18,7 @@ interface CustomTooltipProps {
     currencyA: Currency | undefined;
     currencyB: Currency | undefined;
     currentPrice: number | undefined;
+    isSorted: boolean;
 }
 
 interface ChartProps {
@@ -27,7 +28,7 @@ interface ChartProps {
     leftPrice: string | undefined;
     rightPrice: string | undefined;
     currentPrice: number | undefined;
-    isSorted: boolean | undefined;
+    isSorted: boolean;
     zoom: number;
 }
 
@@ -59,10 +60,11 @@ const CustomTooltip = ({
     props,
     currencyA,
     currencyB,
+    isSorted
 }: CustomTooltipProps) => {
 
-    const price0 = props?.payload?.[0]?.payload.price0
-    const price1 = props?.payload?.[0]?.payload.price1
+    const price0 = isSorted ? props?.payload?.[0]?.payload.price0 : props?.payload?.[0]?.payload.price1;
+    const price1 = isSorted ? props?.payload?.[0]?.payload.price1 : props?.payload?.[0]?.payload.price0;
     // const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
     // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
 
@@ -114,17 +116,17 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
             <Tooltip
                 cursor={false}
                 content={(props) => (
-                    <CustomTooltip props={props} currencyA={currencyA} currencyB={currencyB} currentPrice={currentPrice} />
+                    <CustomTooltip props={props} currencyA={currencyA} currencyB={currencyB} currentPrice={currentPrice} isSorted={isSorted} />
                 )}
             />
 
-            <XAxis reversed={true} tick={(props) => {
+            <XAxis reversed={isSorted} tick={(props) => {
 
                 if (!props?.payload || props.index % 2 === 0) return <text></text>
 
                 return <text x={props.x} y={props.y + 20} fill="white" textAnchor="middle" fontSize={"12px"}
-                    width={"12px"} >{props.payload.value.toFixed(3)}</text>
-            }} dataKey={isSorted ? 'price0' : 'price1'} interval={6} offset={0} tickLine={false} tickFormatter={v => v.toFixed(3)} />
+                    width={"12px"} >{Number(props.payload.value).toFixed(3)}</text>
+            }} dataKey={isSorted ? 'price0' : 'price1'} interval={6} offset={0} tickLine={false} tickFormatter={v => Number(v).toFixed(3)} />
 
             <Bar
                 dataKey="activeLiquidity"
@@ -133,10 +135,10 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                 shape={(props) => {
                     const price = props[isSorted ? 'price0' : 'price1']
                     let percent = 0
-                    if (price === +Number(leftPrice).toFixed(8) || price === +Number(rightPrice).toFixed(8)) {
+                    if (price === +Number(leftPrice).toFixed(18) || price === +Number(rightPrice).toFixed(18)) {
                         const currentPriceIdx = formattedData.findIndex((v: any) => v.isCurrent)
                         const currentPriceRealIndex = formattedData[currentPriceIdx].index
-                        percent = (props.payload.index < currentPriceRealIndex ? -1 : 1) * ((Math.max(props.payload.index, currentPriceRealIndex) - Math.min(props.payload.index, currentPriceRealIndex)) / currentPriceRealIndex) * 100
+                        percent = ( isSorted ? 1 : -1 ) * (props.payload.index < currentPriceRealIndex ? -1 : 1) * ((Math.max(props.payload.index, currentPriceRealIndex) - Math.min(props.payload.index, currentPriceRealIndex)) / currentPriceRealIndex) * 100
                     }
 
                     return <CustomBar height={props.height} width={props.width} x={props.x} y={props.y} fill={props.fill} percent={percent} isCurrent={props.isCurrent} />

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, encodeSqrtRatioX96, Percent, TickMath, tickToPrice } from "@cryptoalgebra/custom-pools-sdk";
 import { IDerivedMintInfo, useMintState, useMintActionHandlers } from "@/state/mintStore";
 import { PresetProfits, Presets, PresetsArgs } from "@/types/presets";
 import { Button } from "@/components/ui/button";
@@ -14,8 +14,8 @@ const stablecoinsPreset = [
     {
         type: Presets.STABLE,
         title: `Stablecoins`,
-        min: 0.984,
-        max: 1.01,
+        min: 98,
+        max: 101,
         risk: PresetProfits.VERY_LOW,
         profit: PresetProfits.HIGH,
     },
@@ -25,24 +25,24 @@ const commonPresets = [
     {
         type: Presets.RISK,
         title: `Narrow`,
-        min: 0.95,
-        max: 1.1,
+        min: 95,
+        max: 110,
         risk: PresetProfits.HIGH,
         profit: PresetProfits.HIGH,
     },
     {
         type: Presets.NORMAL,
         title: `Common`,
-        min: 0.9,
-        max: 1.2,
+        min: 90,
+        max: 120,
         risk: PresetProfits.MEDIUM,
         profit: PresetProfits.MEDIUM,
     },
     {
         type: Presets.SAFE,
         title: `Wide`,
-        min: 0.8,
-        max: 1.4,
+        min: 80,
+        max: 140,
         risk: PresetProfits.LOW,
         profit: PresetProfits.LOW,
     },
@@ -87,8 +87,8 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
         if (!mintInfo.price) return;
 
         return mintInfo.invertPrice
-            ? mintInfo.price.invert().toSignificant(5)
-            : mintInfo.price.toSignificant(5);
+            ? mintInfo.price.invert()
+            : mintInfo.price;
     }, [mintInfo]);
 
     function handlePresetRangeSelection(preset: any | null) {
@@ -99,8 +99,46 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
         if (preset && preset.type === Presets.FULL) {
             setFullRange();
         } else {
-            onLeftRangeInput(preset ? String(+price * preset.min) : '');
-            onRightRangeInput(preset ? String(+price * preset.max) : '');
+            const minPrice = mintInfo.invertPrice
+            ? price.invert().asFraction.multiply(new Percent(preset.min, 100))
+            : price.asFraction.multiply(new Percent(preset.min, 100));
+          const maxPrice = mintInfo.invertPrice
+            ? price.invert().asFraction.multiply(new Percent(preset.max, 100))
+            : price.asFraction.multiply(new Percent(preset.max, 100));
+    
+          const sqrtPriceMin = encodeSqrtRatioX96(minPrice.numerator, minPrice.denominator);
+          const sqrtPriceMax = encodeSqrtRatioX96(maxPrice.numerator, maxPrice.denominator);
+    
+          const minPriceTick = TickMath.getTickAtSqrtRatio(sqrtPriceMin);
+          const maxPriceTick = TickMath.getTickAtSqrtRatio(sqrtPriceMax);
+    
+          let priceAtMinTick;
+          let priceAtMaxTick;
+    
+          if (currencyA && currencyB) {
+            const baseToken = mintInfo.invertPrice ? currencyB.wrapped : currencyA.wrapped;
+            const quoteToken = mintInfo.invertPrice ? currencyA.wrapped : currencyB.wrapped;
+    
+            priceAtMinTick = tickToPrice(baseToken, quoteToken, mintInfo.invertPrice ? maxPriceTick : minPriceTick);
+            priceAtMaxTick = tickToPrice(baseToken, quoteToken, mintInfo.invertPrice ? minPriceTick : maxPriceTick);
+          }
+    
+          if (priceAtMinTick && priceAtMaxTick) {
+            onLeftRangeInput(
+              preset
+                ? mintInfo.invertPrice
+                  ? priceAtMinTick.invert().toSignificant()
+                  : priceAtMinTick.toSignificant()
+                : "",
+            );
+            onRightRangeInput(
+              preset
+                ? mintInfo.invertPrice
+                  ? priceAtMaxTick.invert().toSignificant()
+                  : priceAtMaxTick.toSignificant()
+                : "",
+            );
+          }
         }
     }
 

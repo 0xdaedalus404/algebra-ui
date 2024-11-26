@@ -24,7 +24,7 @@ interface TicksResult {
 export function useInfoTickData() {
 
     const numSurroundingTicks = 500
-    const PRICE_FIXED_DIGITS = 8
+    const PRICE_FIXED_DIGITS = 18
 
     const [ticksResult, setTicksResult] = useState<TicksResult | null>(null)
     const [ticksLoading, setTicksLoading] = useState(false)

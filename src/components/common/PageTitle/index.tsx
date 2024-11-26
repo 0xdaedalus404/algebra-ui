@@ -8,7 +8,7 @@ interface PageTitleProps {
 
 const PageTitle = ({ title, children, showSettings = true }: PageTitleProps) => {
 
-    return <div className="flex w-full items-center justify-between">
+    return <div className="flex w-full items-center justify-between whitespace-nowrap">
         <div className="flex items-center gap-8">
             <h1 className="scroll-m-20 text-2xl font-bold tracking-tight md:text-3xl lg:text-4xl">{title}</h1>
             {children && children}

@@ -82,8 +82,8 @@ const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, 
                         index: i,
                         isCurrent: active,
                         activeLiquidity: parseFloat(t.liquidityActive.toString()),
-                        price0: parseFloat(t.price0),
-                        price1: parseFloat(t.price1),
+                        price0: t.price0,
+                        price1: t.price1,
                         tvlToken0: amount0,
                         tvlToken1: amount1,
                     }
@@ -129,7 +129,7 @@ const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, 
         return slicedData.reverse()
     }, [processedData, zoom])
 
-    const isSorted = currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped)
+    const isSorted = Boolean(currencyA && currencyB && currencyA?.wrapped.sortsBefore(currencyB?.wrapped))
 
     const leftPrice = useMemo(() => {
         return isSorted ? priceLower?.toSignificant(18) : priceUpper?.invert().toSignificant(18)

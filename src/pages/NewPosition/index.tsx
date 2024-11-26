@@ -11,12 +11,13 @@ import {
     useRangeHopCallbacks,
 } from '@/state/mintStore';
 import { Bound, INITIAL_POOL_FEE } from '@cryptoalgebra/custom-pools-sdk';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address } from 'wagmi';
 import AmountsSection from '@/components/create-position/AmountsSection';
 import { ManageLiquidity } from '@/types/manage-liquidity';
 import { useCurrency } from '@/hooks/common/useCurrency';
+import { Switch } from '@/components/ui/switch';
 
 type NewPositionPageParams = Record<'pool', Address>;
 
@@ -31,8 +32,22 @@ const NewPositionPage = () => {
         address: poolAddress,
     });
 
-    const currencyA = useCurrency(token0, true);
-    const currencyB = useCurrency(token1, true);
+    const [currencyIdA, setCurrencyIdA] = useState("");
+    const [currencyIdB, setCurrencyIdB] = useState("");
+
+    useEffect(() => {
+        if (token0 && token1) {
+            setCurrencyIdA(token0);
+            setCurrencyIdB(token1);
+        }
+    }, [token0, token1]);
+
+    const currencyA = useCurrency(currencyIdA as Address, true);
+    const currencyB = useCurrency(currencyIdB as Address, true);
+
+    const [wasManuallyToggled, setWasManuallyToggled] = useState(false);
+
+    const isSorted = currencyA && currencyB && currencyA.wrapped.sortsBefore(currencyB.wrapped);
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
@@ -89,6 +104,20 @@ const NewPositionPage = () => {
 
     const { startPriceTypedValue } = useMintState();
 
+    const handleCurrencySwap = () => {
+        setCurrencyIdA(currencyIdB);
+        setCurrencyIdB(currencyIdA);
+    };
+
+    const handleCurrencyToggle = () => {
+        setWasManuallyToggled(!wasManuallyToggled);
+        if (!mintInfo.ticksAtLimit[Bound.LOWER] && !mintInfo.ticksAtLimit[Bound.UPPER]) {
+            onLeftRangeInput((mintInfo.invertPrice ? priceLower : priceUpper?.invert())?.toSignificant(6) ?? "");
+            onRightRangeInput((mintInfo.invertPrice ? priceUpper : priceLower?.invert())?.toSignificant(6) ?? "");
+        }
+        handleCurrencySwap();
+    };
+
     useEffect(() => {
         return () => {
             onLeftRangeInput('');
@@ -98,7 +127,17 @@ const NewPositionPage = () => {
 
     return (
         <PageContainer>
-            <PageTitle title={'Create Position'} />
+            <PageTitle title={'Create Position'}>
+                <div className="flex gap-2 pt-2">
+                    {isSorted ? currencyA?.symbol : currencyB?.symbol}
+                    <Switch
+                        id="currency-toggle"
+                        checked={wasManuallyToggled}
+                        onCheckedChange={handleCurrencyToggle}
+                    />
+                    {isSorted ? currencyB?.symbol : currencyA?.symbol}
+                </div>
+            </PageTitle>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16 text-left">
                 <div className="col-span-2">
