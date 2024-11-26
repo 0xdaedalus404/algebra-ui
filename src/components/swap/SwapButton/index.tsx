@@ -86,11 +86,10 @@ const SwapButton = ({
     [parsedAmountA, parsedAmountB]
   );
 
-  const userHasSpecifiedInputOutput = Boolean(
-    currencies[SwapField.INPUT] &&
-      currencies[SwapField.OUTPUT] &&
-      parsedAmounts[independentField]?.greaterThan("0")
-  );
+  const userHasSpecifiedInputOutput = Boolean(currencies[SwapField.INPUT] && 
+    currencies[SwapField.OUTPUT] && 
+    independentField !== SwapField.LIMIT_ORDER_PRICE && 
+    parsedAmounts[independentField]?.greaterThan('0'));
 
   const isLoadingRoute = isSmartTradeLoading;
   const routeNotFound = !smartTrade;

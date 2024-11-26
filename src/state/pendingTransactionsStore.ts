@@ -9,6 +9,7 @@ export enum TransactionType {
     SWAP = "SWAP",
     FARM = "FARM",
     POOL = "POOL",
+    LIMIT_ORDER = "LIMIT_ORDER"
 }
 
 export interface TransactionInfo {

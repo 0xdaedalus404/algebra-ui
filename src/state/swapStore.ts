@@ -4,6 +4,7 @@ import {
   useAlgebraPoolTickSpacing,
 } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { usePool } from "@/hooks/pools/usePool";
 import {
   useBestTradeExactIn,
   useBestTradeExactOut,
@@ -16,9 +17,11 @@ import {
   Currency,
   CurrencyAmount,
   Percent,
+  Position,
   TickMath,
   Trade,
   TradeType,
+  ZERO,
   computePoolAddress,
 } from "@cryptoalgebra/custom-pools-sdk";
 import {
@@ -40,7 +43,9 @@ interface SwapState {
   readonly [SwapField.OUTPUT]: {
     readonly currencyId: Address | undefined;
   };
+  readonly [SwapField.LIMIT_ORDER_PRICE]: string | null;
   readonly wasInverted: boolean;
+  readonly limitOrderPriceFocused: boolean;
   readonly lastFocusedField: SwapFieldType;
   actions: {
     selectCurrency: (
@@ -49,6 +54,10 @@ interface SwapState {
     ) => void;
     switchCurrencies: () => void;
     typeInput: (field: SwapFieldType, typedValue: string) => void;
+    typeLimitOrderPrice: (limitOrderPrice: string) => void,
+    limitOrderPriceWasInverted: (wasInverted: boolean) => void,
+    limitOrderPriceFocused: (isFocused: boolean) => void,
+    limitOrderPriceLastFocused: () => void
   };
 }
 
@@ -82,10 +91,15 @@ export const useSwapState = create<SwapState>((set, get) => ({
   [SwapField.OUTPUT]: {
     currencyId: STABLECOINS.USDT.address as Account,
   },
+  [SwapField.LIMIT_ORDER_PRICE]: '',
   wasInverted: false,
+  limitOrderPriceFocused: false,
   lastFocusedField: SwapField.INPUT,
   actions: {
     selectCurrency: (field, currencyId) => {
+
+      if (field === SwapField.LIMIT_ORDER_PRICE) return
+
       const otherField =
         field === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
@@ -127,6 +141,20 @@ export const useSwapState = create<SwapState>((set, get) => ({
         lastFocusedField: field,
         typedValue,
       }),
+    typeLimitOrderPrice: (limitOrderPrice) => set({
+        [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice,
+        lastFocusedField: SwapField.LIMIT_ORDER_PRICE
+    }),
+    limitOrderPriceWasInverted: (wasInverted) => set({
+        wasInverted
+    }),
+    limitOrderPriceFocused: (isFocused) => set({
+        limitOrderPriceFocused: isFocused,
+        lastFocusedField: SwapField.LIMIT_ORDER_PRICE
+    }),
+    limitOrderPriceLastFocused: () => set({
+        lastFocusedField: SwapField.LIMIT_ORDER_PRICE
+    })
   },
 }));
 
@@ -196,6 +224,35 @@ export function tryParseAmount<T extends Currency>(
     console.debug(`Failed to parse input amount: "${value}"`, error);
   }
   return undefined;
+}
+
+export function useLimitOrderInfo(poolAddress: Address | undefined, amount: CurrencyAmount<Currency> | undefined, limitOrderTick: number | undefined) {
+
+  const [, pool] = usePool(poolAddress)
+
+  return useMemo(() => {
+
+      if (!amount || !pool || typeof limitOrderTick !== 'number') return undefined;
+
+      const amount0 = amount.currency.wrapped.equals(pool.token0) ? amount.quotient : ZERO
+      const amount1 = amount.currency.wrapped.equals(pool.token1) ? amount.quotient : ZERO
+
+      if (amount0 !== undefined && amount1 !== undefined) {
+          return Position.fromAmounts({
+              pool,
+              tickLower: limitOrderTick,
+              tickUpper: limitOrderTick + 60,
+              amount0,
+              amount1,
+              useFullPrecision: true,
+          });
+      } else {
+          return undefined;
+      }
+  }, [
+      limitOrderTick,
+      amount,
+  ]);
 }
 
 export function useDerivedSwapInfo(): IDerivedSwapInfo {

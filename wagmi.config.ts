@@ -8,6 +8,7 @@ import {
     ALGEBRA_QUOTER_V2,
     ALGEBRA_ROUTER,
     FARMING_CENTER,
+    ALGEBRA_LIMIT_ORDER_PLUGIN,
 } from './src/constants/addresses';
 import {
     algebraFactoryABI,
@@ -20,7 +21,8 @@ import {
     algebraEternalFarmingABI,
     farmingCenterABI,
     wNativeABI,
-    algebraCustomPoolDeployerABI
+    algebraCustomPoolDeployerABI,
+    algebraLimitOrderPluginABI
 } from './src/abis';
 
 const contracts: ContractConfig[] = [
@@ -66,6 +68,11 @@ const contracts: ContractConfig[] = [
         address: FARMING_CENTER,
         abi: farmingCenterABI,
         name: 'FarmingCenter',
+    },
+    {
+        address: ALGEBRA_LIMIT_ORDER_PLUGIN,
+        abi: algebraLimitOrderPluginABI,
+        name: 'AlgebraLimitOrderPlugin'
     },
     {
         abi: algebraCustomPoolDeployerABI,

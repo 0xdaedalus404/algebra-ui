@@ -8,6 +8,7 @@ import { SwapField, SwapFieldType } from "@/types/swap-field";
 import {
   Currency,
   CurrencyAmount,
+  getTickToPrice,
   maxAmountSpend,
   TradeType,
   tryParseAmount,
@@ -25,12 +26,22 @@ const SwapPair = ({
   derivedSwap: IDerivedSwapInfo;
   smartTrade: SmartRouterTrade<TradeType>;
 }) => {
-  const { currencyBalances, parsedAmount, currencies } = derivedSwap;
+  const { toggledTrade: trade, currencyBalances, parsedAmount, currencies, tick } = derivedSwap;
 
   const baseCurrency = currencies[SwapField.INPUT];
   const quoteCurrency = currencies[SwapField.OUTPUT];
 
-  const { independentField, typedValue } = useSwapState();
+  const pairPrice = getTickToPrice(baseCurrency?.wrapped, quoteCurrency?.wrapped, tick);
+
+  const { 
+      independentField, 
+      typedValue, 
+      [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice, 
+      wasInverted, 
+      limitOrderPriceFocused, 
+      lastFocusedField
+    } = useSwapState();
+
   const dependentField: SwapFieldType =
     independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
@@ -72,42 +83,78 @@ const SwapPair = ({
 
   const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
-  const parsedAmountA =
-    independentField === SwapField.INPUT
-      ? parsedAmount
-      : tryParseAmount(
-          smartTrade?.inputAmount?.toFixed(),
-          smartTrade?.inputAmount?.currency
-        );
+      //TODO reuse this
+      const parsedLimitOrderOutput = useMemo(() => {
+        if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !pairPrice) return;
 
-  const parsedAmountB =
-    independentField === SwapField.OUTPUT
-      ? parsedAmount
-      : tryParseAmount(
-          smartTrade?.outputAmount?.toFixed(),
-          smartTrade?.outputAmount?.currency
-        );
+        const independentPrice = independentField === SwapField.OUTPUT ? parsedAmount.divide(pairPrice.asFraction).toSignificant(parsedAmount.currency.decimals / 2) ?? 1 : +parsedAmount.toSignificant(parsedAmount.currency.decimals / 2);
 
-  const parsedAmounts = useMemo(
-    () =>
-      showWrap
-        ? {
-            [SwapField.INPUT]: parsedAmount,
-            [SwapField.OUTPUT]: parsedAmount,
-          }
-        : {
-            [SwapField.INPUT]: parsedAmountA,
-            [SwapField.OUTPUT]: parsedAmountB,
-          },
-    [parsedAmount, showWrap, parsedAmountA, parsedAmountB]
-  );
+        if (wasInverted) return tryParseAmount(String((Number(independentPrice) / (+limitOrderPrice || 1)).toFixed(quoteCurrency.decimals / 2)), quoteCurrency);
+
+        return tryParseAmount(String((+limitOrderPrice * Number(independentPrice)).toFixed(quoteCurrency.decimals / 2)), quoteCurrency);
+    }, [limitOrderPrice, wasInverted, parsedAmount, quoteCurrency, trade, pairPrice, independentField]);
+
+    const parsedAmounts = useMemo(() => {
+        return showWrap
+            ? {
+                [SwapField.INPUT]: parsedAmount,
+                [SwapField.OUTPUT]: parsedAmount,
+            }
+            : {
+                [SwapField.INPUT]: independentField === SwapField.INPUT ? parsedAmount : pairPrice && limitOrderPrice ? parsedAmount?.divide(pairPrice.asFraction) : smartTrade?.inputAmount,
+                [SwapField.OUTPUT]:
+                    independentField === SwapField.OUTPUT
+                        ? limitOrderPrice
+                            ? quoteCurrency && parsedAmount
+                                ? !limitOrderPriceFocused && lastFocusedField === SwapField.LIMIT_ORDER_PRICE
+                                    ? parsedLimitOrderOutput
+                                    : parsedAmount
+                                : undefined
+                            : parsedAmount
+                        : limitOrderPrice
+                            ? quoteCurrency && parsedAmount
+                                ? parsedLimitOrderOutput
+                                : undefined
+                            : smartTrade?.outputAmount,
+            };
+    }, [baseCurrency, independentField, parsedAmount, showWrap, smartTrade, limitOrderPrice, quoteCurrency, pairPrice, limitOrderPriceFocused, lastFocusedField]);
+
+  // const parsedAmountA =
+  //   independentField === SwapField.INPUT
+  //     ? parsedAmount
+  //     : tryParseAmount(
+  //         smartTrade?.inputAmount?.toFixed(),
+  //         smartTrade?.inputAmount?.currency
+  //       );
+
+  // const parsedAmountB =
+  //   independentField === SwapField.OUTPUT
+  //     ? parsedAmount
+  //     : tryParseAmount(
+  //         smartTrade?.outputAmount?.toFixed(),
+  //         smartTrade?.outputAmount?.currency
+  //       );
+
+  // const parsedAmounts = useMemo(
+  //   () =>
+  //     showWrap
+  //       ? {
+  //           [SwapField.INPUT]: parsedAmount,
+  //           [SwapField.OUTPUT]: parsedAmount,
+  //         }
+  //       : {
+  //           [SwapField.INPUT]: parsedAmountA,
+  //           [SwapField.OUTPUT]: parsedAmountB,
+  //         },
+  //   [parsedAmount, showWrap, parsedAmountA, parsedAmountB]
+  // );
 
   const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(
     currencyBalances[SwapField.INPUT]
   );
   const showMaxButton = Boolean(
     maxInputAmount?.greaterThan(0) &&
-      !parsedAmounts[SwapField.INPUT]?.equalTo(maxInputAmount)
+      !parsedAmounts[SwapField.INPUT]?.equalTo(maxInputAmount.toExact())
   );
 
   const handleMaxInput = useCallback(() => {
@@ -133,11 +180,7 @@ const SwapPair = ({
 
   const formattedAmounts = {
     [independentField]: typedValue,
-    [dependentField]: showWrap
-      ? parsedAmounts[independentField]?.toExact() ?? ""
-      : parsedAmounts[dependentField]?.toFixed(
-          (parsedAmounts[dependentField]?.currency.decimals || 6) / 2
-        ) ?? "",
+    [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toFixed((parsedAmounts[dependentField]?.currency.decimals || 6) / 2) ?? "",
   };
 
   return (

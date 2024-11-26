@@ -2,6 +2,7 @@ import { NavLink, matchPath, useLocation } from "react-router-dom";
 
 const PATHS = {
     SWAP: '/swap',
+    LIMIT_ORDERS: 'limit-order',
     POOLS: '/pools'
 }
 
@@ -10,6 +11,11 @@ const menuItems = [
         title: 'Swap',
         link: '/swap',
         active: [PATHS.SWAP]
+    },
+    {
+        title: 'Limit Order',
+        link: '/limit-order',
+        active: [PATHS.LIMIT_ORDERS]
     },
     {
         title: 'Pools',

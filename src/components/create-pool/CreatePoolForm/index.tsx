@@ -27,12 +27,14 @@ import {
   CUSTOM_POOL_DEPLOYER_BLANK,
   CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
   CUSTOM_POOL_BASE,
+  CUSTOM_POOL_DEPLOYER_LIMIT_ORDER
 } from "@/constants/addresses";
 
 const POOL_DEPLOYER = {
   BASE: "Base",
   FEE_CHANGER: "Fee Changer",
   BLANK: "Blank",
+  LIMIT_ORDER: "Limit Order"
 };
 
 type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
@@ -41,6 +43,7 @@ const customPoolDeployerAddresses = {
   [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE,
   [POOL_DEPLOYER.BLANK]: CUSTOM_POOL_DEPLOYER_BLANK,
   [POOL_DEPLOYER.FEE_CHANGER]: CUSTOM_POOL_DEPLOYER_FEE_CHANGER,
+  [POOL_DEPLOYER.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER
 };
 
 const CreatePoolForm = () => {
@@ -79,7 +82,7 @@ const CreatePoolForm = () => {
 
   const customPoolsAddresses =
     areCurrenciesSelected && !isSameToken
-      ? [CUSTOM_POOL_DEPLOYER_BLANK, CUSTOM_POOL_DEPLOYER_FEE_CHANGER].map(
+      ? [CUSTOM_POOL_DEPLOYER_BLANK, CUSTOM_POOL_DEPLOYER_FEE_CHANGER, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER].map(
           (customPoolDeployer) =>
             computeCustomPoolAddress({
               tokenA: currencyA.wrapped,
@@ -94,6 +97,7 @@ const CreatePoolForm = () => {
   // TODO
   const [poolState0] = usePool(customPoolsAddresses[0]);
   const [poolState1] = usePool(customPoolsAddresses[1]);
+  const [poolState2] = usePool(customPoolsAddresses[2]);
 
   const isPoolExists =
     poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BASE;
@@ -102,9 +106,12 @@ const CreatePoolForm = () => {
   const isPool1Exists =
     poolState1 === PoolState.EXISTS &&
     poolDeployer === POOL_DEPLOYER.FEE_CHANGER;
+  const isPool2Exists =
+    poolState2 === PoolState.EXISTS &&
+    poolDeployer === POOL_DEPLOYER.LIMIT_ORDER;
 
   const isSelectedCustomPoolExists =
-    isPoolExists || isPool0Exists || isPool1Exists;
+    isPoolExists || isPool0Exists || isPool1Exists || isPool2Exists;
 
   const mintInfo = useDerivedMintInfo(
     currencyA ?? undefined,

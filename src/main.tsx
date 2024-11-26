@@ -22,6 +22,8 @@ import CreatePoolPage from '@/pages/CreatePool/index.tsx';
 
 import { ApolloProvider } from '@apollo/client';
 import { infoClient } from './graphql/clients/index.tsx';
+import { SwapPageView } from './pages/Swap/types.ts';
+
 const router = createBrowserRouter([
     {
         path: '/',
@@ -32,7 +34,15 @@ const router = createBrowserRouter([
         path: '/swap',
         element: (
             <App>
-                <SwapPage />
+                <SwapPage type={SwapPageView.SWAP} />
+            </App>
+        ),
+    },
+    {
+        path: '/limit-order',
+        element: (
+            <App> 
+                <SwapPage type={SwapPageView.LIMIT_ORDER} /> 
             </App>
         ),
     },
