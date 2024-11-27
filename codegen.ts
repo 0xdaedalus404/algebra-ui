@@ -6,7 +6,7 @@ const config: CodegenConfig = {
     "https://api.studio.thegraph.com/query/50593/integral-v12/version/latest",
     "https://api.studio.thegraph.com/query/50593/goerli-blocks/version/latest",
     "https://api.studio.thegraph.com/query/50593/integral-v12-farming/version/latest",
-    "https://api.studio.thegraph.com/query/82608/limit-orders/v0.0.3",
+    "https://api.studio.thegraph.com/query/82608/limit-orders/version/latest",
   ],
   documents: "src/graphql/queries/!(*.d).{ts,tsx}",
   generates: {

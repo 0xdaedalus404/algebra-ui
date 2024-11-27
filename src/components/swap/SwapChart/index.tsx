@@ -3,7 +3,7 @@ import { SwapChartPair, SwapChartPairType, SwapChartSpan, SwapChartSpanType, Swa
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import * as LightWeightCharts from "lightweight-charts";
 import { useSwapChart } from "@/hooks/swap/useSwapChart";
-import { BarChartHorizontalIcon, CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
+import { CandlestickChartIcon, ChevronDownIcon, LineChartIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
@@ -14,7 +14,7 @@ import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import MarketDepthChart from "../MarketDepthChart";
+// import MarketDepthChart from "../MarketDepthChart";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
 
@@ -49,14 +49,14 @@ const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, curren
 }
 
 const mainnetPoolsMapping: { [key: Address]: Address } = {
-    ['0x89406233d4290f405eabb6f320fd648276b8b5b7']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
+    ['0x5c37f12d5b94e47505655bf390d7054d540fd586']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
     ['0x9367e79bbc401cec2545b4671a80892a26ae1cd9']: '0x9a772018fbd77fcd2d25657e5c547baff3fd7d16',
     ['0x9f032424a5a4b0effb7fe4912f3e325c105345bc']: '0x3416cf6c708da44db2624d63ea0aaef7113527c6'
 }
 
 const mainnetTokensMapping: { [key: Address]: Address } = {
-    ['0x20b28b1e4665fff290650586ad76e977eab90c5d']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    ['0x49a390a3dfd2d01389f799965f3af5961f87d228']: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+    ['0x7d98346b3b000c55904918e3d9e2fc3f94683b01']: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+    ['0x94373a4919b3240d86ea41593d5eba789fef3848']: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     ['0x5aefba317baba46eaf98fd6f381d07673bca6467']: '0xdac17f958d2ee523a2206206994597c13d831ec7',
     ['0xbc892d5f23d3733cff8986d011ca8ff1249d16ca']: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
 }
@@ -86,7 +86,7 @@ const SwapChart = () => {
     const poolAddress = poolId ? mainnetPoolsMapping[poolId] : '';
     const tokenAddress = chartPair === SwapChartPair.A && tokenA ? mainnetTokensMapping[tokenA.address.toLowerCase() as Address] : tokenB ? mainnetTokensMapping[tokenB.address.toLowerCase() as Address] : '';
 
-    const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
+    // const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
     const [isPoolSwitcherOpen, setIsPoolSwitcherOpen] = useState(false)
 
 
@@ -220,9 +220,9 @@ const SwapChart = () => {
             });
         } else {
             series = chart?.addAreaSeries({
-                topColor: "rgba(39, 151, 255, 0.6)",
-                bottomColor: "rgba(39, 151, 255, 0)",
-                lineColor: "rgba(39, 151, 255, 1)",
+                topColor: "rgba(255, 138, 52, 0.6)",
+                bottomColor: "rgba(255, 138, 52, 0)",
+                lineColor: "rgba(255, 138, 52, 1)",
             });
         }
 
@@ -235,7 +235,7 @@ const SwapChart = () => {
     }, [chartRef, chartType, formattedData]);
 
     const currentValue = useMemo(() => {
-        if (!formattedData) return ''
+        if (!formattedData?.length) return ''
 
         const value = formattedData[formattedData.length - 1].value;
 
@@ -291,7 +291,7 @@ const SwapChart = () => {
 
     return (<div className="flex flex-col gap-6 w-full h-full relative">
 
-        <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} />
+        {/* <MarketDepthChart currencyA={tokenA} currencyB={tokenB} poolAddress={poolId} isOpen={isMarketDepthOpen} close={() => setIsMarketDepthOpen(false)} /> */}
 
         <div className="flex flex-col md:flex-row gap-4 justify-between">
 
@@ -310,12 +310,12 @@ const SwapChart = () => {
 
                 <PopoverContent
                     onPointerDownOutside={() => setTimeout(() => setIsPoolSwitcherOpen(false), 0)}
-                    className="bg-card rounded-3xl border border-card-border">
+                    className="bg-card rounded-3xl border border-card-border w-fit">
                     <div className="flex flex-col gap-2 text-white">
                         {
                             pairSelectorList?.map((item) => <div
                                 key={`chart-pair-selector-item-${item.pair}`}
-                                className="flex items-center gap-2 min-h-[40px] text-white font-semibold p-2 px-4 rounded-2xl cursor-pointer hover:bg-card-hover duration-200"
+                                className="flex items-center gap-2 w-fit min-h-[40px] text-black font-semibold p-2 px-4 rounded-2xl cursor-pointer whitespace-nowrap hover:bg-card-hover duration-200"
                                 onClick={() => {
                                     setChartPair(item.pair)
                                     setIsPoolSwitcherOpen(false)
@@ -353,8 +353,8 @@ const SwapChart = () => {
                         </HoverCardContent>
                     </HoverCard>
                 </div>
-                <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div>
-                <HoverCard>
+                {/* <div className="self-center w-[1px] h-3/6 border border-card-border/40"></div> */}
+                {/* <HoverCard>
                     <HoverCardTrigger>
                         <Button variant={isMarketDepthOpen ? 'iconActive' : 'icon'} size={'icon'} onClick={() => setIsMarketDepthOpen(v => !v)}>
                             <BarChartHorizontalIcon size={20} />
@@ -363,7 +363,7 @@ const SwapChart = () => {
                     <HoverCardContent>
                         <div className="font-bold">Market Depth</div>
                     </HoverCardContent>
-                </HoverCard>
+                </HoverCard> */}
             </div>
         </div>
         <div className={`flex items-center justify-center relative w-full h-[300px]`}>

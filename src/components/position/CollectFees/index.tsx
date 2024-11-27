@@ -66,7 +66,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
         <div className="text-left">
             <div className="font-bold text-xs">EARNED FEES</div>
             <div className="font-semibold text-2xl">
-                {collectedFees ? <span className="text-cyan-300 drop-shadow-cyan">{collectedFees}</span> : <Skeleton className="w-[100px] h-[30px]" />}
+                {collectedFees ? <span className="text-cyan-300">{collectedFees}</span> : <Skeleton className="w-[100px] h-[30px]" />}
             </div>
         </div>
         <Button size={'md'} disabled={!collect || zeroRewards || isLoading} onClick={() => collect && collect()}>

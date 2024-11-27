@@ -16,9 +16,9 @@ const Settings = () => {
                 <SettingsIcon />
             </Button>
         </PopoverTrigger>
-        <PopoverContent align={'end'} className="flex flex-col gap-4 p-6 w-fit bg-card rounded-3xl border border-card-border text-white">
+        <PopoverContent align={'end'} className="flex flex-col gap-4 p-6 w-fit bg-card rounded-3xl border border-card-border text-black">
             <div className="text-md font-bold">Transaction Settings</div>
-            <Separator orientation={'horizontal'} className="bg-border" />
+            <Separator orientation={'horizontal'} className="bg-card-dark" />
             <SlippageTolerance />
             <TransactionDeadline />
             <Multihop />

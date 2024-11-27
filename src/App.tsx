@@ -54,8 +54,9 @@ createWeb3Modal({
   },
   defaultChain: holeskyChain,
   themeVariables: {
-    '--w3m-accent': '#2797ff'
-  }
+    '--w3m-accent': '#ff8a34'
+  },
+  themeMode: 'light'
 })
 
 function App({ children }: { children: React.ReactNode }) {

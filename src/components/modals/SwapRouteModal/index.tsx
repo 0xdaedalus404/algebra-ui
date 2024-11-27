@@ -122,10 +122,10 @@ const RouteSplit = ({
   }, [route]);
 
   return (
-    <div className={"px-4 py-3 rounded-xl bg-gray-800"}>
+    <div className={"px-4 py-3 rounded-xl bg-card-dark/80 border border-card-border"}>
       {route.percent < 100 && (
         <div
-          className={"pb-2 border-b border-gray-600 font-bold"}
+          className={"pb-2 border-b border-card-border font-bold"}
         >{`Split ${route.percent}%`}</div>
       )}
       {route.pools.map((pool, idx) =>
@@ -160,7 +160,7 @@ const SwapRouteModal = ({
     <Credenza open={isOpen}>
       <CredenzaTrigger asChild>{children}</CredenzaTrigger>
       <CredenzaContent
-        className="bg-card-dark !rounded-3xl"
+        className="bg-card !rounded-3xl"
         onInteractOutside={() => setIsOpen(false)}
         onEscapeKeyDown={() => setIsOpen(false)}
       >

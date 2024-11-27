@@ -160,10 +160,10 @@ const MyPositionsTable = <TData, TValue>({
                         <TableRow
                             key={row.id}
                             data-state={row.getIsSelected() && 'selected'}
-                            className={`border-card-border/40 ${
+                            className={`border-card-border ${
                                 isSelected
-                                    ? 'bg-muted-primary/60'
-                                    : 'bg-card-dark'
+                                    ? 'bg-card-dark'
+                                    : 'bg-card'
                             } ${(action || link) && 'cursor-pointer'} ${
                                 action || link
                                     ? isSelected

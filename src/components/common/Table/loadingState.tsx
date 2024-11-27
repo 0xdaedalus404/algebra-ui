@@ -5,7 +5,7 @@ export const LoadingState = () => (
         {[1, 2, 3, 4].map((v) => (
             <Skeleton
                 key={`table-skeleton-${v}`}
-                className="w-full h-[50px] bg-card-light rounded-xl"
+                className="w-full h-[50px] bg-card-dark rounded-xl"
             />
         ))}
     </div>

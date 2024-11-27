@@ -19,7 +19,7 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address, transact
             to={`https://holesky.etherscan.io/tx/${hash}`}
             target={'_blank'}
             >
-                <li className="flex group h-16 justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-border/60 hover:border-border hover:bg-card-dark/60 transition-all duration-200" key={hash}>
+                <li className="flex group h-16 justify-between items-center gap-4 w-full bg-card-dark rounded-3xl p-4 border border-card-border/60 hover:border-card-border hover:bg-card-dark/60 transition-all duration-200" key={hash}>
                     {
                         txType === TransactionType.FARM && transaction.data.tokenId ?
                         <FarmingPositionImg positionId={BigInt(transaction.data.tokenId)} size={10} />
@@ -52,7 +52,7 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address, transact
                     {
                         transaction.loading ? <Loader className="group-hover:hidden" size={20} /> 
                         : 
-                        transaction.success ? <Check className="text-blue-300 group-hover:hidden" size={18} /> 
+                        transaction.success ? <Check className="text-green-500 group-hover:hidden" size={18} /> 
                         :
                         transaction.error && <X className="text-red-500 group-hover:hidden" size={18} />
                     }

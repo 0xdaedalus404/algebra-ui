@@ -141,10 +141,10 @@ const SwapParams = ({
   if (wrapType !== WrapType.NOT_APPLICABLE) return;
 
   return smartTrade ? (
-    <div className="rounded text-white">
+    <div className="rounded text-black">
       <div className="flex justify-between">
         <button
-          className="flex items-center w-full text-md mb-1 text-center text-white bg-card-dark py-1 px-3 rounded-lg"
+          className="flex items-center w-full text-md mb-1 text-center text-black bg-card-dark py-1 px-3 rounded-lg"
           onClick={() => toggleExpanded(!isExpanded)}
         >
           {slidingFee ? (
@@ -153,8 +153,8 @@ const SwapParams = ({
                 <ZapIcon
                   className="mr-2"
                   strokeWidth={1}
-                  stroke="white"
-                  fill="white"
+                  stroke="black"
+                  fill="black"
                   size={16}
                 />
               )}
@@ -233,7 +233,7 @@ const SwapParams = ({
       <Loader size={17} />
     </div>
   ) : (
-    <div className="text-md mb-1 text-center text-white/70 bg-card-dark py-2 px-3 rounded-lg">
+    <div className="text-md mb-1 text-center text-black/70 bg-card-dark py-2 px-3 rounded-lg">
       Select an amount for swap
     </div>
   );

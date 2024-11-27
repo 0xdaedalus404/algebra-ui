@@ -90,7 +90,7 @@ const PositionCard = ({
                             <div className="font-bold text-xs">LIQUIDITY</div>
                             <div className="font-semibold text-2xl">
                                 {positionLiquidityUSD ? (
-                                    <span className="text-cyan-300 drop-shadow-cyan">
+                                    <span className="text-cyan-300">
                                         {positionLiquidityUSD}
                                     </span>
                                 ) : (
@@ -102,7 +102,7 @@ const PositionCard = ({
                             <div className="font-bold text-xs">APR</div>
                             <div className="font-semibold text-2xl">
                                 {positionAPR ? (
-                                    <span className="text-fuchsia-400 drop-shadow-pink">
+                                    <span className="text-fuchsia-400">
                                         {positionAPR}
                                     </span>
                                 ) : (

@@ -45,12 +45,12 @@ const CustomBar = ({
         <g>
             <defs>
                 <linearGradient id='colorUv' x1='0' y1='0' x2='0' y2='100%'>
-                    <stop offset='0' stopColor='#2797ff' />
-                    <stop offset='1' stopColor='rgba(35, 133, 222, 0.05)' />
+                    <stop offset='0' stopColor='#ff8a34' />
+                    <stop offset='1' stopColor='rgba(255, 138, 52, 0.05)' />
                 </linearGradient>
             </defs>
-            {percent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
-            {isCurrent && <text x={x + 10} y={y - 10} fill="white" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
+            {percent && <text x={x + 10} y={y - 10} fill="black" fontSize={'14px'} fontWeight={600} textAnchor="middle">{`${percent.toFixed(0)}%`}</text>}
+            {isCurrent && <text x={x + 10} y={y - 10} fill="black" fontSize={'14px'} fontWeight={600} textAnchor="middle">Current Price</text>}
             <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
         </g>
     )
@@ -68,7 +68,7 @@ const CustomTooltip = ({
     // const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
     // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
 
-    return <div className="flex flex-col gap-2 p-4 rounded-2xl bg-[#13192894] backdrop-blur-sm">
+    return <div className="flex flex-col gap-2 p-4 rounded-2xl bg-white border border-card-border">
         <div className="flex gap-4 justify-between">
             <div>{`${currencyA?.symbol} Price:`}</div>
             <div>{`${price0 ? `${Number(price0).toLocaleString(undefined, {
@@ -146,14 +146,14 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
             >
                 {formattedData?.map((entry: any, index: number) => {
 
-                    let fill = '#3b3c4e'
+                    let fill = '#e8e8e8'
 
                     const value = isSorted ? entry.price0 : entry.price1
 
                     if (focusBar === index) {
-                        fill = '#cdd1ff'
+                        fill = 'rgba(255, 138, 52, 0.5)'
                     } else if (entry.isCurrent) {
-                        fill = '#cd27f0'
+                        fill = '#ffdf34'
                     } else if (leftPrice && rightPrice) {
                         if (Number(value) >= Number(leftPrice) && Number(value) <= Number(rightPrice)) {
                             fill = 'url(#colorUv)'

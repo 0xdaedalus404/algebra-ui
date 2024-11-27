@@ -131,38 +131,6 @@ const SwapPair = ({
       };
   }, [baseCurrency, independentField, parsedAmount, showWrap, smartTrade, limitOrderPrice, quoteCurrency, pairPrice, limitOrderPriceFocused, lastFocusedField]);
 
-  console.log('parsedAmounts', parsedAmounts, limitOrderPrice, parsedLimitOrderOutput, parsedAmount, quoteCurrency, pairPrice)
-
-  // const parsedAmountA =
-  //   independentField === SwapField.INPUT
-  //     ? parsedAmount
-  //     : tryParseAmount(
-  //         smartTrade?.inputAmount?.toFixed(),
-  //         smartTrade?.inputAmount?.currency
-  //       );
-
-  // const parsedAmountB =
-  //   independentField === SwapField.OUTPUT
-  //     ? parsedAmount
-  //     : tryParseAmount(
-  //         smartTrade?.outputAmount?.toFixed(),
-  //         smartTrade?.outputAmount?.currency
-  //       );
-
-  // const parsedAmounts = useMemo(
-  //   () =>
-  //     showWrap
-  //       ? {
-  //           [SwapField.INPUT]: parsedAmount,
-  //           [SwapField.OUTPUT]: parsedAmount,
-  //         }
-  //       : {
-  //           [SwapField.INPUT]: parsedAmountA,
-  //           [SwapField.OUTPUT]: parsedAmountB,
-  //         },
-  //   [parsedAmount, showWrap, parsedAmountA, parsedAmountB]
-  // );
-
   const maxInputAmount: CurrencyAmount<Currency> | undefined = maxAmountSpend(
     currencyBalances[SwapField.INPUT]
   );
@@ -210,7 +178,7 @@ const SwapPair = ({
         showBalance={true}
       />
       <button
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-[#1a1d2b] hover:bg-card-hover duration-200"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-white hover:bg-card-hover duration-200"
         onClick={onSwitchTokens}
       >
         <ChevronsUpDownIcon size={16} />

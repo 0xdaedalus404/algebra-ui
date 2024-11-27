@@ -56,7 +56,7 @@ const AmountsSection = ({
                 <HoverCardTrigger>
                     <TokenRatio mintInfo={mintInfo} />
                 </HoverCardTrigger>
-                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-3xl border border-card-border text-white w-fit">
+                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-3xl border border-card-border text-black w-fit">
                     <div className="flex items-center">
                         <span className="font-bold">Token Ratio</span>
                     </div>
@@ -67,13 +67,13 @@ const AmountsSection = ({
                     <div className="text-xs font-bold">
                         ESTIMATED POSITION APR
                     </div>
-                    <div className="text-lg font-bold text-green-300">
+                    <div className="text-lg font-bold text-green-500">
                         {apr ? `${apr.toFixed(2)}%` : 0}
                     </div>
                 </div>
                 <div className="text-right">
                     <div className="text-xs font-bold">POOL APR</div>
-                    <div className="text-lg font-bold text-cyan-300">
+                    <div className="text-lg font-bold text-cyan-500">
                         {poolAPR !== undefined ? `${poolAPR}%` : null}
                     </div>
                 </div>

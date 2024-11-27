@@ -45,6 +45,7 @@ const LimitOrderButton = ({ disabled, token0, token1, poolAddress, wasInverted, 
     
     const needAllowance = useNeedAllowance(inputCurrency?.isNative ? undefined : inputCurrency?.wrapped, amount, ALGEBRA_LIMIT_ORDER_PLUGIN)
     
+    console.log('IS READE', token0, token1, trade, amount, limitOrder, disabled, inputError, needAllowance)
     const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance
 
     const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN)
