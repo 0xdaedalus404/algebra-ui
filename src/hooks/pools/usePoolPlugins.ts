@@ -42,13 +42,14 @@ export function usePoolPlugins(poolId: Address | undefined) {
         setPluginsForPool(poolId, {
             dynamicFeePlugin: Boolean(hasDynamicFee),
             farmingPlugin: hasFarmingPlugin !== ADDRESS_ZERO,
-            limitOrderPlugin: false,
+            limitOrderPlugin: true,
         });
     }, [poolId, isLoading, pluginsForPools]);
 
     if (poolId && pluginsForPools[poolId]) {
         return {
             ...pluginsForPools[poolId],
+            limitOrderPlugin: true,
             isLoading: false,
         };
     }
@@ -56,7 +57,7 @@ export function usePoolPlugins(poolId: Address | undefined) {
     return {
         dynamicFeePlugin: Boolean(hasDynamicFee),
         farmingPlugin: hasFarmingPlugin !== ADDRESS_ZERO,
-        limitOrderPlugin: false,
+        limitOrderPlugin: true,
         isLoading,
     };
 }

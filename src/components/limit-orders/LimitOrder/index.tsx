@@ -1,15 +1,16 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import {  getTickToPrice, tickToPrice, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import {  computeCustomPoolAddress, getTickToPrice, tickToPrice, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LimitPriceCard from "../LimitPriceCard";
 import LimitOrderButton from "../LimitOrderButton";
-import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
+import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { Address } from "viem";
 
 const LimitOrder = () => {
 
-    const { tick, currencies, tickSpacing, poolAddress } = useDerivedSwapInfo();
+    const { currencies } = useDerivedSwapInfo();
 
     const singleHopOnly = false
 
@@ -30,21 +31,28 @@ const LimitOrder = () => {
 
     const [wasInverted, setWasInverted] = useState(false);
 
-    const [poolState, pool] = usePool(poolAddress);
+    const limitOrderPoolAddress = token0 && token1 ? computeCustomPoolAddress({
+        tokenA: token0,
+        tokenB: token1,
+        customPoolDeployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER
+    }) as Address : undefined
 
-    const { limitOrderPlugin } = usePoolPlugins(poolAddress)
+    const [limitOrderPoolExists, limitOrderPool] = usePool(limitOrderPoolAddress)
 
     const initialSellPrice = useMemo(() => {
-        if (!pool) return "";
+        if (!limitOrderPool) return "";
 
-        const _newPrice = invertPrice ? getTickToPrice(token1, token0, pool.tickCurrent - pool.tickSpacing) : getTickToPrice(token0, token1, pool.tickCurrent + pool.tickSpacing);
+        const _newPrice = invertPrice ? getTickToPrice(token1, token0, limitOrderPool.tickCurrent - limitOrderPool.tickSpacing) : getTickToPrice(token0, token1, limitOrderPool.tickCurrent + limitOrderPool.tickSpacing);
 
         return _newPrice?.toSignificant(_newPrice.baseCurrency.decimals / 2);
-    }, [pool, token0, token1, invertPrice]);
+    }, [limitOrderPool, token0, token1, invertPrice]);
 
     const [sellPrice, setSellPrice] = useState("");
 
-    const isPoolExists = poolState === PoolState.EXISTS;
+    const isPoolExists = limitOrderPoolExists === PoolState.EXISTS;
+
+    const tick = limitOrderPool?.tickCurrent
+    const tickSpacing = limitOrderPool?.tickSpacing
 
     const tickStep = useCallback(
         (direction: 1 | -1) => {
@@ -83,6 +91,8 @@ const LimitOrder = () => {
 
         return false
     }, [token0, token1, currencies, invertPrice, sellPrice, tick, wasInverted, tickSpacing]);
+
+    console.log('BLOCK', blockCreation)
 
     const [plusDisabled, minusDisabled] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return [true, true];
@@ -164,10 +174,10 @@ const LimitOrder = () => {
         />
         <LimitOrderButton 
             disabled={blockCreation}
-            limitOrderPlugin={limitOrderPlugin}
+            limitOrderPlugin={isPoolExists}
             token0={token0} 
             token1={token1}
-            poolAddress={poolAddress} 
+            poolAddress={limitOrderPoolAddress} 
             sellPrice={sellPrice} 
             tickSpacing={tickSpacing} 
             wasInverted={wasInverted}
