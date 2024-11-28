@@ -98,7 +98,7 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
 
         if (preset && preset.type === Presets.FULL) {
             setFullRange();
-        } else {
+        } else if (preset) {
             const minPrice = mintInfo.invertPrice
             ? price.invert().asFraction.multiply(new Percent(preset.min, 100))
             : price.asFraction.multiply(new Percent(preset.min, 100));
@@ -125,20 +125,19 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
     
           if (priceAtMinTick && priceAtMaxTick) {
             onLeftRangeInput(
-              preset
-                ? mintInfo.invertPrice
+              mintInfo.invertPrice
                   ? priceAtMinTick.invert().toSignificant()
                   : priceAtMinTick.toSignificant()
-                : "",
             );
             onRightRangeInput(
-              preset
-                ? mintInfo.invertPrice
+                mintInfo.invertPrice
                   ? priceAtMaxTick.invert().toSignificant()
                   : priceAtMaxTick.toSignificant()
-                : "",
             );
           }
+        } else {
+            onLeftRangeInput("")
+            onRightRangeInput("")
         }
     }
 
