@@ -51,7 +51,7 @@ const IntegralPools = () => {
             </Popover>
 
             <div>
-                {isPluginsLoading ? <Loader size={16} /> : <div className="flex">
+                {isPluginsLoading ? <Loader color="black" size={16} /> : <div className="flex">
                     {dynamicFeePlugin && <DynamicFeePluginIcon />}
                     {limitOrderPlugin && <LimitOrderPluginIcon />}
                 </div>}
@@ -66,7 +66,7 @@ const IntegralPoolsList = memo(({ poolAddress, onPoolSelect }: { poolAddress: Ad
 
     const { data: pools, loading } = usePoolsListQuery()
 
-    if (loading) return <span className="flex w-full justify-center text-white !min-w-[240px] m-auto"> <Loader /> </span>
+    if (loading) return <span className="flex w-full justify-center text-white !min-w-[240px] m-auto"> <Loader color="black" /> </span>
 
     return <div className="flex flex-col gap-2">{pools?.pools.filter((pool) => poolAddress?.toLowerCase() !== pool.id.toLowerCase()).map((pool, idx) => <IntegralPoolsListItem key={`integral-pool-item-${idx}`} pool={pool} onPoolSelect={onPoolSelect} />)}</div>
 
@@ -96,7 +96,7 @@ const IntegralPoolsListItem = memo(({ pool, onPoolSelect }: { pool: PoolFieldsFr
         </div>
         <div className="font-semibold">{currencyA && currencyB ? `${currencyA?.symbol} / ${currencyB?.symbol}` : ''}</div>
         <div className="ml-auto">
-            {isPluginsLoading ? <Loader size={16} /> : <div className="flex">
+            {isPluginsLoading ? <Loader size={16} color="black" /> : <div className="flex">
                 {dynamicFeePlugin && <DynamicFeePluginIcon />}
                 {limitOrderPlugin && <LimitOrderPluginIcon />}
             </div>}

@@ -49,7 +49,7 @@ const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, curren
 }
 
 const mainnetPoolsMapping: { [key: Address]: Address } = {
-    ['0x5c37f12d5b94e47505655bf390d7054d540fd586']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
+    ['0xad82c41371e9448ecef890a3fd41d43a19203a55']: '0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640',
     ['0x9367e79bbc401cec2545b4671a80892a26ae1cd9']: '0x9a772018fbd77fcd2d25657e5c547baff3fd7d16',
     ['0x9f032424a5a4b0effb7fe4912f3e325c105345bc']: '0x3416cf6c708da44db2624d63ea0aaef7113527c6'
 }
@@ -271,7 +271,7 @@ const SwapChart = () => {
 
     const [pairImage, pairTitle] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT) return [
-            <Loader size={16} />,
+            <Loader size={16} color="black" />,
             'Loading...'
         ];
 
@@ -373,7 +373,7 @@ const SwapChart = () => {
             <div className="absolute right-0 top-0 flex flex-col items-end w-full text-3xl text-right">
                 {chartCreated ? <>
                     <div className="text-3xl font-bold">
-                        <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} />}</span>
+                        <span>{displayValue ? displayValue : currentValue ? currentValue : <Loader size={18} color="black" />}</span>
                         <span className="ml-2">{displayValueCurrency && displayValueCurrency}</span>
                     </div>
                     <div className="text-[#b7b7b7] text-sm">
@@ -387,7 +387,7 @@ const SwapChart = () => {
             
             {!chartCreated ? (
                 <div className="flex items-center justify-center absolute w-full h-full">
-                    <Loader />
+                    <Loader color="black" />
                 </div>
             ) : null}
 

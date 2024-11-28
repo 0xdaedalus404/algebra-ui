@@ -7,6 +7,6 @@ interface LoaderProps {
     className?: string;
 }
 
-const Loader = ({ size = 22, color = 'black', className }: LoaderProps) => <Loader2Icon size={size} color={color} className={cn("animate-spin", className)} />
+const Loader = ({ size = 22, color = 'white', className }: LoaderProps) => <Loader2Icon size={size} color={color} className={cn("animate-spin", className)} />
 
 export default Loader

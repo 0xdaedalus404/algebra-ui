@@ -161,7 +161,7 @@ const SwapParams = ({
               <span>{`${slidingFee?.toFixed(4)}% fee`}</span>
             </div>
           ) : <div className="rounded select-none px-1.5 py-1 flex items-center relative">
-            <Loader size={16} />   
+            <Loader size={16} color="black" />   
           </div>}
           <div className={`ml-auto duration-300 ${isExpanded && "rotate-180"}`}>
             <ChevronDownIcon strokeWidth={2} size={16} />
@@ -230,7 +230,7 @@ const SwapParams = ({
     </div>
   ) : smartTrade !== undefined && isSmartTradeLoading ? (
     <div className="flex justify-center mb-1 bg-card-dark py-3 px-3 rounded-lg">
-      <Loader size={17} />
+      <Loader size={17} color="black" />
     </div>
   ) : (
     <div className="text-md mb-1 text-center text-black/70 bg-card-dark py-2 px-3 rounded-lg">
