@@ -128,7 +128,6 @@ const CreatePoolForm = () => {
         : [[calldata] as Address[]],
       value: BigInt(value || 0),
       enabled: Boolean(calldata),
-      gas: 6_999_999n
     });
 
   const { data: createBasePoolData, write: createBasePool } =
@@ -187,7 +186,7 @@ const CreatePoolForm = () => {
 
     return () => {
       selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-      selectCurrency(SwapField.OUTPUT, STABLECOINS.USDT.address as Account);
+      selectCurrency(SwapField.OUTPUT, STABLECOINS.USDC.address as Account);
       typeStartPriceInput("");
     };
   }, []);

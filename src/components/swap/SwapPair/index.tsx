@@ -30,7 +30,7 @@ const SwapPair = ({
   derivedSwap: IDerivedSwapInfo;
   smartTrade: SmartRouterTrade<TradeType>;
 }) => {
-  const { toggledTrade: trade, currencyBalances, parsedAmount, currencies, tick } = derivedSwap;
+  const { toggledTrade: trade, currencyBalances, parsedAmount, currencies } = derivedSwap;
 
   const baseCurrency = currencies[SwapField.INPUT];
   const quoteCurrency = currencies[SwapField.OUTPUT];

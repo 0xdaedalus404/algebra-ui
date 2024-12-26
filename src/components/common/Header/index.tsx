@@ -1,6 +1,6 @@
 import Navigation from "@/components/common/Navigation"
-import DaikonLogo from "@/assets/daikon-logo.svg"
-import DaikonMobileLogo from "@/assets/daikon-single-logo.svg"
+import ClammLogo from "@/assets/clamm-logo.svg"
+import ClammMobileLogo from "@/assets/clamm-single-logo.svg"
 import { NavLink } from "react-router-dom"
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react"
 import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id"
@@ -31,9 +31,9 @@ const Algebra = () => <div className="flex items-center gap-2">
     <NavLink to={'/'}>
         <div className="flex items-center gap-2 py-1 pl-2 pr-3 bg-card rounded-3xl hover:bg-card-hover duration-200">
             <div className="block md:hidden flex items-center justify-center w-[32px] h-[32px] rounded-full">
-                <img src={DaikonMobileLogo} width={25} height={25} />
+                <img src={ClammMobileLogo} width={25} height={25} />
             </div>
-            <img className="hidden md:block" src={DaikonLogo} width={120} height={25} />
+            <img className="hidden md:block" src={ClammLogo} width={120} height={25} />
         </div>
     </NavLink>
 </div>
