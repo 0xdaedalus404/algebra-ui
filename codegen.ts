@@ -6,7 +6,7 @@ const config: CodegenConfig = {
     "https://api.studio.thegraph.com/query/50593/clamm-analytics/v0.0.1",
     "https://api.studio.thegraph.com/query/50593/clamm-blocks/v0.0.1",
     "https://api.studio.thegraph.com/query/50593/clamm-farms/v0.0.1",
-    "https://api.studio.thegraph.com/query/50593/clamm-limits/v0.0.1",
+    "https://api.studio.thegraph.com/query/50593/clamm-limits/v0.0.2",
   ],
   documents: "src/graphql/queries/!(*.d).{ts,tsx}",
   generates: {
