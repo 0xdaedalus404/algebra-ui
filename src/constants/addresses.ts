@@ -34,6 +34,6 @@ export const FARMING_CENTER: Address =
 // Custom pools
 
 export const CUSTOM_POOL_DEPLOYER_LIMIT_ORDER: Address = 
-  "0x03f8B4b140249Dc7B2503C928E7258CCe1d91F1A";
+  "0x03f8b4b140249dc7b2503c928e7258cce1d91f1a";
 
 export const CUSTOM_POOL_BASE: Address = ADDRESS_ZERO;
