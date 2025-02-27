@@ -10,7 +10,7 @@ import { Currency as CurrencyBN } from "@cryptoalgebra/router-custom-pools-and-s
 import { useAccount } from "wagmi";
 import { SwapPageProps, SwapPageView } from "./types";
 import LimitOrder from "@/components/limit-orders/LimitOrder";
-import SwapChart from "@/components/swap/SwapChart";
+// import SwapChart from "@/components/swap/SwapChart";
 import LimitOrdersList from "@/components/limit-orders/LimitOrdersList";
 // import {useSmartRouterCallback} from "@/hooks/routing/useSmartRouterCallback.ts";
 
@@ -34,6 +34,10 @@ const SwapPage = ({ type }: SwapPageProps) => {
   return (
     <PageContainer>
 
+      { isLimitOrder && (<div className='w-full mb-12 p-2 bg-red-200 border border-2 font-bold border-red-700 text-red-500 rounded-lg'>
+        💀 WARNING! This product is in the Beta stage. Use at your own risk & DYOR. 💀
+        </div>) 
+      }
       <PageTitle title={isLimitOrder ? "Limit Order" : "Swap"} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">
@@ -64,7 +68,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
         </div>
 
         <div className="col-span-2">
-          <SwapChart />
+          {/* <SwapChart /> */}
         </div>
       </div>
 

@@ -10,7 +10,7 @@ import {
     useMintState,
     useRangeHopCallbacks,
 } from '@/state/mintStore';
-import { Bound, INITIAL_POOL_FEE } from '@cryptoalgebra/custom-pools-sdk';
+import { Bound, INITIAL_POOL_FEE, nearestUsableTick, TickMath } from '@cryptoalgebra/custom-pools-sdk';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Address } from 'wagmi';
@@ -60,6 +60,11 @@ const NewPositionPage = () => {
 
     const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } =
         mintInfo.pricesAtTicks;
+
+    const hidePresets = mintInfo.pool ? 
+        mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MAX_TICK, mintInfo.pool.tickSpacing) ||
+        mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MIN_TICK, mintInfo.pool.tickSpacing)
+    : false
 
     const price = useMemo(() => {
         if (!mintInfo.price) return;
@@ -145,11 +150,11 @@ const NewPositionPage = () => {
                         <h2 className="font-semibold text-2xl text-left">
                             1. Select Range
                         </h2>
-                        <PresetTabs
+                        { hidePresets && <PresetTabs
                             currencyA={currencyA}
                             currencyB={currencyB}
                             mintInfo={mintInfo}
-                        />
+                        /> }
                     </div>
 
                     <div className="flex flex-col w-full">

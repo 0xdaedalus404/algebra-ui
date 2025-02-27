@@ -559,10 +559,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.0.0.tgz#2b030879ae0943e265aab026271cfce0a91be929"
-  integrity sha512-rHq+Y+XDdP5gMnvBGfOt1cqgC0PHPFHzqr9TWOpwrJIq2x5K9QpzMgsTiLeRaCTsnOhWsDPTq9RKlcfeelcreg==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.1.0.tgz#e18736e5159d126288753099c3323f86077a48ae"
+  integrity sha512-M0aAdZc1Yj0I3mva4WewQG/XibmNYwr55CfMkNHKKN9T9ce8EOMmBj2x0Lu8JGZuDHqzXKwX4Sk+k8J81bm6PQ==
   dependencies:
     "@ethersproject/abi" "^5.7.0"
     "@ethersproject/address" "^5.7.0"
@@ -576,12 +576,12 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.1.0.tgz#3e8fb0790faaff5b075b09bd7cb0d4ef7d8440e8"
-  integrity sha512-QX3Quw5na9YOSiPFbh/GisX4G58akvQ+4bGNWJIRaHhpnnO+n6Oal3lJCnkOlLALIP3KF8al7p5OrV79DmaCSw==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.3.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.3.0.tgz#fbb8b2e57ed16d60236a8332629862b9fd5e9099"
+  integrity sha512-fgOaQDlN/TutyaGkW6jjzOjxy+wcMTcx0SQ8D7D5eNjjG0mQoTZ66uoaAbeBT1F2gA9O86fIOw3hpk5Y5q474g==
   dependencies:
-    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/clamm-base-sdk@1.0.0"
+    "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/clamm-base-sdk@1.1.0"
     "@pancakeswap/sdk" "5.7.6"
     "@pancakeswap/swap-sdk-core" "1.0.0"
     "@pancakeswap/token-lists" "0.0.9"
