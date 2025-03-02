@@ -1,7 +1,10 @@
 import { Currency, CurrencyAmount, Route, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { useAllRoutes } from "./useAllRoutes";
+import { Address } from "viem";
+
 import { TradeState, TradeStateType } from "@/types/trade-state";
+
+import { useAllRoutes } from "./useAllRoutes";
 import { useQuotesResults } from "./useQuotesResults";
 
 
@@ -14,10 +17,11 @@ import { useQuotesResults } from "./useQuotesResults";
  */
 export function useBestTradeExactIn(
     amountIn?: CurrencyAmount<Currency>,
-    currencyOut?: Currency
+    currencyOut?: Currency,
+    deployer?: Address
 ): { state: TradeStateType; trade: Trade<Currency, Currency, TradeType.EXACT_INPUT> | null; fee?: bigint[] | null, priceAfterSwap?: bigint[] | null } {
 
-    const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut)
+    const { routes, loading: routesLoading } = useAllRoutes(amountIn?.currency, currencyOut, deployer)
 
     const {
         data: quotesResults,

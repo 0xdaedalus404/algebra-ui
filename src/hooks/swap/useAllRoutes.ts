@@ -2,7 +2,6 @@ import { Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgeb
 import { useMemo } from "react"
 import { useSwapPools } from "./useSwapPools"
 import { Address, useChainId } from "wagmi"
-import { useUserState } from "@/state/userStore"
 
 
 /**
@@ -69,16 +68,16 @@ function computeAllRoutes(
  */
 export function useAllRoutes(
     currencyIn?: Currency,
-    currencyOut?: Currency
+    currencyOut?: Currency,
+    deployer?: Address
 ): { loading: boolean; routes: Route<Currency, Currency>[] } {
 
     const chainId = useChainId()
 
-    const { pools, loading: poolsLoading } = useSwapPools(currencyIn, currencyOut)
-
-    const { isMultihop } = useUserState();
+    const { pools, loading: poolsLoading } = useSwapPools(currencyIn, currencyOut, deployer)
 
     return useMemo(() => {
+                
         if (poolsLoading || !chainId || !pools || !currencyIn || !currencyOut)
             return {
                 loading: true,
@@ -96,9 +95,9 @@ export function useAllRoutes(
             [],
             [],
             currencyIn,
-            isMultihop ? 3 : 1
+            1
         )
-
+        
         return { loading: false, routes }
-    }, [chainId, currencyIn, currencyOut, pools, poolsLoading, isMultihop])
+    }, [chainId, currencyIn, currencyOut, pools, poolsLoading])
 }

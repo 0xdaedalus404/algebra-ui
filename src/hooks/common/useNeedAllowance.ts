@@ -17,6 +17,7 @@ export function useNeedAllowance(
     abi: erc20ABI,
     functionName: "allowance",
     watch: true,
+    cacheTime: 5_000,
     args: account && spender && [account, spender],
   });
 

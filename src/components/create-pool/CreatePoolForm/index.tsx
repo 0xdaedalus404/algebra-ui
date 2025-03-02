@@ -28,6 +28,8 @@ import {
   CUSTOM_POOL_DEPLOYER_LIMIT_ORDER
 } from "@/constants/addresses";
 
+import FixBrokenPool from "../FixBrokenPool";
+
 const POOL_DEPLOYER = {
   BASE: "Base",
   LIMIT_ORDER: "Limit Order"
@@ -268,6 +270,13 @@ const CreatePoolForm = () => {
           {isBasePoolLoading ? <Loader /> : "Initialize"}
         </Button>
       )}
+
+      <FixBrokenPool 
+        currencyIn={currencyA} 
+        currencyOut={currencyB}
+        deployer={customPoolDeployerAddresses[poolDeployer]}
+      />
+
     </div>
   );
 };

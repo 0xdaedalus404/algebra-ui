@@ -1,4 +1,10 @@
-import { Currency, Token, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk"
+import { 
+    ADDRESS_ZERO, 
+    Currency, 
+    Token, 
+    computeCustomPoolAddress, 
+    computePoolAddress
+} from "@cryptoalgebra/custom-pools-sdk"
 import { useEffect, useMemo, useState } from "react"
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations"
 import { Address } from "wagmi"
@@ -12,7 +18,8 @@ import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id"
  */
 export function useSwapPools(
     currencyIn?: Currency,
-    currencyOut?: Currency
+    currencyOut?: Currency,
+    deployer?: Address
 ): {
     pools: { tokens: [Token, Token], pool: { address: Address, liquidity: string, price: string, tick: string, fee: string, deployer: string, token0: TokenFieldsFragment, token1: TokenFieldsFragment } }[]
     loading: boolean
@@ -28,10 +35,19 @@ export function useSwapPools(
 
         async function getPools() {
 
-            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => computePoolAddress({
-                tokenA,
-                tokenB
-            }) as Address)
+            const useBasePool = !deployer || deployer === ADDRESS_ZERO
+
+            const poolsAddresses = allCurrencyCombinations.map(([tokenA, tokenB]) => useBasePool ?
+                computePoolAddress({
+                    tokenA,
+                    tokenB,
+                })
+                : computeCustomPoolAddress({
+                    tokenA,
+                    tokenB,
+                    customPoolDeployer: deployer
+                })
+            );
 
             const poolsData = await getMultiplePools({
                 variables: {
@@ -55,7 +71,7 @@ export function useSwapPools(
 
         Boolean(allCurrencyCombinations.length) && getPools()
 
-    }, [allCurrencyCombinations])
+    }, [allCurrencyCombinations, deployer])
 
     return useMemo(() => {
 
@@ -63,7 +79,7 @@ export function useSwapPools(
             pools: [],
             loading: true
         }
-
+        
         return {
             pools: existingPools.map((pool) => ({
                 tokens: [
@@ -77,5 +93,5 @@ export function useSwapPools(
                 }),
             loading: false
         }
-    }, [existingPools])
+    }, [existingPools, deployer])
 }

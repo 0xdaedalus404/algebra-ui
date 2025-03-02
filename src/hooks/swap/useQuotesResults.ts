@@ -54,7 +54,7 @@ export function useQuotesResults({
             args: quote,
         })),
         watch: true,
-        cacheTime: 5_000
+        cacheTime: 10_000
     });
 
     return {
