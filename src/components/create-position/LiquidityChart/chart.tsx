@@ -124,7 +124,7 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
 
                 if (!props?.payload || props.index % 2 === 0) return <text></text>
 
-                return <text x={props.x} y={props.y + 20} fill="white" textAnchor="middle" fontSize={"12px"}
+                return <text x={props.x} y={props.y + 20} fill="black" textAnchor="middle" fontSize={"12px"}
                     width={"12px"} >{Number(props.payload.value).toFixed(3)}</text>
             }} dataKey={isSorted ? 'price0' : 'price1'} interval={6} offset={0} tickLine={false} tickFormatter={v => Number(v).toFixed(3)} />
 

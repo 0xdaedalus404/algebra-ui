@@ -162,7 +162,7 @@ const ExpertMode = () => {
                 <Switch id="expert-mode" checked={isExpertMode} onCheckedChange={setIsExpertMode} />
             </div>
             <p className="whitespace-break-spaces">
-                Advanced control over swap parameters such as price setting and gas management.
+                Allows high slippage trades. Use at your own risk.
             </p>
         </div>
 }

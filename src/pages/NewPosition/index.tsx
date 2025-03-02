@@ -150,7 +150,7 @@ const NewPositionPage = () => {
                         <h2 className="font-semibold text-2xl text-left">
                             1. Select Range
                         </h2>
-                        { hidePresets && <PresetTabs
+                        { !hidePresets && <PresetTabs
                             currencyA={currencyA}
                             currencyB={currencyB}
                             mintInfo={mintInfo}
