@@ -39,9 +39,9 @@ const FixBrokenPool = ({
     const { address: account } = useAccount();
 
     const currencyAmount = useMemo(() => currencyIn ?
-        CurrencyAmount.fromRawAmount(currencyIn, 10 ** currencyIn.decimals) :
+        CurrencyAmount.fromRawAmount(currencyIn, 10 ** Math.floor(currencyIn.decimals / 2)) :
         undefined
-        , [currencyIn])
+    , [currencyIn])
 
     const exactInSwap = useBestTradeExactIn(
         currencyAmount,
@@ -63,7 +63,10 @@ const FixBrokenPool = ({
 
     }, [exactInSwap])
 
-    const isBroken = givenPool && [TickMath.MIN_TICK, TickMath.MAX_TICK].includes(givenPool.tickCurrent);
+    const isBroken = givenPool && (
+        givenPool.tickCurrent <= TickMath.MIN_TICK + givenPool.tickSpacing ||
+        givenPool.tickCurrent >= TickMath.MAX_TICK - givenPool.tickSpacing
+    );
 
     const trade = isBroken && exactInSwap?.trade ? exactInSwap.trade : undefined;
 

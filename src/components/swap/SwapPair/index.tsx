@@ -161,7 +161,7 @@ const SwapPair = ({
 
   const formattedAmounts = {
     [independentField]: typedValue,
-    [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toFixed((parsedAmounts[dependentField]?.currency.decimals || 6) / 2) ?? "",
+    [dependentField]: showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE ? parsedAmounts[independentField]?.toExact() ?? "" : parsedAmounts[dependentField]?.toFixed((parsedAmounts[dependentField]?.currency.decimals || 6)) ?? "",
   };
 
   return (
