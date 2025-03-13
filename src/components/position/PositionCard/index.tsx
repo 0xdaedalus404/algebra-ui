@@ -1,24 +1,21 @@
-import { usePool } from '@/hooks/pools/usePool';
-import {
-    usePosition,
-    usePositionInFarming,
-} from '@/hooks/positions/usePositions';
-import { INITIAL_POOL_FEE, Position } from '@cryptoalgebra/custom-pools-sdk';
-import PositionNFT from '../PositionNFT';
-import { FormattedPosition } from '@/types/formatted-position';
-import { formatUSD } from '@/utils/common/formatUSD';
-import { Skeleton } from '@/components/ui/skeleton';
-import PositionRangeChart from '../PositionRangeChart';
-import TokenRatio from '@/components/create-position/TokenRatio';
-import { useDerivedMintInfo } from '@/state/mintStore';
-import CollectFees from '../CollectFees';
-import RemoveLiquidityModal from '@/components/modals/RemoveLiquidityModal';
-import { Farming } from '@/types/farming-info';
-import { EternalFarming } from '@/graphql/generated/graphql';
-import ActiveFarmingCard from '../ActiveFarmingCard';
-import ClosedFarmingCard from '../ClosedFarmingCard';
-import { IncreaseLiquidityModal } from '@/components/modals/IncreaseLiquidityModal';
-import { useCurrency } from '@/hooks/common/useCurrency';
+import { usePool } from "@/hooks/pools/usePool";
+import { usePosition, usePositionInFarming } from "@/hooks/positions/usePositions";
+import { INITIAL_POOL_FEE, Position } from "@cryptoalgebra/custom-pools-sdk";
+import PositionNFT from "../PositionNFT";
+import { FormattedPosition } from "@/types/formatted-position";
+import { formatUSD } from "@/utils/common/formatUSD";
+import { Skeleton } from "@/components/ui/skeleton";
+import PositionRangeChart from "../PositionRangeChart";
+import TokenRatio from "@/components/create-position/TokenRatio";
+import { useDerivedMintInfo } from "@/state/mintStore";
+import CollectFees from "../CollectFees";
+import RemoveLiquidityModal from "@/components/modals/RemoveLiquidityModal";
+import { Farming } from "@/types/farming-info";
+import { EternalFarming } from "@/graphql/generated/graphql";
+import ActiveFarmingCard from "../ActiveFarmingCard";
+import ClosedFarmingCard from "../ClosedFarmingCard";
+import { IncreaseLiquidityModal } from "@/components/modals/IncreaseLiquidityModal";
+import { useCurrency } from "@/hooks/common/useCurrency";
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -26,19 +23,12 @@ interface PositionCardProps {
     closedFarmings?: EternalFarming[] | null;
 }
 
-const PositionCard = ({
-    selectedPosition,
-    farming,
-    closedFarmings,
-}: PositionCardProps) => {
+const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCardProps) => {
     const { loading, position } = usePosition(selectedPosition?.id);
 
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
 
-    const positionInEndedFarming = closedFarmings?.filter(
-        (closedFarming) =>
-            closedFarming.id === positionInFarming?.eternalFarming
-    )[0];
+    const positionInEndedFarming = closedFarmings?.filter((closedFarming) => closedFarming.id === positionInFarming?.eternalFarming)[0];
 
     const token0 = position?.token0;
     const token1 = position?.token1;
@@ -57,23 +47,15 @@ const PositionCard = ({
             tickUpper: Number(position.tickUpper),
         });
 
-    const mintInfo = useDerivedMintInfo(
-        currencyA,
-        currencyB,
-        position?.pool,
-        INITIAL_POOL_FEE,
-        currencyA,
-        positionEntity || undefined
-    );
+    const mintInfo = useDerivedMintInfo(currencyA, currencyB, position?.pool, INITIAL_POOL_FEE, currencyA, positionEntity || undefined);
 
-    const [positionLiquidityUSD, positionFeesUSD, positionAPR] =
-        selectedPosition
-            ? [
-                  formatUSD.format(selectedPosition.liquidityUSD),
-                  formatUSD.format(selectedPosition.feesUSD),
-                  `${selectedPosition.apr.toFixed(2)}%`,
-              ]
-            : [];
+    const [positionLiquidityUSD, positionFeesUSD, positionAPR] = selectedPosition
+        ? [
+              formatUSD.format(selectedPosition.liquidityUSD),
+              formatUSD.format(selectedPosition.feesUSD),
+              `${selectedPosition.apr.toFixed(2)}%`,
+          ]
+        : [];
 
     if (!selectedPosition || loading) return;
 
@@ -90,9 +72,7 @@ const PositionCard = ({
                             <div className="font-bold text-xs">LIQUIDITY</div>
                             <div className="font-semibold text-2xl">
                                 {positionLiquidityUSD ? (
-                                    <span className="text-cyan-300">
-                                        {positionLiquidityUSD}
-                                    </span>
+                                    <span className="text-cyan-300">{positionLiquidityUSD}</span>
                                 ) : (
                                     <Skeleton className="w-[100px] h-[30px]" />
                                 )}
@@ -102,9 +82,7 @@ const PositionCard = ({
                             <div className="font-bold text-xs">APR</div>
                             <div className="font-semibold text-2xl">
                                 {positionAPR ? (
-                                    <span className="text-fuchsia-400">
-                                        {positionAPR}
-                                    </span>
+                                    <span className="text-fuchsia-400">{positionAPR}</span>
                                 ) : (
                                     <Skeleton className="w-[100px] h-[30px]" />
                                 )}
@@ -114,30 +92,16 @@ const PositionCard = ({
                 </div>
             </div>
 
-            <CollectFees
-                positionFeesUSD={positionFeesUSD}
-                mintInfo={mintInfo}
-                positionId={selectedPosition.id}
-            />
+            <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={selectedPosition.id} />
             <TokenRatio mintInfo={mintInfo} />
 
             {positionEntity && (
                 <div className="flex justify-between font-semibold">
-                    <div>
-                        {`${positionEntity.amount0.toFixed(2)} ${
-                            currencyA?.symbol
-                        }`}
-                    </div>
-                    <div>
-                        {`${positionEntity.amount1.toFixed(2)} ${
-                            currencyB?.symbol
-                        }`}
-                    </div>
+                    <div>{`${positionEntity.amount0.toFixed(2)} ${currencyA?.symbol}`}</div>
+                    <div>{`${positionEntity.amount1.toFixed(2)} ${currencyB?.symbol}`}</div>
                 </div>
             )}
-            {pool && positionEntity && (
-                <PositionRangeChart pool={pool} position={positionEntity} />
-            )}
+            {pool && positionEntity && <PositionRangeChart pool={pool} position={positionEntity} />}
 
             {positionEntity && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
@@ -155,16 +119,10 @@ const PositionCard = ({
                 </div>
             )}
             {positionInFarming && farming && !positionInEndedFarming && (
-                <ActiveFarmingCard
-                    farming={farming}
-                    selectedPosition={positionInFarming}
-                />
+                <ActiveFarmingCard farming={farming} selectedPosition={positionInFarming} />
             )}
             {positionInEndedFarming && (
-                <ClosedFarmingCard
-                    positionInEndedFarming={positionInEndedFarming}
-                    selectedPosition={selectedPosition}
-                />
+                <ClosedFarmingCard positionInEndedFarming={positionInEndedFarming} selectedPosition={selectedPosition} />
             )}
         </div>
     );

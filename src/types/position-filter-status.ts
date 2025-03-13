@@ -1,5 +1,5 @@
 export enum PositionsStatus {
-    OPEN = 'Open',
-    ON_FARMING = 'OnFarming',
-    CLOSED = 'Closed',
+    OPEN = "Open",
+    ON_FARMING = "OnFarming",
+    CLOSED = "Closed",
 }

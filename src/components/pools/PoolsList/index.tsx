@@ -65,7 +65,7 @@ const PoolsList = () => {
                 avgApr,
                 isMyPool: Boolean(openPositions?.length),
                 hasActiveFarming: Boolean(activeFarming),
-                deployer: deployer.toLowerCase()
+                deployer: deployer.toLowerCase(),
             };
         });
     }, [isLoading, pools, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR]);

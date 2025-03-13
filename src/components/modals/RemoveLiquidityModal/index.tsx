@@ -19,10 +19,9 @@ interface RemoveLiquidityModalProps {
 }
 
 const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
+    const [sliderValue, setSliderValue] = useState([50]);
 
-    const [sliderValue, setSliderValue] = useState([50])
-
-    const { txDeadline } = useUserState()
+    const { txDeadline } = useUserState();
     const { address: account } = useAccount();
 
     const { refetch: refetchAllPositions } = usePositions();
@@ -31,27 +30,14 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { percent } = useBurnState();
 
-    const { onPercentSelect } = useBurnActionHandlers()
+    const { onPercentSelect } = useBurnActionHandlers();
 
     const derivedInfo = useDerivedBurnInfo(position, false);
 
-    const {
-        position: positionSDK,
-        liquidityPercentage,
-        feeValue0,
-        feeValue1,
-    } = derivedInfo;
+    const { position: positionSDK, liquidityPercentage, feeValue0, feeValue1 } = derivedInfo;
 
     const { calldata, value } = useMemo(() => {
-        if (
-            !positionSDK ||
-            !positionId ||
-            !liquidityPercentage ||
-            !feeValue0 ||
-            !feeValue1 ||
-            !account ||
-            percent === 0
-        )
+        if (!positionSDK || !positionId || !liquidityPercentage || !feeValue0 || !feeValue1 || !account || percent === 0)
             return { calldata: undefined, value: undefined };
 
         return NonfungiblePositionManager.removeCallParameters(positionSDK, {
@@ -65,40 +51,28 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                 recipient: account,
             },
         });
-    }, [
-        positionId,
-        positionSDK,
-        txDeadline,
-        feeValue0,
-        feeValue1,
-        liquidityPercentage,
-        account,
-        percent,
-    ]);
+    }, [positionId, positionSDK, txDeadline, feeValue0, feeValue1, liquidityPercentage, account, percent]);
 
     const { config: removeLiquidityConfig } = usePrepareAlgebraPositionManagerMulticall({
         args: calldata && [calldata as `0x${string}`[]],
         value: BigInt(value || 0),
-        enabled: Boolean(calldata)
+        enabled: Boolean(calldata),
     });
 
-    const { data: removeLiquidityData, write: removeLiquidity } = useContractWrite(removeLiquidityConfig)
+    const { data: removeLiquidityData, write: removeLiquidity } = useContractWrite(removeLiquidityConfig);
 
-    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(
-        removeLiquidityData?.hash,
-        {
-            title: 'Remove liquidity',
-            tokenA: position?.token0 as Address,
-            tokenB: position?.token1 as Address,
-            type: TransactionType.POOL
-        }
-    )
+    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(removeLiquidityData?.hash, {
+        title: "Remove liquidity",
+        tokenA: position?.token0 as Address,
+        tokenB: position?.token1 as Address,
+        type: TransactionType.POOL,
+    });
 
-    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity
+    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity;
 
     useEffect(() => {
-        onPercentSelect(sliderValue[0])
-    }, [sliderValue])
+        onPercentSelect(sliderValue[0]);
+    }, [sliderValue]);
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -113,18 +87,17 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         /* pool positions refetch */
         Promise.all([refetchPosition(), refetchAllPositions()])
 
-        /* farming deposits refetch */
+            /* farming deposits refetch */
             .then(() => {
                 handleCloseModal?.();
-                if(sliderValue[0] !== 100) return;
+                if (sliderValue[0] !== 100) return;
                 interval = setInterval(
                     () =>
                         farmingClient.refetchQueries({
-                            include: ['Deposits'],
+                            include: ["Deposits"],
                             onQueryUpdated: (query, { result: diff }) => {
                                 const currentPos = diff.deposits.find(
-                                    (deposit: Deposit) =>
-                                        deposit.id.toString() === positionId.toString()
+                                    (deposit: Deposit) => deposit.id.toString() === positionId.toString()
                                 );
                                 if (!currentPos) return;
 
@@ -142,55 +115,57 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         return () => clearInterval(interval);
     }, [isSuccess]);
 
-    return <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogTrigger asChild>
-            <Button variant={'outline'} className="w-full" >Remove Liquidity</Button>
-        </DialogTrigger>
-        <DialogContent className="min-w-[500px] rounded-3xl bg-card-dark" style={{ borderRadius: '32px' }}>
-            <DialogHeader>
-                <DialogTitle className="font-bold select-none">Remove Liquidity</DialogTitle>
-            </DialogHeader>
-
-            <div className="flex flex-col gap-6">
-
-                <h2 className="text-3xl font-bold select-none">{`${sliderValue}%`}</h2>
-
-                <div className="flex gap-2">
-                    {[25, 50, 75, 100].map((v) => (
-                        <Button
-                            key={`liquidity-percent-${v}`}
-                            disabled={isRemoveLoading}
-                            variant={'icon'}
-                            className="border border-card-border"
-                            size={'sm'}
-                            onClick={() => setSliderValue([v])}>{v}%</Button>
-                    ))}
-                </div>
-
-                <Slider
-                    value={sliderValue}
-                    id="liquidity-percent"
-                    max={100}
-                    defaultValue={sliderValue}
-                    step={1}
-                    onValueChange={(v) => setSliderValue(v)}
-                    className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
-                    aria-label="Liquidity Percent"
-                    disabled={isRemoveLoading}
-                />
-
-                <Button disabled={isDisabled} onClick={() => removeLiquidity && removeLiquidity()}>
-                    {isRemoveLoading ? <Loader /> : 'Remove Liquidity'}
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+                <Button variant={"outline"} className="w-full">
+                    Remove Liquidity
                 </Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-[500px] rounded-3xl bg-card-dark" style={{ borderRadius: "32px" }}>
+                <DialogHeader>
+                    <DialogTitle className="font-bold select-none">Remove Liquidity</DialogTitle>
+                </DialogHeader>
 
-            </div>
+                <div className="flex flex-col gap-6">
+                    <h2 className="text-3xl font-bold select-none">{`${sliderValue}%`}</h2>
 
-        </DialogContent>
-    </Dialog>
+                    <div className="flex gap-2">
+                        {[25, 50, 75, 100].map((v) => (
+                            <Button
+                                key={`liquidity-percent-${v}`}
+                                disabled={isRemoveLoading}
+                                variant={"icon"}
+                                className="border border-card-border"
+                                size={"sm"}
+                                onClick={() => setSliderValue([v])}
+                            >
+                                {v}%
+                            </Button>
+                        ))}
+                    </div>
 
+                    <Slider
+                        value={sliderValue}
+                        id="liquidity-percent"
+                        max={100}
+                        defaultValue={sliderValue}
+                        step={1}
+                        onValueChange={(v) => setSliderValue(v)}
+                        className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
+                        aria-label="Liquidity Percent"
+                        disabled={isRemoveLoading}
+                    />
 
-}
+                    <Button disabled={isDisabled} onClick={() => removeLiquidity && removeLiquidity()}>
+                        {isRemoveLoading ? <Loader /> : "Remove Liquidity"}
+                    </Button>
+                </div>
+            </DialogContent>
+        </Dialog>
+    );
+};
 
-RemoveLiquidityModal.whyDidYouRender = true
+RemoveLiquidityModal.whyDidYouRender = true;
 
 export default RemoveLiquidityModal;

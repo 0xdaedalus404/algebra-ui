@@ -1,25 +1,20 @@
-import PageContainer from '@/components/common/PageContainer';
-import PageTitle from '@/components/common/PageTitle';
-import LiquidityChart from '@/components/create-position/LiquidityChart';
-import RangeSelector from '@/components/create-position/RangeSelector';
-import PresetTabs from '@/components/create-position/PresetTabs';
-import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from '@/generated';
-import {
-    useDerivedMintInfo,
-    useMintActionHandlers,
-    useMintState,
-    useRangeHopCallbacks,
-} from '@/state/mintStore';
-import { Bound, INITIAL_POOL_FEE, nearestUsableTick, TickMath } from '@cryptoalgebra/custom-pools-sdk';
-import { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Address } from 'wagmi';
-import AmountsSection from '@/components/create-position/AmountsSection';
-import { ManageLiquidity } from '@/types/manage-liquidity';
-import { useCurrency } from '@/hooks/common/useCurrency';
-import { Switch } from '@/components/ui/switch';
+import PageContainer from "@/components/common/PageContainer";
+import PageTitle from "@/components/common/PageTitle";
+import LiquidityChart from "@/components/create-position/LiquidityChart";
+import RangeSelector from "@/components/create-position/RangeSelector";
+import PresetTabs from "@/components/create-position/PresetTabs";
+import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
+import { useDerivedMintInfo, useMintActionHandlers, useMintState, useRangeHopCallbacks } from "@/state/mintStore";
+import { Bound, INITIAL_POOL_FEE, nearestUsableTick, TickMath } from "@cryptoalgebra/custom-pools-sdk";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Address } from "wagmi";
+import AmountsSection from "@/components/create-position/AmountsSection";
+import { ManageLiquidity } from "@/types/manage-liquidity";
+import { useCurrency } from "@/hooks/common/useCurrency";
+import { Switch } from "@/components/ui/switch";
 
-type NewPositionPageParams = Record<'pool', Address>;
+type NewPositionPageParams = Record<"pool", Address>;
 
 const NewPositionPage = () => {
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
@@ -58,20 +53,17 @@ const NewPositionPage = () => {
         undefined
     );
 
-    const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } =
-        mintInfo.pricesAtTicks;
+    const { [Bound.LOWER]: priceLower, [Bound.UPPER]: priceUpper } = mintInfo.pricesAtTicks;
 
-    const hidePresets = mintInfo.pool ? 
-        mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MAX_TICK, mintInfo.pool.tickSpacing) ||
-        mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MIN_TICK, mintInfo.pool.tickSpacing)
-    : false
+    const hidePresets = mintInfo.pool
+        ? mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MAX_TICK, mintInfo.pool.tickSpacing) ||
+          mintInfo.pool.tickCurrent === nearestUsableTick(TickMath.MIN_TICK, mintInfo.pool.tickSpacing)
+        : false;
 
     const price = useMemo(() => {
         if (!mintInfo.price) return;
 
-        return mintInfo.invertPrice
-            ? mintInfo.price.invert().toSignificant(5)
-            : mintInfo.price.toSignificant(5);
+        return mintInfo.invertPrice ? mintInfo.price.invert().toSignificant(5) : mintInfo.price.toSignificant(5);
     }, [mintInfo]);
 
     const currentPrice = useMemo(() => {
@@ -84,17 +76,11 @@ const NewPositionPage = () => {
         }
     }, [mintInfo.price, price]);
 
-    const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } =
-        useMemo(() => {
-            return mintInfo.ticks;
-        }, [mintInfo]);
+    const { [Bound.LOWER]: tickLower, [Bound.UPPER]: tickUpper } = useMemo(() => {
+        return mintInfo.ticks;
+    }, [mintInfo]);
 
-    const {
-        getDecrementLower,
-        getIncrementLower,
-        getDecrementUpper,
-        getIncrementUpper,
-    } = useRangeHopCallbacks(
+    const { getDecrementLower, getIncrementLower, getDecrementUpper, getIncrementUpper } = useRangeHopCallbacks(
         currencyA ?? undefined,
         currencyB ?? undefined,
         mintInfo.tickSpacing,
@@ -103,9 +89,7 @@ const NewPositionPage = () => {
         mintInfo.pool
     );
 
-    const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(
-        mintInfo.noLiquidity
-    );
+    const { onLeftRangeInput, onRightRangeInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
     const { startPriceTypedValue } = useMintState();
 
@@ -125,21 +109,17 @@ const NewPositionPage = () => {
 
     useEffect(() => {
         return () => {
-            onLeftRangeInput('');
-            onRightRangeInput('');
+            onLeftRangeInput("");
+            onRightRangeInput("");
         };
     }, []);
 
     return (
         <PageContainer>
-            <PageTitle title={'Create Position'}>
+            <PageTitle title={"Create Position"}>
                 <div className="flex gap-2 pt-2">
                     {isSorted ? currencyA?.symbol : currencyB?.symbol}
-                    <Switch
-                        id="currency-toggle"
-                        checked={wasManuallyToggled}
-                        onCheckedChange={handleCurrencyToggle}
-                    />
+                    <Switch id="currency-toggle" checked={wasManuallyToggled} onCheckedChange={handleCurrencyToggle} />
                     {isSorted ? currencyB?.symbol : currencyA?.symbol}
                 </div>
             </PageTitle>
@@ -147,14 +127,8 @@ const NewPositionPage = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16 text-left">
                 <div className="col-span-2">
                     <div className="flex items-center justify-between w-full mb-6">
-                        <h2 className="font-semibold text-2xl text-left">
-                            1. Select Range
-                        </h2>
-                        { !hidePresets && <PresetTabs
-                            currencyA={currencyA}
-                            currencyB={currencyB}
-                            mintInfo={mintInfo}
-                        /> }
+                        <h2 className="font-semibold text-2xl text-left">1. Select Range</h2>
+                        {!hidePresets && <PresetTabs currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />}
                     </div>
 
                     <div className="flex flex-col w-full">
@@ -172,14 +146,10 @@ const NewPositionPage = () => {
                                     currencyA={currencyA}
                                     currencyB={currencyB}
                                     mintInfo={mintInfo}
-                                    disabled={
-                                        !startPriceTypedValue && !mintInfo.price
-                                    }
+                                    disabled={!startPriceTypedValue && !mintInfo.price}
                                 />
                                 <div className="md:ml-auto md:text-right">
-                                    <div className="font-bold text-xs mb-3">
-                                        CURRENT PRICE
-                                    </div>
+                                    <div className="font-bold text-xs mb-3">CURRENT PRICE</div>
                                     <div className="font-bold text-xl">{`${currentPrice}`}</div>
                                 </div>
                             </div>
@@ -188,9 +158,7 @@ const NewPositionPage = () => {
                                 currencyA={currencyA}
                                 currencyB={currencyB}
                                 pool={mintInfo.pool}
-                                currentPrice={
-                                    price ? parseFloat(price) : undefined
-                                }
+                                currentPrice={price ? parseFloat(price) : undefined}
                                 priceLower={priceLower}
                                 priceUpper={priceUpper}
                             />
@@ -199,9 +167,7 @@ const NewPositionPage = () => {
                 </div>
 
                 <div className="flex flex-col">
-                    <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">
-                        2. Enter Amounts
-                    </h2>
+                    <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2>
                     <div className="flex flex-col w-full h-full gap-2 bg-card border border-card-border rounded-3xl p-2">
                         <AmountsSection
                             currencyA={currencyA}
