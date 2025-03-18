@@ -1,16 +1,13 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/utils/common/formatCurrency";
-import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useMemo } from "react";
 import { Address, useAccount, useBalance } from "wagmi";
 
 interface EnterAmountsCardProps {
     currency: Currency | undefined;
     value: string;
-    needApprove: boolean;
-    error: string | undefined;
-    valueForApprove: CurrencyAmount<Currency> | undefined;
     handleChange: (value: string) => void;
 }
 
@@ -71,66 +68,6 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
             </div>
         </div>
     );
-
-    // return (
-    //   <div
-    //       className="flex flex-col justify-between w-full relative">
-    //     <div
-    //     className="absolute text-right">
-    //       {/* // {`Balance: ${displayNumber(balance)}`} */}
-    //       {`Balance: ${balance.toString()}`}
-    //     </div>
-
-    //     <div
-    //     className="flex items-center justify-between">
-    //       <div className="flex items-center p-2">
-    //         {/* <EquilibreAvatar
-    //           src={asset?.logoURI || ''}
-    //           size={'md'}
-    //           ml={1}
-    //           mr={4}
-    //         /> */}
-    //         <Input value={value} onChange={v => handleChange(v.target.value)} />
-    //         {/* <InputGroup flexDirection={'column'}>
-    //           <NumberInput
-    //             step={0.1}
-    //             colorScheme="white"
-    //             variant={'unstyled'}
-    //             value={value}
-    //             onChange={handleChange}>
-    //             <NumberInputField
-    //               fontSize={'2xl'}
-    //               placeholder="0"
-    //               textAlign={'left'}
-    //             />
-    //           </NumberInput>
-    //         </InputGroup> */}
-    //       </div>
-    //       <Button
-    //         onClick={setMax}>
-    //         MAX
-    //       </Button>
-    //     </div>
-    //     <div className="mt-4">
-    //       {error ? (
-    //         <div className="flex flex-col absolute">
-    //           {error}
-    //         </div>
-    //       ) : needApprove ? (
-    //         <Button
-    //           disabled={!approve || isApprovalLoading}
-    //           onClick={() => approve()}>
-    //           {isApprovalLoading ? 'Loading...' : `Approve ${currency?.symbol}`}
-    //         </Button>
-    //       ) : valueForApprove ? (
-    //         <div className="absolute">
-    //           {/* <CheckIcon /> */}
-    //           Approved
-    //         </div>
-    //       ) : null}
-    //     </div>
-    //   </div>
-    // );
 };
 
 export default EnterAmountCard;
