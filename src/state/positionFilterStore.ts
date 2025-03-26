@@ -3,9 +3,9 @@ import { PositionsStatus } from "@/types/position-filter-status";
 import { createJSONStorage, persist } from "zustand/middleware";
 import deepMerge from "lodash.merge";
 
-type FilteredPositions = {
+type FilteredPositions = Partial<{
     [key in PositionsStatus]: boolean;
-};
+}>;
 
 interface FilterStore {
     filterStatus: FilteredPositions;

@@ -3,7 +3,7 @@ import { HeaderItem } from "./common";
 import { formatUSD } from "@/utils/common/formatUSD";
 
 interface MyPosition {
-    id: number;
+    id: string;
     outOfRange: boolean;
     range: string;
     liquidityUSD: number;

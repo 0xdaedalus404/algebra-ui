@@ -559,6 +559,33 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
+"@cryptoalgebra/alm-sdk@npm:@skdamn/alm-sdk":
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/@skdamn/alm-sdk/-/alm-sdk-0.0.2.tgz#dce106cb7122f82ef4fefc9fefa184b2396eedec"
+  integrity sha512-GbMJE4QPlpn2esUIv9Bm2lJ0Zm0fpUdUN5iTt332/GBUvj6di1jFSQuh6SZORusgZfCFWlNLqrjspIOp7xeNwQ==
+  dependencies:
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/abstract-signer" "^5.6.2"
+    "@ethersproject/address" "^5.6.0"
+    "@ethersproject/bignumber" "^5.6.0"
+    "@ethersproject/bytes" "^5.6.1"
+    "@ethersproject/constants" "^5.6.0"
+    "@ethersproject/contracts" "^5.6.2"
+    "@ethersproject/providers" "^5.6.5"
+    "@ethersproject/units" "^5.6.1"
+    "@ethersproject/wallet" "^5.6.2"
+    "@thanpolas/univ3prices" "^3.0.2"
+    "@typechain/ethers-v5" "^10.0.0"
+    bignumber.js "^9.0.1"
+    ethereumjs-util "^7.1.4"
+    ethers "^5.6.8"
+    global "^4.4.0"
+    graphql "^16.6.0"
+    graphql-request "^6.0.0"
+    jsbi "^3.1.5"
+    node-cache "^5.1.2"
+    typechain "^8.0.0"
+
 "@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.1.0.tgz#e18736e5159d126288753099c3323f86077a48ae"
@@ -1980,33 +2007,6 @@
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
-
-"@ichidao/ichi-vaults-sdk@^0.0.106":
-  version "0.0.106"
-  resolved "https://registry.yarnpkg.com/@ichidao/ichi-vaults-sdk/-/ichi-vaults-sdk-0.0.106.tgz#e5e0ce26e22281ad4cc17012bfb5d963051c24d0"
-  integrity sha512-j+E0QuyOKWv7j76dlvnOWzSV12z9UEWc2wAGifvIxQ8xVCQvfABpsVRvzVSKJAluHRu0CKoySJUYcIbZJaB2NA==
-  dependencies:
-    "@ethersproject/abi" "^5.7.0"
-    "@ethersproject/abstract-signer" "^5.6.2"
-    "@ethersproject/address" "^5.6.0"
-    "@ethersproject/bignumber" "^5.6.0"
-    "@ethersproject/bytes" "^5.6.1"
-    "@ethersproject/constants" "^5.6.0"
-    "@ethersproject/contracts" "^5.6.2"
-    "@ethersproject/providers" "^5.6.5"
-    "@ethersproject/units" "^5.6.1"
-    "@ethersproject/wallet" "^5.6.2"
-    "@thanpolas/univ3prices" "^3.0.2"
-    "@typechain/ethers-v5" "^10.0.0"
-    bignumber.js "^9.0.1"
-    ethereumjs-util "^7.1.4"
-    ethers "^5.6.8"
-    global "^4.4.0"
-    graphql "^16.6.0"
-    graphql-request "^6.0.0"
-    jsbi "^3.1.5"
-    node-cache "^5.1.2"
-    typechain "^8.0.0"
 
 "@jridgewell/gen-mapping@^0.3.0", "@jridgewell/gen-mapping@^0.3.2":
   version "0.3.3"

@@ -8,9 +8,10 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
 import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { deposit, depositNativeToken, SupportedDex } from "@ichidao/ichi-vaults-sdk";
+import { deposit, depositNativeToken, SupportedDex } from "@cryptoalgebra/alm-sdk";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useCallback, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Address, useAccount } from "wagmi";
 
 const VAULT_DEPOSIT_GUARD = "0xc7944fB8e8F4c89e7D8a997F59F2efec3Ce02B12";
@@ -27,7 +28,9 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
 
     const { selectedNetworkId } = useWeb3ModalState();
 
-    const currency = vault?.currency;
+    const { poolId } = useParams();
+
+    const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(amount, VAULT_DEPOSIT_GUARD);
@@ -46,7 +49,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
 
     // const { data: addLiquidityData, write: addLiquidity } = useContractWrite(addLiquidityConfig);
 
-    const provider = useEthersSigner({ chainId: DEFAULT_CHAIN_ID });
+    const provider = useEthersSigner();
 
     const [isPending, setIsPending] = useState(false);
     const [txHash, setTxHash] = useState<Address | undefined>();
@@ -62,7 +65,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
                     vault.allowTokenA ? amount.toExact() : "0",
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
-                    provider as any,
+                    provider,
                     SupportedDex.Henjin
                 );
             } else {
@@ -71,7 +74,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
                     vault.allowTokenA ? amount.toExact() : "0",
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
-                    provider as any,
+                    provider,
                     SupportedDex.Henjin
                 );
             }
@@ -84,11 +87,15 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
         }
     }, [vault, amount?.quotient.toString(), account, provider, useNative]);
 
-    const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(txHash, {
-        title: "Add automated liquidity",
-        tokenA: currency?.wrapped.address as Address,
-        type: TransactionType.POOL,
-    });
+    const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
+        txHash,
+        {
+            title: "Add automated liquidity",
+            tokenA: currency?.wrapped.address as Address,
+            type: TransactionType.POOL,
+        },
+        `/pool/${poolId}`
+    );
 
     const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
 
@@ -103,7 +110,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
         return (
             <div className="flex w-full gap-2">
                 {showApproveA && (
-                    <Button disabled={isApprovePending} className="w-full" onClick={() => approvalCallbackA && approvalCallbackA()}>
+                    <Button disabled={isApprovePending} className="w-full" onClick={approvalCallbackA}>
                         {isApprovePending ? <Loader /> : `Approve ${currency?.symbol}`}
                     </Button>
                 )}
@@ -111,7 +118,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
         );
 
     return (
-        <Button disabled={!isReady || isPending || isAddingLiquidityLoading} onClick={() => callback()}>
+        <Button disabled={!isReady || isPending || isAddingLiquidityLoading} onClick={callback}>
             {isAddingLiquidityLoading || isPending ? <Loader /> : "Create Position"}
         </Button>
     );

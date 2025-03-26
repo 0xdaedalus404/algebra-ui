@@ -63,7 +63,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
         <div className="flex flex-col gap-6 bg-card border border-card-border rounded-3xl p-4 animate-fade-in">
             <div className="relative flex w-full justify-end text-right">
                 <div className="absolute left-0 top-0">
-                    <PositionNFT positionId={selectedPosition.id} />
+                    <PositionNFT positionId={Number(selectedPosition.id)} />
                 </div>
                 <div className="flex flex-col gap-4 w-full">
                     <h2 className="scroll-m-20 text-2xl font-bold tracking-tight lg:text-2xl">{`Position #${selectedPosition?.id}`}</h2>
@@ -92,7 +92,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
                 </div>
             </div>
 
-            <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={selectedPosition.id} />
+            <CollectFees positionFeesUSD={positionFeesUSD} mintInfo={mintInfo} positionId={Number(selectedPosition.id)} />
             <TokenRatio mintInfo={mintInfo} />
 
             {positionEntity && (
@@ -106,7 +106,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
             {positionEntity && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
                     <IncreaseLiquidityModal
-                        tokenId={Number(selectedPosition.id)}
+                        tokenId={Number(Number(selectedPosition.id))}
                         currencyA={currencyA}
                         currencyB={currencyB}
                         mintInfo={mintInfo}
@@ -115,7 +115,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
             )}
             {positionEntity && Number(positionEntity.liquidity) > 0 && (
                 <div className="flex gap-4 w-full whitespace-nowrap">
-                    <RemoveLiquidityModal positionId={selectedPosition.id} />
+                    <RemoveLiquidityModal positionId={Number(selectedPosition.id)} />
                 </div>
             )}
             {positionInFarming && farming && !positionInEndedFarming && (

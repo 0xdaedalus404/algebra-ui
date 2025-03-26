@@ -1,9 +1,7 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
-import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
 import { useParams } from "react-router-dom";
 import { Address } from "wagmi";
-import { useCurrency } from "@/hooks/common/useCurrency";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CreateAutomatedPosition } from "./CreateAutomatedPosition";
@@ -18,18 +16,7 @@ const NewPositionPage = () => {
 
     const { pool: poolAddress } = useParams<NewPositionPageParams>();
 
-    const { data: token0 } = useAlgebraPoolToken0({
-        address: poolAddress,
-    });
-
-    const { data: token1 } = useAlgebraPoolToken1({
-        address: poolAddress,
-    });
-
-    const currencyA = useCurrency(token0, true);
-    const currencyB = useCurrency(token1, true);
-
-    const { vaults } = useALMVaultsByPool(currencyA, currencyB, poolAddress);
+    const { vaults } = useALMVaultsByPool(poolAddress);
 
     useEffect(() => {
         if (vaults && vaults.length > 0) {
@@ -61,11 +48,7 @@ const NewPositionPage = () => {
                     </Button>
                 </div>
             </PageTitle>
-            {isALM ? (
-                <CreateAutomatedPosition currencyA={currencyA} currencyB={currencyB} poolAddress={poolAddress} vaults={vaults} />
-            ) : (
-                <CreateManualPosition currency0={currencyA} currency1={currencyB} poolAddress={poolAddress} />
-            )}
+            {isALM ? <CreateAutomatedPosition vaults={vaults} /> : <CreateManualPosition poolAddress={poolAddress} />}
         </PageContainer>
     );
 };

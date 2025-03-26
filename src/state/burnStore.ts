@@ -38,8 +38,8 @@ export function useDerivedBurnInfo(
 
     const { percent } = useBurnState();
 
-    const currency0 = useCurrency(position?.token0);
-    const currency1 = useCurrency(position?.token1);
+    const currency0 = useCurrency(position?.token0, true);
+    const currency1 = useCurrency(position?.token1, true);
 
     const poolId = position?.pool;
 
@@ -78,7 +78,7 @@ export function useDerivedBurnInfo(
             liquidityValue0,
             liquidityValue1,
         };
-    }, [percent, positionSDK, currency0, currency1]);
+    }, [percent, positionSDK, currency0, currency1, asWNative]);
 
     const { amount0: feeValue0, amount1: feeValue1 } = usePositionFees(pool ?? undefined, Number(position?.tokenId), asWNative);
 

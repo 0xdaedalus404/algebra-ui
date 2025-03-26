@@ -6,8 +6,8 @@ import MyPositionsTable from "@/components/common/Table/myPositionsTable";
 interface MyPositionsProps {
     positions: FormattedPosition[];
     poolId: Address | undefined;
-    selectedPosition: number | undefined;
-    selectPosition: (positionId: number | null) => void;
+    selectedPosition: string | undefined;
+    selectPosition: (positionId: string | null) => void;
 }
 
 const MyPositions = ({ positions, selectedPosition, selectPosition }: MyPositionsProps) => {

@@ -20,7 +20,7 @@ import { PositionsStatus } from "@/types/position-filter-status";
 interface MyPositionsTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
-    selectedRow?: number;
+    selectedRow?: string;
     action?: (args?: any) => void;
     defaultSortingID?: string;
     link?: string;
@@ -44,6 +44,7 @@ const MyPositionsTable = <TData, TValue>({
     const [expandActive, setExpandActive] = useState(true);
     const [expandOnFarming, setExpandOnFarming] = useState(true);
     const [expandClosed, setExpandClosed] = useState(true);
+    const [expandALM, setExpandALM] = useState(true);
 
     const { filterStatus } = usePositionFilterStore();
 
@@ -63,11 +64,13 @@ const MyPositionsTable = <TData, TValue>({
         },
     });
 
-    const activePositions = data.filter((pos: any) => !pos.inFarming && !pos.isClosed);
+    const activePositions = data.filter((pos: any) => !pos.inFarming && !pos.isClosed && !pos.isALM);
 
     const farmingPositions = data.filter((pos: any) => pos.inFarming && !pos.isClosed);
 
     const closedPositions = data.filter((pos: any) => pos.isClosed);
+
+    const almPositions = data.filter((pos: any) => pos.isALM);
 
     const noActivePositions = filterStatus.Open && activePositions.length === 0;
     const noFarmingPositions = filterStatus.OnFarming && farmingPositions.length === 0;
@@ -78,6 +81,7 @@ const MyPositionsTable = <TData, TValue>({
             const isStatusActive = positionStatus === PositionsStatus.OPEN;
             const isStatusOnFarming = positionStatus === PositionsStatus.ON_FARMING;
             const isStatusClosed = positionStatus === PositionsStatus.CLOSED;
+            const isStatusALM = positionStatus === PositionsStatus.ALM;
             return (
                 <TableRow
                     key={"open-positions"}
@@ -86,6 +90,7 @@ const MyPositionsTable = <TData, TValue>({
                         if (isStatusActive) setExpandActive(!expandActive);
                         if (isStatusOnFarming) setExpandOnFarming(!expandOnFarming);
                         if (isStatusClosed) setExpandClosed(!expandClosed);
+                        if (isStatusALM) setExpandALM(!expandALM);
                     }}
                 >
                     <td colSpan={columns.length} className="pl-8 h-12 text-left whitespace-nowrap">
@@ -93,12 +98,14 @@ const MyPositionsTable = <TData, TValue>({
                             {isStatusActive && "Open"}
                             {isStatusOnFarming && "On Farming"}
                             {isStatusClosed && "Closed"}
+                            {isStatusALM && "ALM"}
                             <ChevronDown
                                 className={cn(
                                     "opacity-50 transition-transform ease-in-out duration-200 mt-auto",
                                     isStatusActive && !expandActive && "-rotate-90 opacity-100",
                                     isStatusOnFarming && !expandOnFarming && "-rotate-90 opacity-100",
-                                    isStatusClosed && !expandClosed && "-rotate-90 opacity-100"
+                                    isStatusClosed && !expandClosed && "-rotate-90 opacity-100",
+                                    isStatusALM && !expandALM && "-rotate-90 opacity-100"
                                 )}
                                 size={18}
                             />
@@ -107,7 +114,7 @@ const MyPositionsTable = <TData, TValue>({
                 </TableRow>
             );
         },
-        [expandActive, expandOnFarming, expandClosed, columns.length]
+        [expandActive, expandOnFarming, expandClosed, expandALM, columns.length]
     );
 
     const renderPositions = useCallback(
@@ -115,13 +122,15 @@ const MyPositionsTable = <TData, TValue>({
             const isStatusActive = positionStatus === PositionsStatus.OPEN;
             const isStatusOnFarming = positionStatus === PositionsStatus.ON_FARMING;
             const isStatusClosed = positionStatus === PositionsStatus.CLOSED;
+            const isStatusALM = positionStatus === PositionsStatus.ALM;
 
             return table.getRowModel().rows.map((row: any) => {
-                const isSelected = Number(selectedRow) === Number(row.original.id);
+                const isSelected = selectedRow === row.original.id;
                 if (
-                    (isStatusActive && !row.original.inFarming && !row.original.isClosed) ||
+                    (isStatusActive && !row.original.inFarming && !row.original.isClosed && !row.original.isALM) ||
                     (isStatusOnFarming && row.original.inFarming && !row.original.isClosed) ||
-                    (isStatusClosed && row.original.isClosed)
+                    (isStatusClosed && row.original.isClosed) ||
+                    (isStatusALM && row.original.isALM)
                 ) {
                     return (
                         <TableRow
@@ -132,7 +141,9 @@ const MyPositionsTable = <TData, TValue>({
                             } ${action || link ? (isSelected ? "hover:bg-muted-primary" : "hover:bg-card-hover") : "hover:bg-card-dark"} ${
                                 isStatusActive && !expandActive && "collapse border-0 opacity-0"
                             } ${isStatusOnFarming && !expandOnFarming && "collapse border-0 opacity-0"}
-                            ${isStatusClosed && !expandClosed && "collapse border-0 opacity-0"}`}
+                            ${isStatusClosed && !expandClosed && "collapse border-0 opacity-0"} ${
+                                isStatusALM && !expandALM && "collapse border-0 opacity-0"
+                            }`}
                             onClick={() => {
                                 if (action) {
                                     action(row.original.id);
@@ -151,7 +162,7 @@ const MyPositionsTable = <TData, TValue>({
                 } else return null;
             });
         },
-        [action, link, expandActive, expandOnFarming, expandClosed, selectedRow, table, navigate]
+        [action, link, expandActive, expandOnFarming, expandClosed, selectedRow, table, navigate, expandALM]
     );
 
     if (loading) return <LoadingState />;
@@ -203,6 +214,12 @@ const MyPositionsTable = <TData, TValue>({
                                 <>
                                     {renderHeaderRow(PositionsStatus.CLOSED)}
                                     {renderPositions(PositionsStatus.CLOSED)}
+                                </>
+                            )}
+                            {almPositions.length > 0 && (
+                                <>
+                                    {renderHeaderRow(PositionsStatus.ALM)}
+                                    {renderPositions(PositionsStatus.ALM)}
                                 </>
                             )}
                         </>

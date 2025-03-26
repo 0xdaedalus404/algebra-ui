@@ -3,19 +3,30 @@ import LiquidityChart from "@/components/create-position/LiquidityChart";
 import PresetTabs from "@/components/create-position/PresetTabs";
 import RangeSelector from "@/components/create-position/RangeSelector";
 import { Switch } from "@/components/ui/switch";
+import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
+import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { ManageLiquidity } from "@/types/manage-liquidity";
-import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath, Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE, Bound, nearestUsableTick, TickMath } from "@cryptoalgebra/custom-pools-sdk";
 import { useState, useMemo, useEffect } from "react";
 import { Address } from "viem";
 
 interface ManualProps {
-    currency0?: Currency;
-    currency1?: Currency;
     poolAddress?: Address;
 }
 
-export function CreateManualPosition({ currency0, currency1, poolAddress }: ManualProps) {
+export function CreateManualPosition({ poolAddress }: ManualProps) {
+    const { data: token0 } = useAlgebraPoolToken0({
+        address: poolAddress,
+    });
+
+    const { data: token1 } = useAlgebraPoolToken1({
+        address: poolAddress,
+    });
+
+    const currency0 = useCurrency(token0, true);
+    const currency1 = useCurrency(token1, true);
+
     const [wasManuallyToggled, setWasManuallyToggled] = useState(false);
 
     const [currencyA, currencyB] = useMemo(() => {

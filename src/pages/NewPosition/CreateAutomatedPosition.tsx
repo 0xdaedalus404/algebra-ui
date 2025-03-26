@@ -3,24 +3,20 @@ import AddAutomatedLiquidityButton from "@/components/create-position/AddAutomat
 import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
 import { ExtendedVault } from "@/hooks/alm/useALMVaults";
 import { useMintActionHandlers, useMintState } from "@/state/mintStore";
-import { Currency, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useState, useEffect } from "react";
-import { Address } from "viem";
 
-interface ManualProps {
-    currencyA?: Currency;
-    currencyB?: Currency;
-    poolAddress?: Address;
+interface CreateAutomatedPositionProps {
     vaults?: ExtendedVault[];
 }
 
-export function CreateAutomatedPosition({ vaults }: ManualProps) {
+export function CreateAutomatedPosition({ vaults }: CreateAutomatedPositionProps) {
     const [selectedVault, setSelectedVault] = useState<ExtendedVault>();
     const { typedValue } = useMintState();
 
     const { onFieldAInput, onFieldBInput } = useMintActionHandlers(true);
 
-    const parsedAmountA = tryParseAmount(typedValue, selectedVault?.currency);
+    const parsedAmountA = tryParseAmount(typedValue, selectedVault?.depositToken);
 
     useEffect(() => {
         return () => {
@@ -64,7 +60,7 @@ export function CreateAutomatedPosition({ vaults }: ManualProps) {
                                             checked={selectedVault.id === vault.id}
                                             onChange={() => setSelectedVault(vault)}
                                         />
-                                        <CurrencyLogo currency={vault.currency} size={30} /> {vault.currency?.symbol}
+                                        <CurrencyLogo currency={vault.depositToken} size={30} /> {vault.depositToken?.symbol}
                                     </div>
                                     <div className="flex flex-col items-start">
                                         <span className="font-semibold">{Math.abs(vault.apr).toFixed(2)}%</span>
@@ -90,7 +86,11 @@ export function CreateAutomatedPosition({ vaults }: ManualProps) {
                 <h2 className="font-semibold text-2xl text-left mb-6">2. Enter Amount</h2>
 
                 <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-3xl p-2">
-                    <EnterAmountCard currency={selectedVault.currency} value={typedValue} handleChange={(value) => onFieldAInput(value)} />
+                    <EnterAmountCard
+                        currency={selectedVault.depositToken}
+                        value={typedValue}
+                        handleChange={(value) => onFieldAInput(value)}
+                    />
                     <AddAutomatedLiquidityButton vault={selectedVault} amount={parsedAmountA} />
                 </div>
             </div>

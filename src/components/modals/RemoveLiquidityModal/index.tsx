@@ -1,3 +1,4 @@
+import { CurrencyAmounts } from "@/components/common/CurrencyAmounts";
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -32,9 +33,9 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { onPercentSelect } = useBurnActionHandlers();
 
-    const derivedInfo = useDerivedBurnInfo(position, false);
+    const derivedInfo = useDerivedBurnInfo(position, true);
 
-    const { position: positionSDK, liquidityPercentage, feeValue0, feeValue1 } = derivedInfo;
+    const { position: positionSDK, liquidityPercentage, feeValue0, feeValue1, liquidityValue0, liquidityValue1 } = derivedInfo;
 
     const { calldata, value } = useMemo(() => {
         if (!positionSDK || !positionId || !liquidityPercentage || !feeValue0 || !feeValue1 || !account || percent === 0)
@@ -122,7 +123,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                     Remove Liquidity
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[500px] rounded-3xl bg-card-dark" style={{ borderRadius: "32px" }}>
+            <DialogContent className="min-w-[500px] rounded-3xl bg-card" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">Remove Liquidity</DialogTitle>
                 </DialogHeader>
@@ -155,6 +156,13 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                         aria-label="Liquidity Percent"
                         disabled={isRemoveLoading}
+                    />
+
+                    <CurrencyAmounts
+                        amount0Parsed={liquidityValue0?.toSignificant(24)}
+                        amount1Parsed={liquidityValue1?.toSignificant(24)}
+                        token0={liquidityValue0?.currency}
+                        token1={liquidityValue1?.currency}
                     />
 
                     <Button disabled={isDisabled} onClick={() => removeLiquidity && removeLiquidity()}>
