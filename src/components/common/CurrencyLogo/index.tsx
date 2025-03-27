@@ -27,6 +27,10 @@ export const specialTokens: { [key: Address]: { symbol: string; logo: string } }
         symbol: "USDC",
         logo: USDCLogo,
     },
+    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+        symbol: "USDC",
+        logo: USDCLogo,
+    },
 };
 
 const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoProps) => {

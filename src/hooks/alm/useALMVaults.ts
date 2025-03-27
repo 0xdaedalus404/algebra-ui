@@ -1,10 +1,11 @@
-import { getVaultsByPool, SupportedChainId, SupportedDex, IchiVault, getExtendedIchiVaultInfo } from "@cryptoalgebra/alm-sdk";
+import { getVaultsByPool, SupportedDex, IchiVault, getExtendedIchiVaultInfo } from "@cryptoalgebra/alm-sdk";
 import useSWR from "swr";
 import { useEthersProvider } from "../common/useEthersProvider";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "../common/useCurrency";
 import { Address, formatUnits } from "viem";
+import { useChainId } from "wagmi";
 
 export interface ExtendedVault extends Omit<IchiVault, "tokenA" | "tokenB"> {
     name: string;
@@ -25,6 +26,8 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
         address: poolAddress,
     });
 
+    const chainId = useChainId();
+
     const currencyA = useCurrency(token0Address, true);
     const currencyB = useCurrency(token1Address, true);
 
@@ -33,27 +36,22 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
     const currencyAPriceUSD = 1900;
     const currencyBPriceUSD = 1;
 
-    const { data: vaults, isLoading } = useSWR(["vaults", poolAddress, provider, currencyA, currencyB], async () => {
+    const {
+        data: vaults,
+        isLoading,
+        error,
+    } = useSWR(["vaults", poolAddress, provider, currencyA, currencyB, chainId], async () => {
         if (!provider || !currencyA || !currencyB || !poolAddress) {
             throw new Error("No provider");
         }
 
         const dex = SupportedDex.CLAMM;
-        const chainId = SupportedChainId.base
 
-        const vaultAddresses: string[] = await getVaultsByPool(poolAddress, SupportedChainId.base, SupportedDex.CLAMM);
+        const vaultAddresses: string[] = await getVaultsByPool(poolAddress, chainId, SupportedDex.CLAMM);
 
-    
         const vaultsData = await Promise.all(
             vaultAddresses.map(async (vault) => {
-                const data = await getExtendedIchiVaultInfo(
-                    vault,
-                    dex,
-                    chainId,
-                    provider,
-                    currencyA.decimals,
-                    currencyB.decimals,
-                );
+                const data = await getExtendedIchiVaultInfo(vault, dex, chainId, provider, currencyA.decimals, currencyB.decimals);
 
                 const amount0 = formatUnits(data.amount0, currencyA.decimals);
                 const amount1 = formatUnits(data.amount1, currencyB.decimals);
@@ -73,11 +71,13 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
                     token1: currencyB,
                     depositToken,
                 };
-            }, )
+            })
         );
 
         return vaultsData;
     });
+
+    console.log(error);
 
     return { vaults, isLoading };
 }

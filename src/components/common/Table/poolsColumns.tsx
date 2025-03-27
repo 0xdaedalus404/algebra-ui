@@ -10,6 +10,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { formatPercent } from "@/utils/common/formatPercent";
 import { ReactNode } from "react";
 import { customPoolDeployerTitles } from "@/constants/deployers.ts";
+import almLogo from "@/assets/alm-logo.png";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -53,13 +54,7 @@ const PoolPair = ({ pair, fee, hasALM }: Pool) => {
             )}
 
             <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div>
-            {hasALM ? (
-                <img
-                    className="w-6 h-6 overflow-hidden rounded-full"
-                    src="https://docs.ichi.org/~gitbook/image?url=https%3A%2F%2F1172929898-files.gitbook.io%2F%7E%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FOUojwAvkzrENCQOkhMq6%252Fuploads%252F0yEP2totj9XMMs5JUfTm%252Fimage.png%3Falt%3Dmedia%26token%3D675aed61-9724-4514-91ae-df99bbc86f91&width=768&dpr=4&quality=100&sign=a8e20ee9&sv=2"
-                    alt="ALM"
-                />
-            ) : null}
+            {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null}
         </div>
     );
 };

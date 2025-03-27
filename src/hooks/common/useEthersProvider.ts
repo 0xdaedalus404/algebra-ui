@@ -1,4 +1,3 @@
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 import { providers } from "ethers";
 import { useMemo } from "react";
 import useSWR from "swr";
@@ -23,7 +22,7 @@ export function clientToProvider(client: Client<Transport, Chain>): providers.Js
 /** Action to convert a viem Client to an ethers.js Provider. */
 export function useEthersProvider() {
     const chainId = useChainId();
-    const client = usePublicClient({ chainId: chainId || DEFAULT_CHAIN_ID });
+    const client = usePublicClient({ chainId });
 
     return useMemo(() => {
         return clientToProvider(client);
@@ -46,7 +45,7 @@ export function useEthersSigner() {
     const chainId = useChainId();
 
     const { data: provider } = useSWR(["ethersProvider", chainId], async () => {
-        const client = await getWalletClient({ chainId: chainId || DEFAULT_CHAIN_ID });
+        const client = await getWalletClient({ chainId });
         if (!client) throw new Error("No wallet client");
         return walletToProvider(client);
     });

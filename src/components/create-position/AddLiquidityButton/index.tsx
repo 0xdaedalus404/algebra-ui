@@ -97,7 +97,12 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button
+                variant={"destructive"}
+                onClick={() => open({ view: "Networks" })}
+            >{`Connect to ${DEFAULT_CHAIN_NAME[chainId]}`}</Button>
+        );
 
     if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 
