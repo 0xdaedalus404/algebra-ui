@@ -3,6 +3,7 @@ import { Pool, TickMath, Token, computeCustomPoolAddress, tickToPrice } from "@c
 import { useState } from "react";
 import { Address } from "wagmi";
 import keyBy from "lodash.keyby";
+import { useClients } from "../graphql/useClients";
 
 interface TickProcessed {
     liquidityActive: bigint;
@@ -28,7 +29,11 @@ export function useInfoTickData() {
     const [ticksResult, setTicksResult] = useState<TicksResult | null>(null);
     const [ticksLoading, setTicksLoading] = useState(false);
 
-    const [getAllTicks] = useAllTicksLazyQuery();
+    const { infoClient } = useClients();
+
+    const [getAllTicks] = useAllTicksLazyQuery({
+        client: infoClient,
+    });
 
     async function fetchInitializedTicks(poolAddress: Address) {
         let surroundingTicks: TickFieldsFragment[] = [];

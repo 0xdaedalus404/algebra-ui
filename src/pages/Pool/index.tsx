@@ -22,6 +22,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Address, useAccount } from "wagmi";
 import JSBI from "jsbi";
+import { useClients } from "@/hooks/graphql/useClients";
 
 const PoolPage = () => {
     const { address: account } = useAccount();
@@ -32,19 +33,23 @@ const PoolPage = () => {
 
     const [, poolEntity] = usePool(poolId);
 
+    const { infoClient } = useClients();
+
     const { data: poolInfo } = useSinglePoolQuery({
         variables: {
             poolId,
         },
+        client: infoClient,
     });
 
     const { data: poolFeeData } = usePoolFeeDataQuery({
         variables: {
             poolId,
         },
+        client: infoClient,
     });
 
-    const { data: bundles } = useNativePriceQuery();
+    const { data: bundles } = useNativePriceQuery({ client: infoClient });
     const nativePrice = bundles?.bundles[0].maticPriceUSD;
 
     const { farmingInfo, deposits, isFarmingLoading, areDepositsLoading } = useActiveFarming({

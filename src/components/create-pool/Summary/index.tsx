@@ -1,6 +1,7 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSingleTokenQuery } from "@/graphql/generated/graphql";
+import { useClients } from "@/hooks/graphql/useClients";
 import { useMintState } from "@/state/mintStore";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useState } from "react";
@@ -15,6 +16,8 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
     const [suggestedPrice, setSuggestedPrice] = useState(0);
     const { startPriceTypedValue } = useMintState();
 
+    const { infoClient } = useClients();
+
     const token0 = currencyA?.wrapped.address.toLowerCase() as Address;
     const token1 = currencyB?.wrapped.address.toLowerCase() as Address;
 
@@ -23,6 +26,7 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
             tokenId: token0,
         },
         skip: !token0,
+        client: infoClient,
     });
 
     const { data: singleToken1 } = useSingleTokenQuery({
@@ -30,6 +34,7 @@ const Summary = ({ currencyA, currencyB }: ISummary) => {
             tokenId: token1,
         },
         skip: !token1,
+        client: infoClient,
     });
     useEffect(() => {
         if (!singleToken0?.token || !singleToken1?.token) return;

@@ -1,14 +1,14 @@
 import { FARMING_CENTER } from "@/constants/addresses";
 import { farmingCenterABI } from "@/generated";
-import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { Address, useChainId, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { encodeFunctionData } from "viem";
 import { MaxUint128 } from "@cryptoalgebra/custom-pools-sdk";
 import { useFarmCheckApprove } from "./useFarmCheckApprove";
 import { useEffect, useState } from "react";
-import { farmingClient } from "@/graphql/clients";
 import { Deposit } from "@/graphql/generated/graphql";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { useClients } from "../graphql/useClients";
 
 export function useFarmStake({
     tokenId,
@@ -23,11 +23,15 @@ export function useFarmStake({
     pool: Address;
     nonce: bigint;
 }) {
+    const chainId = useChainId();
+
+    const { farmingClient } = useClients();
+
     const { approved } = useFarmCheckApprove(tokenId);
 
     const [isQueryLoading, setIsQueryLoading] = useState<boolean>(false);
 
-    const address = tokenId && approved ? FARMING_CENTER : undefined;
+    const address = tokenId && approved ? FARMING_CENTER[chainId] : undefined;
 
     const { config } = usePrepareContractWrite({
         address,
@@ -100,6 +104,10 @@ export function useFarmUnstake({
     nonce: bigint;
     account: Address;
 }) {
+    const chainId = useChainId();
+
+    const { farmingClient } = useClients();
+
     const [isQueryLoading, setIsQueryLoading] = useState<boolean>(false);
 
     const exitFarmingCalldata = encodeFunctionData({
@@ -131,7 +139,7 @@ export function useFarmUnstake({
     const calldatas = [exitFarmingCalldata, rewardClaimCalldata, bonusRewardClaimCalldata];
 
     const { config } = usePrepareContractWrite({
-        address: account && tokenId ? FARMING_CENTER : undefined,
+        address: account && tokenId ? FARMING_CENTER[chainId] : undefined,
         abi: farmingCenterABI,
         functionName: "multicall",
         args: [calldatas],

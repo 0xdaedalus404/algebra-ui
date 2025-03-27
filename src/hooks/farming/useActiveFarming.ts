@@ -9,7 +9,7 @@ export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolIn
 
     const [farmingInfo, setFarmingInfo] = useState<Farming | null>();
 
-    const { farmingClient } = useClients();
+    const { infoClient, farmingClient } = useClients();
 
     const { data: farmings, loading: isFarmingLoading } = useEternalFarmingsQuery({
         variables: {
@@ -26,6 +26,7 @@ export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolIn
         variables: {
             tokenId: activeFarming?.rewardToken,
         },
+        client: infoClient,
     });
 
     const { data: bonusRewardToken } = useSingleTokenQuery({
@@ -33,6 +34,7 @@ export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolIn
         variables: {
             tokenId: activeFarming?.bonusRewardToken,
         },
+        client: infoClient,
     });
 
     const { data: deposits, loading: areDepositsLoading } = useDepositsQuery({

@@ -1,8 +1,7 @@
 import { useMemo, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { limitOrderColumns } from "@/components/common/Table/limitOrdersColumns";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 import { useLimitOrdersListQuery, useMultiplePoolsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
@@ -11,6 +10,8 @@ import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 
 const LimitOrdersList = () => {
     const { address: account } = useAccount();
+
+    const chainId = useChainId();
 
     const [tab, setTab] = useState(0);
 
@@ -37,11 +38,11 @@ const LimitOrdersList = () => {
             (acc, { id, token0, token1, sqrtPrice, liquidity, tick, tickSpacing }) => ({
                 ...acc,
                 [id]: new Pool(
-                    new Token(DEFAULT_CHAIN_ID, token0.id, Number(token0.decimals), token0.symbol, token0.name),
-                    new Token(DEFAULT_CHAIN_ID, token1.id, Number(token1.decimals), token1.symbol, token1.name),
+                    new Token(chainId, token0.id, Number(token0.decimals), token0.symbol, token0.name),
+                    new Token(chainId, token1.id, Number(token1.decimals), token1.symbol, token1.name),
                     INITIAL_POOL_FEE,
                     sqrtPrice,
-                    CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+                    CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
                     liquidity,
                     Number(tick),
                     tickSpacing
@@ -82,7 +83,7 @@ const LimitOrdersList = () => {
                         pool.token1,
                         pool.fee,
                         zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO,
-                        CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+                        CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
                         pool.liquidity,
                         zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK,
                         pool.tickSpacing

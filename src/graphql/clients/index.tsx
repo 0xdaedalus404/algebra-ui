@@ -19,3 +19,18 @@ export const farmingClient = new ApolloClient({
     uri: import.meta.env.VITE_FARMING_GRAPH,
     cache: new InMemoryCache(),
 });
+
+export const infoClientTestnet = new ApolloClient({
+    uri: import.meta.env.VITE_INFO_GRAPH_TESTNET,
+    cache: new InMemoryCache(),
+});
+
+export const blocksClientTestnet = new ApolloClient({
+    uri: import.meta.env.VITE_BLOCKS_GRAPH_TESTNET,
+    cache: new InMemoryCache(),
+});
+
+export const farmingClientTestnet = new ApolloClient({
+    uri: import.meta.env.VITE_FARMING_GRAPH_TESTNET,
+    cache: new InMemoryCache(),
+});

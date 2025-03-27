@@ -6,10 +6,14 @@ import { ETERNAL_FARMINGS_API, POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } fro
 import useSWR from "swr";
 import PoolsTable from "@/components/common/Table/poolsTable";
 import { usePositions } from "@/hooks/positions/usePositions";
-import { farmingClient } from "@/graphql/clients";
+import { useClients } from "@/hooks/graphql/useClients";
 
 const PoolsList = () => {
-    const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery();
+    const { infoClient, farmingClient } = useClients();
+
+    const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery({
+        client: infoClient,
+    });
 
     const { data: activeFarmings, loading: isFarmingsLoading } = useActiveFarmingsQuery({
         client: farmingClient,

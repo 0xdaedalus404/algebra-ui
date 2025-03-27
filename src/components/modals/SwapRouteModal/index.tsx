@@ -10,11 +10,11 @@ import {
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { ArrowRight } from "lucide-react";
 import { Address } from "wagmi";
-import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
 import { Route, Currency, Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { customPoolDeployerTitles } from "@/constants/deployers";
 
 interface ISwapRouteModal {
     isOpen: boolean;
@@ -25,17 +25,12 @@ interface ISwapRouteModal {
     children: React.ReactNode;
 }
 
-const customPoolDeployers = {
-    [CUSTOM_POOL_BASE]: "Base",
-    [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER]: "Limit Order",
-};
-
 const RoutePool = ({ pool }: { pool: { path: Currency[]; address: Address; deployer: Address; fee: number } }) => {
     const [token0, token1] = [pool.path[0], pool.path[1]];
     const currencyA = useCurrency(token0.wrapped.address as Address, true);
     const currencyB = useCurrency(token1.wrapped.address as Address, true);
 
-    const deployer = customPoolDeployers[pool.deployer.toLowerCase()];
+    const deployer = customPoolDeployerTitles[pool.deployer.toLowerCase()];
 
     return (
         <div className={"w-full flex items-center justify-between py-2"}>

@@ -1,7 +1,7 @@
 import { FARMING_CENTER } from "@/constants/addresses";
 import { farmingCenterABI } from "@/generated";
 import { getRewardsCalldata } from "@/utils/farming/getRewardsCalldata";
-import { Address, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { Address, useChainId, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { encodeFunctionData } from "viem";
 import { Deposit } from "@/graphql/generated/graphql";
@@ -22,6 +22,8 @@ export function useFarmHarvest({
     nonce: bigint;
     account: Address;
 }) {
+    const chainId = useChainId();
+
     const calldata = getRewardsCalldata({
         rewardToken,
         bonusRewardToken,
@@ -32,7 +34,7 @@ export function useFarmHarvest({
     });
 
     const { config } = usePrepareContractWrite({
-        address: account && tokenId ? FARMING_CENTER : undefined,
+        address: account && tokenId ? FARMING_CENTER[chainId] : undefined,
         abi: farmingCenterABI,
         functionName: "multicall",
         args: [calldata],
@@ -69,6 +71,7 @@ export function useFarmHarvestAll(
     },
     deposits: Deposit[]
 ) {
+    const chainId = useChainId();
     const calldatas: Address[] = [];
 
     deposits.forEach((deposit) => {
@@ -92,7 +95,7 @@ export function useFarmHarvestAll(
     });
 
     const { config } = usePrepareContractWrite({
-        address: FARMING_CENTER,
+        address: FARMING_CENTER[chainId],
         abi: farmingCenterABI,
         functionName: "multicall",
         args: [calldatas],

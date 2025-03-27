@@ -576,10 +576,27 @@
     tiny-warning "^1.0.3"
     toformat "^2.0.0"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.3.0.tgz#fbb8b2e57ed16d60236a8332629862b9fd5e9099"
-  integrity sha512-fgOaQDlN/TutyaGkW6jjzOjxy+wcMTcx0SQ8D7D5eNjjG0mQoTZ66uoaAbeBT1F2gA9O86fIOw3hpk5Y5q474g==
+"@cryptoalgebra/custom-pools-sdk@npm:@cryptoalgebra/clamm-base-sdk@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/clamm-base-sdk/-/clamm-base-sdk-1.2.0.tgz#4db64888ec2a1cc58c1a5b1c64912ff75ace4754"
+  integrity sha512-Nh0Rm/tHiziRkL9xbwHdOOvz5Mc2GV6TNL0nV8qD7vkfb+Zf+/OCRYdjP++t3QIeDcEJvinIufR8xLXjhc4tWQ==
+  dependencies:
+    "@ethersproject/abi" "^5.7.0"
+    "@ethersproject/address" "^5.7.0"
+    "@ethersproject/solidity" "^5.7.0"
+    "@ethersproject/units" "^5.7.0"
+    big.js "^6.2.1"
+    decimal.js-light "^2.5.1"
+    jsbi "^3.2.5"
+    numeral "^2.0.6"
+    tiny-invariant "^1.3.1"
+    tiny-warning "^1.0.3"
+    toformat "^2.0.0"
+
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@skdamn/router-clamm-base@1.4.0":
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/@skdamn/router-clamm-base/-/router-clamm-base-1.4.0.tgz#8400d6ad06fb0b66cae6323fc75f2ca2670a54e8"
+  integrity sha512-XzKh5f/wFKV6vtPD+eRzNnObsM7V1o+36V/3Dw4GZTC9oNzs4h99mnpbiMWQBtuwP3+CopEBDFh4SSzXx4VWbw==
   dependencies:
     "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/clamm-base-sdk@1.1.0"
     "@pancakeswap/sdk" "5.7.6"
@@ -7740,7 +7757,7 @@ viem@1.19.11:
     isows "1.0.3"
     ws "8.13.0"
 
-viem@^1.0.0, viem@^1.12.2:
+viem@^1.0.0:
   version "1.15.4"
   resolved "https://registry.yarnpkg.com/viem/-/viem-1.15.4.tgz#422b2a23bc2c9e240d91758ae29a464ca6faed5b"
   integrity sha512-kQtJiYbZ86rzGdAXkvAxf6ovsabzyn41loNiSjQNFXwvn24cGP3IbQhQcK5OYorQY9Pz7Dm54EBV5XhFxo+15g==
@@ -7753,6 +7770,20 @@ viem@^1.0.0, viem@^1.12.2:
     "@types/ws" "^8.5.5"
     abitype "0.9.8"
     isomorphic-ws "5.0.0"
+    ws "8.13.0"
+
+viem@^1.12.2:
+  version "1.21.4"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.21.4.tgz#883760e9222540a5a7e0339809202b45fe6a842d"
+  integrity sha512-BNVYdSaUjeS2zKQgPs+49e5JKocfo60Ib2yiXOWBT6LuVxY1I/6fFX3waEtpXvL1Xn4qu+BVitVtMh9lyThyhQ==
+  dependencies:
+    "@adraffy/ens-normalize" "1.10.0"
+    "@noble/curves" "1.2.0"
+    "@noble/hashes" "1.3.2"
+    "@scure/bip32" "1.3.2"
+    "@scure/bip39" "1.2.1"
+    abitype "0.9.8"
+    isows "1.0.3"
     ws "8.13.0"
 
 vite@^4.4.5:

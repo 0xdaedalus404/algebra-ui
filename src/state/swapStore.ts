@@ -8,6 +8,7 @@ import { SwapField, SwapFieldType } from "@/types/swap-field";
 import { TradeStateType } from "@/types/trade-state";
 import {
     ADDRESS_ZERO,
+    ChainId,
     Currency,
     CurrencyAmount,
     Percent,
@@ -77,7 +78,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO,
     },
     [SwapField.OUTPUT]: {
-        currencyId: STABLECOINS.USDC.address as Account,
+        currencyId: STABLECOINS[ChainId.Base].USDC.address as Account,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,

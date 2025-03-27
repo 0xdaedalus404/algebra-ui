@@ -8,10 +8,12 @@ import { usePrepareAlgebraLimitOrderPluginKill } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useState } from "react";
-import { Address, useContractWrite } from "wagmi";
+import { Address, useChainId, useContractWrite } from "wagmi";
 
 const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: LimitOrder) => {
     const [value, setValue] = useState([50]);
+
+    const chainId = useChainId();
 
     const liquidityToRemove = (BigInt(liquidity) * BigInt(value[0])) / 100n;
 
@@ -20,7 +22,7 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: Limit
             {
                 token0: pool.token0.address as Address,
                 token1: pool.token1.address as Address,
-                deployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+                deployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
             },
             ticks.tickLower,
             ticks.tickUpper,

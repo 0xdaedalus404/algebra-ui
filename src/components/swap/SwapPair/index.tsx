@@ -18,19 +18,21 @@ import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding
 import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 import { usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
+import { useChainId } from "wagmi";
 
 const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> }) => {
+    const chainId = useChainId();
     const { toggledTrade: trade, currencyBalances, parsedAmount, currencies } = derivedSwap;
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
 
     const limitOrderPoolAddress =
-        baseCurrency && quoteCurrency
+        baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId]
             ? (computeCustomPoolAddress({
                   tokenA: baseCurrency.wrapped,
                   tokenB: quoteCurrency.wrapped,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
               }) as Address)
             : undefined;
 

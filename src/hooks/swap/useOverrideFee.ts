@@ -4,12 +4,15 @@ import { getAlgebraBasePlugin, getAlgebraPool } from "@/generated";
 import { ADDRESS_ZERO, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useEffect, useState } from "react";
+import { useChainId } from "wagmi";
 
 export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
     const [overrideFees, setOverrideFees] = useState<{
         fee: number | undefined;
         fees: number[][];
     }>({ fee: undefined, fees: [] });
+
+    const chainId = useChainId();
 
     useEffect(() => {
         if (!smartTrade) return undefined;
@@ -51,7 +54,7 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
                         beforeSwap = await pluginContract.simulate
                             .beforeSwap(
                                 [
-                                    ALGEBRA_ROUTER,
+                                    ALGEBRA_ROUTER[chainId],
                                     ADDRESS_ZERO,
                                     isZeroToOne,
                                     smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
@@ -93,7 +96,7 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
         }
 
         getFees();
-    }, [smartTrade]);
+    }, [smartTrade, chainId]);
 
     return overrideFees;
 }

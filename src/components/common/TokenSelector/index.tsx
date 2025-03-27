@@ -7,7 +7,7 @@ import { useAllTokens } from "@/hooks/tokens/useAllTokens";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FixedSizeList } from "react-window";
 import { Address, isAddress } from "viem";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useChainId } from "wagmi";
 import CurrencyLogo from "../CurrencyLogo";
 import { ADDRESS_ZERO, Currency, ExtendedNative, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useTokensState } from "@/state/tokensStore";
@@ -30,9 +30,11 @@ const Search = ({
     data: TokenFieldsFragment[];
     onSearch: (matchedTokens: TokenFieldsFragment[], importToken: Token | undefined) => void;
 }) => {
+    const chainId = useChainId();
+
     const [query, setQuery] = useState<Address | string | undefined>(undefined);
     const debouncedQuery = useDebounce(query, 200);
-    const tokenEntity = useAlgebraToken(debouncedQuery && isAddress(debouncedQuery) ? debouncedQuery : undefined);
+    const tokenEntity = useAlgebraToken(debouncedQuery && isAddress(debouncedQuery) ? debouncedQuery : undefined, chainId);
 
     const fuseOptions = useMemo(
         () => ({

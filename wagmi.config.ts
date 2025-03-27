@@ -88,12 +88,12 @@ export default defineConfig({
     out: "src/generated.ts",
     contracts,
     plugins: [
-        actions({
-            watchContractEvent: false,
-        }),
         react({
             useContractEvent: false,
             useContractItemEvent: false,
+        }),
+        actions({
+            watchContractEvent: false,
         }),
     ],
 });

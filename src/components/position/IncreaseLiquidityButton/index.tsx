@@ -1,7 +1,7 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
-import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
 import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -10,11 +10,11 @@ import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
-import { Currency, Field, NonfungiblePositionManager, Percent, ZERO } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, Currency, Field, NonfungiblePositionManager, Percent, ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import JSBI from "jsbi";
 import { useEffect, useMemo } from "react";
-import { Address, useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useChainId, useContractWrite } from "wagmi";
 
 interface IncreaseLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -59,13 +59,15 @@ export const IncreaseLiquidityButton = ({
         });
     }, [mintInfo, account, tokenId, txDeadline, useNative]);
 
+    const chainId = useChainId();
+
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_A],
-        ALGEBRA_POSITION_MANAGER
+        ALGEBRA_POSITION_MANAGER[chainId]
     );
     const { approvalState: approvalStateB, approvalCallback: approvalCallbackB } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_B],
-        ALGEBRA_POSITION_MANAGER
+        ALGEBRA_POSITION_MANAGER[chainId]
     );
 
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING;
@@ -101,12 +103,17 @@ export const IncreaseLiquidityButton = ({
         Promise.all([refetchPosition(), refetchAllPositions()]).then(() => handleCloseModal?.());
     }, [isSuccess]);
 
-    const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
+    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
+        return (
+            <Button
+                variant={"destructive"}
+                onClick={() => open({ view: "Networks" })}
+            >{`Connect to ${DEFAULT_CHAIN_NAME[chainId]}`}</Button>
+        );
 
     if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 

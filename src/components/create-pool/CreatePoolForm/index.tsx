@@ -8,10 +8,11 @@ import {
     NonfungiblePositionManager,
     ADDRESS_ZERO,
     INITIAL_POOL_FEE,
+    ChainId,
 } from "@cryptoalgebra/custom-pools-sdk";
 import { usePrepareAlgebraCustomPoolDeployerCreateCustomPool, usePrepareAlgebraPositionManagerMulticall } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
-import { Address, useAccount, useContractWrite } from "wagmi";
+import { Address, useAccount, useChainId, useContractWrite } from "wagmi";
 import { useDerivedMintInfo, useMintState } from "@/state/mintStore";
 import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
@@ -32,8 +33,8 @@ const POOL_DEPLOYER = {
 type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
 
 const customPoolDeployerAddresses = {
-    [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE,
-    [POOL_DEPLOYER.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+    [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE[ChainId.Base],
+    [POOL_DEPLOYER.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[ChainId.Base],
 };
 
 const CreatePoolForm = () => {
@@ -49,6 +50,8 @@ const CreatePoolForm = () => {
         startPriceTypedValue,
         actions: { typeStartPriceInput },
     } = useMintState();
+
+    const chainid = useChainId();
 
     const [poolDeployer, setPoolDeployer] = useState<PoolDeployerType>(POOL_DEPLOYER.BASE);
 
@@ -69,7 +72,7 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         areCurrenciesSelected && !isSameToken
-            ? [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER].map(
+            ? [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid]].map(
                   (customPoolDeployer) =>
                       computeCustomPoolAddress({
                           tokenA: currencyA.wrapped,
@@ -161,7 +164,7 @@ const CreatePoolForm = () => {
 
         return () => {
             selectCurrency(SwapField.INPUT, ADDRESS_ZERO);
-            selectCurrency(SwapField.OUTPUT, STABLECOINS.USDC.address as Account);
+            selectCurrency(SwapField.OUTPUT, STABLECOINS[chainid].USDC.address as Account);
             typeStartPriceInput("");
         };
     }, []);

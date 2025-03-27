@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { CurrencyAmount, Pool, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, CurrencyAmount, Pool, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import CurrencyLogo from "../CurrencyLogo";
@@ -8,7 +8,6 @@ import { Address, useContractWrite } from "wagmi";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import Loader from "../Loader";
 import { useWeb3ModalState } from "@web3modal/wagmi/react";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 import KillLimitOrderModal from "@/components/modals/KillLimitOrderModal";
 import { HeaderItem } from "./common";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -142,7 +141,7 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
 const Action = (props: LimitOrder) => {
     const { selectedNetworkId } = useWeb3ModalState();
 
-    if (selectedNetworkId !== DEFAULT_CHAIN_ID) return;
+    if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId)) return;
 
     if (props.killed) return;
 

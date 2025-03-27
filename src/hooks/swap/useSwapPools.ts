@@ -1,9 +1,9 @@
 import { ADDRESS_ZERO, Currency, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
-import { Address } from "wagmi";
+import { Address, useChainId } from "wagmi";
 import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import { useClients } from "../graphql/useClients";
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
@@ -32,9 +32,15 @@ export function useSwapPools(
 } {
     const [existingPools, setExistingPools] = useState<any[]>();
 
+    const chainId = useChainId();
+
     const allCurrencyCombinations = useAllCurrencyCombinations(currencyIn, currencyOut);
 
-    const [getMultiplePools] = useMultiplePoolsLazyQuery();
+    const { infoClient } = useClients();
+
+    const [getMultiplePools] = useMultiplePoolsLazyQuery({
+        client: infoClient,
+    });
 
     useEffect(() => {
         async function getPools() {
@@ -97,8 +103,8 @@ export function useSwapPools(
             pools: existingPools
                 .map((pool) => ({
                     tokens: [
-                        new Token(DEFAULT_CHAIN_ID, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol, pool.token0.name),
-                        new Token(DEFAULT_CHAIN_ID, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol, pool.token1.name),
+                        new Token(chainId, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol, pool.token0.name),
+                        new Token(chainId, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol, pool.token1.name),
                     ] as [Token, Token],
                     pool: pool,
                 }))
@@ -107,5 +113,5 @@ export function useSwapPools(
                 }),
             loading: false,
         };
-    }, [existingPools, deployer]);
+    }, [existingPools, deployer, chainId]);
 }

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Address } from "viem";
-import { useContractWrite } from "wagmi";
+import { useChainId, useContractWrite } from "wagmi";
 
 import { ALGEBRA_ROUTER } from "@/constants/addresses";
 
@@ -17,8 +17,9 @@ export function useSmartRouterCallback(
     calldata: Address | undefined,
     value: string | undefined
 ) {
+    const chainId = useChainId();
     const { data: swapData, writeAsync: callback } = useContractWrite({
-        address: ALGEBRA_ROUTER,
+        address: ALGEBRA_ROUTER[chainId],
         abi: algebraRouterABI,
         functionName: "multicall",
         args: calldata ? [[calldata]] : undefined,

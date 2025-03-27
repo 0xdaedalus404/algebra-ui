@@ -7,6 +7,7 @@ import LimitPriceCard from "../LimitPriceCard";
 import LimitOrderButton from "../LimitOrderButton";
 import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 import { Address } from "viem";
+import { useChainId } from "wagmi";
 
 const LimitOrder = () => {
     const { currencies } = useDerivedSwapInfo();
@@ -33,12 +34,14 @@ const LimitOrder = () => {
 
     const [wasInverted, setWasInverted] = useState(false);
 
+    const chainId = useChainId();
+
     const limitOrderPoolAddress =
         token0 && token1
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
               }) as Address)
             : undefined;
 

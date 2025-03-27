@@ -4,6 +4,7 @@ import { Currency, Field } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useMemo } from "react";
 import EnterAmountCard from "../EnterAmountsCard";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
+import { useChainId } from "wagmi";
 
 interface EnterAmountsProps {
     currencyA: Currency | undefined;
@@ -13,6 +14,7 @@ interface EnterAmountsProps {
 
 const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => {
     const { independentField, typedValue } = useMintState();
+    const chainId = useChainId();
 
     const { onFieldAInput, onFieldBInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
@@ -42,9 +44,9 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
         return;
     }, [mintInfo, currencyB]);
 
-    const allowanceA = useNeedAllowance(currencyA, mintInfo.parsedAmounts[Field.CURRENCY_B], ALGEBRA_POSITION_MANAGER);
+    const allowanceA = useNeedAllowance(currencyA, mintInfo.parsedAmounts[Field.CURRENCY_B], ALGEBRA_POSITION_MANAGER[chainId]);
 
-    const allowanceB = useNeedAllowance(currencyB, mintInfo.parsedAmounts[Field.CURRENCY_B], ALGEBRA_POSITION_MANAGER);
+    const allowanceB = useNeedAllowance(currencyB, mintInfo.parsedAmounts[Field.CURRENCY_B], ALGEBRA_POSITION_MANAGER[chainId]);
 
     useEffect(() => {
         return () => {

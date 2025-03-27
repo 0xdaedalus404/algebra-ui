@@ -10,6 +10,7 @@ import { Address } from "wagmi";
 import { useCurrency } from "../common/useCurrency";
 import { useMemo } from "react";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
+import { useClients } from "../graphql/useClients";
 
 export const PoolState = {
     LOADING: "LOADING",
@@ -58,6 +59,8 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
         address,
     });
 
+    const { infoClient } = useClients();
+
     const {
         data: poolDeployer,
         loading: isPoolDeployerLoading,
@@ -66,6 +69,7 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
         variables: {
             poolId: address?.toLowerCase() || "",
         },
+        client: infoClient,
     });
 
     const token0 = useCurrency(token0Address);

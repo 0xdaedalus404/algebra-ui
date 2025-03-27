@@ -3,7 +3,7 @@ import ClammLogo from "@/assets/clamm-logo.svg";
 import ClammMobileLogo from "@/assets/clamm-single-logo.svg";
 import { NavLink } from "react-router-dom";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
 import { Button } from "@/components/ui/button";
 import { AlignJustify, UnplugIcon, WalletIcon } from "lucide-react";
 import Loader from "../Loader";
@@ -14,6 +14,7 @@ import { TransactionCard } from "../TransactionCard";
 import { useAccount } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
 import { Separator } from "@/components/ui/separator";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
 const Header = () => (
     <header className="sticky top-4 z-10 grid grid-cols-3 justify-between items-center py-1 px-2 bg-card border border-card-border rounded-3xl gap-4">
@@ -58,7 +59,7 @@ const Account = () => {
 
     const { selectedNetworkId } = useWeb3ModalState();
 
-    if (selectedNetworkId !== DEFAULT_CHAIN_ID)
+    if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId))
         return (
             <div className="flex justify-end">
                 <Button
@@ -70,7 +71,7 @@ const Account = () => {
                     size={"sm"}
                     variant={"destructive"}
                     className="hidden md:block"
-                >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
+                >{`Connect to ${DEFAULT_CHAIN_NAME[ChainId.Base]}`}</Button>
                 <Button
                     onClick={() =>
                         open({

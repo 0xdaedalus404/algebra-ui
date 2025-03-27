@@ -3,9 +3,7 @@ import { Address } from "viem";
 import { useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useAccount, useBalance } from "wagmi";
 
-import { CurrencyAmount, Currency, TickMath, Percent } from "@cryptoalgebra/custom-pools-sdk";
-
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
+import { CurrencyAmount, Currency, TickMath, Percent, ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
 import { ApprovalState } from "@/types/approve-state";
 
@@ -82,7 +80,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         }
     }, [callback]);
 
-    const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
+    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
 
     const insufficientBalance = inputBalance && trade ? trade.inputAmount.greaterThan(inputBalance.value.toString()) : undefined;
 

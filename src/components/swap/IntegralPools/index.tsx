@@ -4,6 +4,7 @@ import { DynamicFeePluginIcon, LimitOrderPluginIcon } from "@/components/common/
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { PoolFieldsFragment, usePoolsListQuery } from "@/graphql/generated/graphql";
 import { useCurrency } from "@/hooks/common/useCurrency";
+import { useClients } from "@/hooks/graphql/useClients";
 import { usePoolPlugins } from "@/hooks/pools/usePoolPlugins";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
@@ -68,13 +69,17 @@ const IntegralPools = () => {
 };
 
 const IntegralPoolsList = memo(({ poolAddress, onPoolSelect }: { poolAddress: Address | undefined; onPoolSelect: () => void }) => {
-    const { data: pools, loading } = usePoolsListQuery();
+    const { infoClient } = useClients();
+
+    const { data: pools, loading } = usePoolsListQuery({
+        client: infoClient,
+    });
 
     if (loading)
         return (
             <span className="flex w-full justify-center text-white !min-w-[240px] m-auto">
                 {" "}
-                <Loader color="black" />{" "}
+                <Loader color={"black"} />{" "}
             </span>
         );
 

@@ -1,12 +1,11 @@
 import { algebraPositionManagerABI } from "@/abis";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 import { useAlgebraPositionManagerBalanceOf } from "@/generated";
-import { farmingClient } from "@/graphql/clients";
 import { useDepositsQuery } from "@/graphql/generated/graphql";
 import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { Address, useAccount, useContractReads } from "wagmi";
+import { Address, useAccount, useChainId, useContractReads } from "wagmi";
+import { useClients } from "../graphql/useClients";
 
 export interface PositionFromTokenId {
     tokenId: number;
@@ -30,6 +29,8 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
     positions: PositionFromTokenId[] | undefined;
     refetch: () => void;
 } {
+    const chainId = useChainId();
+
     const inputs = useMemo(() => (tokenIds ? tokenIds.map((tokenId) => tokenId) : []), [tokenIds]);
 
     const {
@@ -40,7 +41,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         refetch,
     } = useContractReads({
         contracts: inputs.map((x) => ({
-            address: ALGEBRA_POSITION_MANAGER,
+            address: ALGEBRA_POSITION_MANAGER[chainId],
             abi: algebraPositionManagerABI,
             functionName: "positions",
             args: [[Number(x)]],
@@ -62,12 +63,12 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                     const pool = (
                         isBasePool
                             ? computePoolAddress({
-                                  tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
-                                  tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
+                                  tokenA: new Token(chainId, result[2], 18),
+                                  tokenB: new Token(chainId, result[3], 18),
                               })
                             : computeCustomPoolAddress({
-                                  tokenA: new Token(DEFAULT_CHAIN_ID, result[2], 18),
-                                  tokenB: new Token(DEFAULT_CHAIN_ID, result[3], 18),
+                                  tokenA: new Token(chainId, result[2], 18),
+                                  tokenB: new Token(chainId, result[3], 18),
                                   customPoolDeployer: result[4],
                               })
                     ) as Address;
@@ -91,7 +92,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
                 });
         }
         return undefined;
-    }, [isLoading, isError, error, results, tokenIds, account, refetch]);
+    }, [isLoading, isError, error, results, tokenIds, account, refetch, chainId]);
 
     return useMemo(() => {
         return {
@@ -104,6 +105,7 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
 
 export function usePositions() {
     const { address: account } = useAccount();
+    const chainId = useChainId();
 
     const { data: balanceResult, isLoading: balanceLoading } = useAlgebraPositionManagerBalanceOf({
         args: account ? [account] : undefined,
@@ -124,7 +126,7 @@ export function usePositions() {
 
     const { data: tokenIdResults, isLoading: someTokenIdsLoading } = useContractReads({
         contracts: tokenIdsArgs.map((args) => ({
-            address: ALGEBRA_POSITION_MANAGER,
+            address: ALGEBRA_POSITION_MANAGER[chainId],
             abi: algebraPositionManagerABI,
             functionName: "tokenOfOwnerByIndex",
             args,
@@ -173,6 +175,7 @@ export function usePosition(tokenId: string | number | undefined): {
 }
 
 export function usePositionInFarming(tokenId: string | number | undefined) {
+    const { farmingClient } = useClients();
     const { position } = usePosition(tokenId);
 
     const { address: account } = useAccount();

@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { Currency, OnChainProvider, SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useQuery } from "@tanstack/react-query";
+import { useChainId } from "wagmi";
 
 export interface V3PoolsHookParams {
     key?: string;
@@ -15,6 +16,7 @@ export interface CommonPoolsParams {
 }
 
 export function useV3CandidatePools(currencyA?: Currency, currencyB?: Currency, options?: V3PoolsHookParams) {
+    const chainId = useChainId();
     const key = useMemo(() => {
         if (!currencyA || !currencyB || currencyA.chainId !== currencyB.chainId || currencyA.wrapped.equals(currencyB.wrapped)) {
             return "";
@@ -35,18 +37,25 @@ export function useV3CandidatePools(currencyA?: Currency, currencyB?: Currency, 
     const { data, refetch, isLoading, isFetching, error, dataUpdatedAt } = useQuery({
         queryKey: ["v3_candidate_pools", key],
         queryFn: async () => {
-            const pools = await SmartRouter.getV3CandidatePools({
-                currencyA,
-                currencyB,
-                onChainProvider: (() => SmartRouter.publicClient) as OnChainProvider,
-                subgraphProvider: () => SmartRouter.v3SubgraphClient,
-                blockNumber: options?.blockNumber,
-            });
-            return {
-                key,
-                pools,
-                blockNumber: options?.blockNumber,
-            };
+            try {
+                // console.log(SmartRouter.publicClient[chainId]);
+                // console.log(SmartRouter.v3SubgraphClient[chainId]);
+                const pools = await SmartRouter.getV3CandidatePools({
+                    currencyA,
+                    currencyB,
+                    onChainProvider: (() => SmartRouter.publicClient[chainId as 8453 | 84532]) as OnChainProvider,
+                    subgraphProvider: () => SmartRouter.v3SubgraphClient[chainId as 8453 | 84532],
+                    // blockNumber: options?.blockNumber,
+                });
+                console.log("pools", pools);
+                return {
+                    key,
+                    pools,
+                    blockNumber: options?.blockNumber,
+                };
+            } catch (e) {
+                console.log(e);
+            }
         },
         retry: 2,
         staleTime: refetchInterval,

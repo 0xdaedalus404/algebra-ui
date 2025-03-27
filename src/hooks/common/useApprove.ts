@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import {
     Currency as CurrencyBN,
     CurrencyAmount as CurrencyAmountBN,
@@ -58,7 +58,7 @@ export function useApproveCallbackFromTrade(trade: Trade<Currency, Currency, Tra
         () => (trade && trade.inputAmount.currency.isToken ? trade.maximumAmountIn(allowedSlippage) : undefined),
         [trade, allowedSlippage]
     );
-    return useApprove(amountToApprove, ALGEBRA_ROUTER);
+    return useApprove(amountToApprove, ALGEBRA_ROUTER[amountToApprove?.currency.chainId || ChainId.Base]);
 }
 
 export function useApproveCallbackFromSmartTrade(trade: SmartRouterTrade<TradeType> | undefined, allowedSlippage: Percent) {
@@ -72,5 +72,5 @@ export function useApproveCallbackFromSmartTrade(trade: SmartRouterTrade<TradeTy
         [trade, allowedSlippageBN]
     );
 
-    return useApprove(amountToApprove, ALGEBRA_ROUTER);
+    return useApprove(amountToApprove, ALGEBRA_ROUTER[amountToApprove?.currency.chainId || ChainId.Base]);
 }

@@ -4,13 +4,12 @@ import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useDerivedSwapInfo, useLimitOrderInfo } from "@/state/swapStore";
-import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
-import { Address, useAccount, useContractWrite } from "wagmi";
+import { ChainId, Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import { Address, useAccount, useChainId, useContractWrite } from "wagmi";
 import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { DEFAULT_CHAIN_ID } from "@/constants/default-chain-id";
 import { SwapField } from "@/types/swap-field";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -58,16 +57,17 @@ const LimitOrderButton = ({
 
     const limitOrder = useLimitOrderInfo(poolAddress, amount, formattedTick);
 
+    const chainId = useChainId();
+
     const needAllowance = useNeedAllowance(
         inputCurrency?.isNative ? undefined : inputCurrency?.wrapped,
         amount,
-        ALGEBRA_LIMIT_ORDER_PLUGIN
+        ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]
     );
 
-    console.log("IS READE", token0, token1, trade, amount, limitOrder, disabled, inputError, needAllowance);
     const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance;
 
-    const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN);
+    const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]);
 
     const { config: placeLimitOrderConfig } = usePrepareAlgebraLimitOrderPluginPlace({
         args: isReady
@@ -75,7 +75,7 @@ const LimitOrderButton = ({
                   {
                       token0: token0.address as Address,
                       token1: token1.address as Address,
-                      deployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+                      deployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
                   },
                   limitOrder.tickLower,
                   zeroToOne,
@@ -93,7 +93,7 @@ const LimitOrderButton = ({
         title: `Buy ${formatCurrency.format(Number(amount?.toSignificant()))} ${amount?.currency.symbol}`,
     });
 
-    const isWrongChain = selectedNetworkId !== DEFAULT_CHAIN_ID;
+    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
