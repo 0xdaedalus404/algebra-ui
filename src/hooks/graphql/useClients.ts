@@ -1,10 +1,38 @@
-import { infoClient, blocksClient, farmingClient, limitOrderClient } from '@/graphql/clients';
+import {
+    infoClient,
+    blocksClient,
+    farmingClient,
+    limitOrderClient,
+    infoClientTestnet,
+    blocksClientTestnet,
+    farmingClientTestnet,
+} from "@/graphql/clients";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { useChainId } from "wagmi";
 
 export function useClients() {
-    return {
-        infoClient,
-        blocksClient,
-        farmingClient,
-        limitOrderClient
-    };
+    const chainId = useChainId();
+
+    switch (chainId) {
+        case ChainId.Base:
+            return {
+                infoClient,
+                blocksClient,
+                farmingClient,
+                limitOrderClient,
+            };
+        case ChainId.BaseSepolia:
+            return {
+                infoClient: infoClientTestnet,
+                blocksClient: blocksClientTestnet,
+                farmingClient: farmingClientTestnet,
+            };
+        default:
+            return {
+                infoClient,
+                blocksClient,
+                farmingClient,
+                limitOrderClient,
+            };
+    }
 }

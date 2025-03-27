@@ -1,45 +1,32 @@
-import { Address, useAccount } from 'wagmi';
-import { useClients } from '../graphql/useClients';
-import { useEffect, useState } from 'react';
-import {
-    useDepositsQuery,
-    useEternalFarmingsQuery,
-    useSingleTokenQuery,
-    SinglePoolQuery,
-} from '@/graphql/generated/graphql';
-import { Farming } from '@/types/farming-info';
+import { Address, useAccount } from "wagmi";
+import { useClients } from "../graphql/useClients";
+import { useEffect, useState } from "react";
+import { useDepositsQuery, useEternalFarmingsQuery, useSingleTokenQuery, SinglePoolQuery } from "@/graphql/generated/graphql";
+import { Farming } from "@/types/farming-info";
 
-export function useActiveFarming({
-    poolId,
-    poolInfo,
-}: {
-    poolId: Address;
-    poolInfo: SinglePoolQuery | undefined;
-}) {
+export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolInfo: SinglePoolQuery | undefined }) {
     const { address: account } = useAccount();
 
     const [farmingInfo, setFarmingInfo] = useState<Farming | null>();
 
-    const { farmingClient } = useClients();
+    const { infoClient, farmingClient } = useClients();
 
-    const { data: farmings, loading: isFarmingLoading } =
-        useEternalFarmingsQuery({
-            variables: {
-                pool: poolId,
-            },
-            client: farmingClient,
-            skip: !poolInfo,
-        });
+    const { data: farmings, loading: isFarmingLoading } = useEternalFarmingsQuery({
+        variables: {
+            pool: poolId,
+        },
+        client: farmingClient,
+        skip: !poolInfo,
+    });
 
-    const activeFarming = farmings?.eternalFarmings.filter(
-        (farming) => !farming.isDeactivated
-    )[0];
+    const activeFarming = farmings?.eternalFarmings.filter((farming) => !farming.isDeactivated)[0];
 
     const { data: rewardToken } = useSingleTokenQuery({
         skip: !activeFarming,
         variables: {
             tokenId: activeFarming?.rewardToken,
         },
+        client: infoClient,
     });
 
     const { data: bonusRewardToken } = useSingleTokenQuery({
@@ -47,6 +34,7 @@ export function useActiveFarming({
         variables: {
             tokenId: activeFarming?.bonusRewardToken,
         },
+        client: infoClient,
     });
 
     const { data: deposits, loading: areDepositsLoading } = useDepositsQuery({
@@ -64,7 +52,7 @@ export function useActiveFarming({
         if (!rewardToken) return;
         if (!bonusRewardToken) return;
         if (!activeFarming || !rewardToken.token) {
-            console.debug('Active farming not found');
+            console.debug("Active farming not found");
             setFarmingInfo(null);
             return;
         }

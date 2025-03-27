@@ -1,73 +1,77 @@
-import { STABLECOINS } from "@/constants/tokens"
-import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql"
-import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk"
-import { useMemo } from "react"
+import { STABLECOINS } from "@/constants/tokens";
+import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
+import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { useMemo } from "react";
+import { useChainId } from "wagmi";
+import { useClients } from "../graphql/useClients";
 
 export function useUSDCPrice(currency: Currency | undefined) {
+    const { infoClient } = useClients();
 
-    const { data: bundles } = useNativePriceQuery()
+    const chainId = useChainId();
+
+    const { data: bundles } = useNativePriceQuery({
+        client: infoClient,
+    });
 
     const { data: token } = useSingleTokenQuery({
         variables: {
-            tokenId: currency ? currency.wrapped.address.toLowerCase() : ''
-        }
-    })
+            tokenId: currency ? currency.wrapped.address.toLowerCase() : "",
+        },
+        client: infoClient,
+    });
 
     return useMemo(() => {
+        if (!currency || !bundles?.bundles?.[0] || !token?.token)
+            return {
+                price: undefined,
+                formatted: 0,
+            };
 
-        if (!currency || !bundles?.bundles?.[0] || !token?.token) return {
-            price: undefined,
-            formatted: 0
-        }
+        if (STABLECOINS[chainId].USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase())
+            return {
+                price: new Price(STABLECOINS[chainId].USDC, STABLECOINS[chainId].USDC, "1", "1"),
+                formatted: 1,
+            };
 
-        if (STABLECOINS.USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) return {
-            price: new Price(STABLECOINS.USDC, STABLECOINS.USDC, '1', '1'),
-            formatted: 1
-        }
+        const tokenUSDValue = Number(token.token.derivedMatic) * Number(bundles.bundles[0].maticPriceUSD);
 
-        const tokenUSDValue = Number(token.token.derivedMatic) * Number(bundles.bundles[0].maticPriceUSD)
-
-        const usdAmount = tryParseAmount(tokenUSDValue.toString(), currency)
+        const usdAmount = tryParseAmount(tokenUSDValue.toString(), currency);
 
         if (usdAmount) {
             return {
-                price: new Price(currency, STABLECOINS.USDC, usdAmount.denominator, usdAmount.numerator),
-                formatted: Number(usdAmount.toSignificant())
-            }
+                price: new Price(currency, STABLECOINS[chainId].USDC, usdAmount.denominator, usdAmount.numerator),
+                formatted: Number(usdAmount.toSignificant()),
+            };
         }
 
         return {
             price: undefined,
-            formatted: 0
-        }
-
-    }, [currency, bundles, token])
-
+            formatted: 0,
+        };
+    }, [currency, bundles, token]);
 }
 
 export function useUSDCValue(currencyAmount: CurrencyAmount<Currency> | undefined | null) {
-
-    const { price, formatted } = useUSDCPrice(currencyAmount?.currency)
+    const { price, formatted } = useUSDCPrice(currencyAmount?.currency);
 
     return useMemo(() => {
-
-        if (!price || !currencyAmount) return {
-            price: null,
-            formatted: null
-        }
+        if (!price || !currencyAmount)
+            return {
+                price: null,
+                formatted: null,
+            };
 
         try {
             return {
                 price: price.quote(currencyAmount),
-                formatted: Number(currencyAmount.toSignificant()) * formatted
-            }
+                formatted: Number(currencyAmount.toSignificant()) * formatted,
+            };
         } catch {
             return {
                 price: null,
-                formatted: null
-            }
+                formatted: null,
+            };
         }
-
-    }, [currencyAmount, price])
-
+    }, [currencyAmount, price]);
 }
