@@ -19,8 +19,8 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v3
 
-            - name: Set dev target path
-              if: ${{ inputs.target == 'dev' }}
+            - name: Set clamm target path
+              if: ${{ inputs.target == 'clamm' }}
               run: |
                   echo "TARGET_PATH=${{ secrets.CLAMM_DEPLOYMENT_PATH }}" >> $GITHUB_ENV
 
