@@ -36,11 +36,7 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
     const currencyAPriceUSD = 1900;
     const currencyBPriceUSD = 1;
 
-    const {
-        data: vaults,
-        isLoading,
-        error,
-    } = useSWR(["vaults", poolAddress, provider, currencyA, currencyB, chainId], async () => {
+    const { data: vaults, isLoading } = useSWR(["vaults", poolAddress, provider, currencyA, currencyB, chainId], async () => {
         if (!provider || !currencyA || !currencyB || !poolAddress) {
             throw new Error("No provider");
         }
@@ -76,8 +72,6 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
 
         return vaultsData;
     });
-
-    console.log(error);
 
     return { vaults, isLoading };
 }
