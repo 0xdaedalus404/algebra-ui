@@ -4,13 +4,15 @@ import { TransactionInfo, usePendingTransactionsStore } from "@/state/pendingTra
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Address, useAccount, useWaitForTransaction } from "wagmi";
+import { Address, useAccount, useNetwork, useWaitForTransaction } from "wagmi";
 
-export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
-    hash ? (
+export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) => {
+    const { chain } = useNetwork();
+
+    return hash ? (
         <ToastAction altText="View on explorer" asChild>
             <Link
-                to={`https://basescan.org/tx/${hash}`}
+                to={`${chain?.blockExplorers?.default.url}/tx/${hash}`}
                 target={"_blank"}
                 className="border-none gap-2 hover:bg-transparent hover:text-blue-400"
             >
@@ -21,6 +23,7 @@ export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) =>
     ) : (
         <></>
     );
+};
 
 export function useTransactionAwait(hash: Address | undefined, transactionInfo: TransactionInfo, redirectPath?: string) {
     const { toast } = useToast();

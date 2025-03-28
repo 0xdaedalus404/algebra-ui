@@ -30,7 +30,7 @@ const ALMPositionCard = ({ userVault }: ALMPositionCardProps) => {
                                 {positionLiquidityUSD ? (
                                     <span className="text-cyan-300">${formatAmount(positionLiquidityUSD, 4)}</span>
                                 ) : (
-                                    <Skeleton className="w-[100px] h-[30px]" />
+                                    <Skeleton className="w-[100px] h-[30px] ml-auto" />
                                 )}
                             </div>
                         </div>
