@@ -1,4 +1,4 @@
-import { getVaultsByPool, SupportedDex, IchiVault, getExtendedIchiVaultInfo } from "@cryptoalgebra/alm-sdk";
+import { getVaultsByPool, SupportedDex, AlgebraVault, getExtendedAlgebraVault } from "@cryptoalgebra/alm-sdk";
 import useSWR from "swr";
 import { useEthersProvider } from "../common/useEthersProvider";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
@@ -7,7 +7,7 @@ import { useCurrency } from "../common/useCurrency";
 import { Address, formatUnits } from "viem";
 import { useChainId } from "wagmi";
 
-export interface ExtendedVault extends Omit<IchiVault, "tokenA" | "tokenB"> {
+export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
     name: string;
     apr: number;
     amount0: string;
@@ -47,7 +47,7 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
 
         const vaultsData = await Promise.all(
             vaultAddresses.map(async (vault) => {
-                const data = await getExtendedIchiVaultInfo(vault, dex, chainId, provider, currencyA.decimals, currencyB.decimals);
+                const data = await getExtendedAlgebraVault(vault, dex, chainId, provider, currencyA.decimals, currencyB.decimals);
 
                 const amount0 = formatUnits(data.amount0, currencyA.decimals);
                 const amount1 = formatUnits(data.amount1, currencyB.decimals);

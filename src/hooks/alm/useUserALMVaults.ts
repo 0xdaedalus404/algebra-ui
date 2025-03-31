@@ -38,21 +38,21 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
 
                 if (shares === "0") continue;
 
-                const amounts = [
+                const userAmounts = [
                     (Number(shares) * Number(totalAmounts[0].toBigInt())) / Number(totalSupply),
                     (Number(shares) * Number(totalAmounts[1].toBigInt())) / Number(totalSupply),
                 ];
 
-                const formattedAmounts = [
-                    formatUnits(BigInt(amounts[0].toFixed(0)), vault.token0.decimals),
-                    formatUnits(BigInt(amounts[1].toFixed(0)), vault.token1.decimals),
+                const formattedUserAmounts = [
+                    formatUnits(BigInt(userAmounts[0].toFixed(0)), vault.token0.decimals),
+                    formatUnits(BigInt(userAmounts[1].toFixed(0)), vault.token1.decimals),
                 ];
 
                 userALMVaults.push({
-                    amount0: formattedAmounts[0],
-                    amount1: formattedAmounts[1],
+                    amount0: formattedUserAmounts[0],
+                    amount1: formattedUserAmounts[1],
                     shares,
-                    amountsUsd: Number(formattedAmounts[0]) * currencyAPriceUSD + Number(formattedAmounts[1]) * currencyBPriceUSD,
+                    amountsUsd: Number(formattedUserAmounts[0]) * currencyAPriceUSD + Number(formattedUserAmounts[1]) * currencyBPriceUSD,
                     vault: vault,
                 });
             }
