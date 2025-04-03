@@ -656,10 +656,10 @@
     "@openzeppelin/contracts" "4.9.3"
     "@uniswap/v2-core" "1.0.1"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.4.0.tgz#283f9974a0ebab2a1b8f7e24f8ee621fa142555a"
-  integrity sha512-uz5Ho1djjYFGy9VI6gSiNtFNiZb7U4ycbVU/2Kcbglla+rhi6KUukoH8n3Fob3haEbJ2mkPlNbZ1HVsrSIxPdg==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.4.1.tgz#cb0abfb436d9c226a4fcae07c265d43d05b95d0a"
+  integrity sha512-nWT4ih6iz2ek2/2htRCk6qT5cVKWCAZ80hOnkmCdnWmqD5yT7jqpkitpiZZX+6s2+QAX81PNxHxHIyJr15JJFQ==
   dependencies:
     "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/clamm-base-sdk@1.1.0"
     "@pancakeswap/sdk" "5.7.6"
