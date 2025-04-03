@@ -21,13 +21,14 @@ import SelectPair from "../SelectPair";
 import { STABLECOINS } from "@/constants/tokens";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { cn } from "@/lib/utils";
-import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 
 import FixBrokenPool from "../FixBrokenPool";
 
 const POOL_DEPLOYER = {
     BASE: "Base",
     LIMIT_ORDER: "Limit Order",
+    ALM: "ALM",
 };
 
 type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
@@ -35,6 +36,7 @@ type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
 const customPoolDeployerAddresses = {
     [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE[ChainId.Base],
     [POOL_DEPLOYER.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[ChainId.Base],
+    [POOL_DEPLOYER.ALM]: CUSTOM_POOL_DEPLOYER_ALM[ChainId.Base],
 };
 
 const CreatePoolForm = () => {
