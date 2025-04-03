@@ -182,7 +182,11 @@ const PoolPage = () => {
         return positionsData.find(({ id }) => Number(id) === Number(selectedPositionId));
     }, [selectedPositionId, positionsData]);
 
-    const noPositions = (!positionsLoading || !isFarmingLoading || !areDepositsLoading) && positionsData.length === 0 && poolEntity;
+    const noPositions =
+        (!positionsLoading || !isFarmingLoading || !areDepositsLoading || !areUserVaultsLoading) &&
+        positionsData.length === 0 &&
+        (userVaults?.length === 0 || !userVaults) &&
+        poolEntity;
 
     return (
         <PageContainer>
