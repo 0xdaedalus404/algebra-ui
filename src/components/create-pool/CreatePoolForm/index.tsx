@@ -74,7 +74,7 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         areCurrenciesSelected && !isSameToken
-            ? [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid]].map(
+            ? [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid], CUSTOM_POOL_DEPLOYER_ALM[chainid]].map(
                   (customPoolDeployer) =>
                       computeCustomPoolAddress({
                           tokenA: currencyA.wrapped,
@@ -88,11 +88,13 @@ const CreatePoolForm = () => {
 
     // TODO
     const [poolState0] = usePool(customPoolsAddresses[0]);
+    const [poolState1] = usePool(customPoolsAddresses[1]);
 
     const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BASE;
     const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.LIMIT_ORDER;
+    const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.ALM;
 
-    const isSelectedCustomPoolExists = isPoolExists || isPool0Exists;
+    const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists;
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
