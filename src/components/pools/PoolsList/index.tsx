@@ -7,7 +7,7 @@ import useSWR from "swr";
 import PoolsTable from "@/components/common/Table/poolsTable";
 import { usePositions } from "@/hooks/positions/usePositions";
 import { useClients } from "@/hooks/graphql/useClients";
-import { ALM_POOLS } from "@/constants/pools";
+import { ALM_POOLS } from "@/constants/addresses";
 
 const PoolsList = () => {
     const { infoClient, farmingClient } = useClients();

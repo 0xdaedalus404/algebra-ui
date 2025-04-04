@@ -60,11 +60,16 @@ export const CUSTOM_POOL_BASE: Record<number, Address> = {
     [ChainId.BaseSepolia]: ADDRESS_ZERO,
 };
 
-// ALM
+/* ALM */
 export const CUSTOM_POOL_DEPLOYER_ALM: Record<number, Address> = {
-    [ChainId.Base]: "0x4b5306375bb264481c097a5f693877ed41a5ecf1",
+    [ChainId.Base]: "0x05f3bd357d47d159ac7d33f9dbaacfc65d31976d",
 };
+
 export const VAULT_DEPOSIT_GUARD: Record<number, Address> = {
-    [ChainId.Base]: "0xd97c576eCd678cBAd57d112d93a1Ce76C880233E",
+    [ChainId.Base]: "0x57F583b82624680bC57446f486cBd69B56Beb037",
     [ChainId.BaseSepolia]: "0x6768D9cEC5e1C4f416685dBfCFa4F92E660dc129",
 };
+
+export const ALM_POOLS: Address[] = ["0x47e8ca40666102ac217286e51660a4e6e6d7f9a3", "0xabff72aee1ba72fc459acd5222dd84a3182411bb"].map(
+    (address) => address.toLowerCase() as Address
+);

@@ -559,10 +559,10 @@
     stream-browserify "^3.0.0"
     util "^0.12.4"
 
-"@cryptoalgebra/alm-sdk@npm:@skdamn/alm-sdk@0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@skdamn/alm-sdk/-/alm-sdk-0.0.10.tgz#8649fd021213b7bee7c2e161efa55508273c9ebb"
-  integrity sha512-ANniRPdqTZAgAT7+OYQbsF5pdjV0mKg5OLuaaepG4ThhRr4gXlORm6wUUe2WBI91c6WGeaU6Gr21WcJBGY8lYw==
+"@cryptoalgebra/alm-sdk@npm:@skdamn/alm-sdk@0.0.11":
+  version "0.0.11"
+  resolved "https://registry.yarnpkg.com/@skdamn/alm-sdk/-/alm-sdk-0.0.11.tgz#703c4cfa442ddbf322018f8a27364b1735fc9647"
+  integrity sha512-vd80GlfC7daRS+K23lAuEyYDVCklK/h4VsAtJbDX03mEsbQX+ahcVXwmad7/so2jY8Wa3ATezYeoJhIoYGFrdw==
   dependencies:
     "@cryptoalgebra/alm-vault" "^1.2.1-patch1"
     "@ethersproject/abi" "^5.7.0"
@@ -656,10 +656,10 @@
     "@openzeppelin/contracts" "4.9.3"
     "@uniswap/v2-core" "1.0.1"
 
-"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.4.1":
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.4.1.tgz#cb0abfb436d9c226a4fcae07c265d43d05b95d0a"
-  integrity sha512-nWT4ih6iz2ek2/2htRCk6qT5cVKWCAZ80hOnkmCdnWmqD5yT7jqpkitpiZZX+6s2+QAX81PNxHxHIyJr15JJFQ==
+"@cryptoalgebra/router-custom-pools-and-sliding-fee@npm:@cryptoalgebra/router-clamm-base@1.4.2":
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/@cryptoalgebra/router-clamm-base/-/router-clamm-base-1.4.2.tgz#783a9e515d0782bdeb80ab64f3c0cd8402cbfff9"
+  integrity sha512-6q3f6VgZyN7hsyvN16S5/0o3xdDW9mUrKRkIMxNOQk/P7+bqWWx82Dt8Ifl6+Xt4kBK/F+yMytPIeZkT9Mrwqw==
   dependencies:
     "@cryptoalgebra/custom-pools-sdk" "npm:@cryptoalgebra/clamm-base-sdk@1.1.0"
     "@pancakeswap/sdk" "5.7.6"
