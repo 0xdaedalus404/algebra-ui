@@ -66,7 +66,7 @@ export const CUSTOM_POOL_DEPLOYER_ALM: Record<number, Address> = {
 };
 
 export const VAULT_DEPOSIT_GUARD: Record<number, Address> = {
-    [ChainId.Base]: "0x57F583b82624680bC57446f486cBd69B56Beb037",
+    [ChainId.Base]: "0x1e18b4a180b13520bD202e571cD9dFE0A545Cc85",
     [ChainId.BaseSepolia]: "0x6768D9cEC5e1C4f416685dBfCFa4F92E660dc129",
 };
 
