@@ -3,6 +3,7 @@ import { ExtendedVault, useALMVaultsByPool } from "./useALMVaults";
 import useSWR from "swr";
 import { useEthersSigner } from "../common/useEthersProvider";
 import { getTotalAmounts, getTotalSupply, getUserBalance, SupportedDex } from "@cryptoalgebra/alm-sdk";
+import { useUSDCPrice } from "../common/useUSDCValue";
 
 export interface UserALMVault {
     amount0: string;
@@ -16,8 +17,8 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
     const provider = useEthersSigner();
     const { vaults, isLoading: isVaultsLoading } = useALMVaultsByPool(poolAddress);
 
-    const currencyAPriceUSD = 1900;
-    const currencyBPriceUSD = 1;
+    const { formatted: currencyAPriceUSD } = useUSDCPrice(vaults?.[0]?.token0);
+    const { formatted: currencyBPriceUSD } = useUSDCPrice(vaults?.[0]?.token1);
 
     const { data: userVaults, isLoading } = useSWR(
         ["userVaults", account, vaults, poolAddress],

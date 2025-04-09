@@ -6,6 +6,7 @@ import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "../common/useCurrency";
 import { Address, formatUnits } from "viem";
 import { useChainId } from "wagmi";
+import { useUSDCPrice } from "../common/useUSDCValue";
 
 export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
     name: string;
@@ -33,8 +34,8 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
 
     const provider = useEthersProvider();
 
-    const currencyAPriceUSD = 1900;
-    const currencyBPriceUSD = 1;
+    const { formatted: currencyAPriceUSD } = useUSDCPrice(currencyA);
+    const { formatted: currencyBPriceUSD } = useUSDCPrice(currencyB);
 
     const { data: vaults, isLoading } = useSWR(["vaults", poolAddress, provider, currencyA, currencyB, chainId], async () => {
         if (!provider || !currencyA || !currencyB || !poolAddress) {
