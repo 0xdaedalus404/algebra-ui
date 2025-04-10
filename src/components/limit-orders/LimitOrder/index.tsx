@@ -1,7 +1,7 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { computeCustomPoolAddress, getTickToPrice, tickToPrice, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LimitPriceCard from "../LimitPriceCard";
 import LimitOrderButton from "../LimitOrderButton";
@@ -50,9 +50,13 @@ const LimitOrder = () => {
     const initialSellPrice = useMemo(() => {
         if (!limitOrderPool) return "";
 
-        const _newPrice = invertPrice
-            ? getTickToPrice(token1, token0, limitOrderPool.tickCurrent - limitOrderPool.tickSpacing)
-            : getTickToPrice(token0, token1, limitOrderPool.tickCurrent + limitOrderPool.tickSpacing);
+        const { tickCurrent, tickSpacing } = limitOrderPool;
+
+        const targetTick = invertPrice
+            ? Math.max(tickCurrent - tickSpacing, TickMath.MIN_TICK)
+            : Math.min(tickCurrent + tickSpacing, TickMath.MAX_TICK);
+
+        const _newPrice = invertPrice ? getTickToPrice(token1, token0, targetTick) : getTickToPrice(token0, token1, targetTick);
 
         return _newPrice?.toSignificant(_newPrice.baseCurrency.decimals / 2);
     }, [limitOrderPool, token0, token1, invertPrice]);
