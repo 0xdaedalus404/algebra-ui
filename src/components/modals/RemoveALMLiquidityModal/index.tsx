@@ -45,9 +45,9 @@ const RemoveALMLiquidityModal = ({ userVault }: RemoveALMLiquidityModalProps) =>
         try {
             let tx;
             if (useNative) {
-                tx = await withdrawNativeToken(account, amountToWithdraw, vault.id, provider, SupportedDex.Henjin);
+                tx = await withdrawNativeToken(account, amountToWithdraw, vault.id, provider, SupportedDex.CLAMM);
             } else {
-                tx = await withdraw(account, amountToWithdraw, vault.id, provider, SupportedDex.Henjin);
+                tx = await withdraw(account, amountToWithdraw, vault.id, provider, SupportedDex.CLAMM);
             }
 
             setTxHash(tx.hash as Address);

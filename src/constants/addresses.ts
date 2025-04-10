@@ -53,6 +53,7 @@ export const FARMING_CENTER: Record<number, Address> = {
 
 export const CUSTOM_POOL_DEPLOYER_LIMIT_ORDER: Record<number, Address> = {
     [ChainId.Base]: "0xf3b57fe4d5d0927c3a5e549cb6af1866687e2d62",
+    [ChainId.BaseSepolia]: "0x9089f3440C8e7534aFCFeC2b731C4d6b78876308",
 };
 
 export const CUSTOM_POOL_BASE: Record<number, Address> = {
