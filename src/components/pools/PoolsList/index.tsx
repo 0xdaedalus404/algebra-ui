@@ -7,7 +7,6 @@ import useSWR from "swr";
 import PoolsTable from "@/components/common/Table/poolsTable";
 import { usePositions } from "@/hooks/positions/usePositions";
 import { useClients } from "@/hooks/graphql/useClients";
-import { ALM_POOLS } from "@/constants/addresses";
 
 const PoolsList = () => {
     const { infoClient, farmingClient } = useClients();
@@ -54,8 +53,6 @@ const PoolsList = () => {
 
             const avgApr = farmApr + poolAvgApr;
 
-            const hasALM = ALM_POOLS.includes(id.toLowerCase() as Address);
-
             return {
                 id: id as Address,
                 pair: {
@@ -73,7 +70,6 @@ const PoolsList = () => {
                 isMyPool: Boolean(openPositions?.length),
                 hasActiveFarming: Boolean(activeFarming),
                 deployer: deployer.toLowerCase(),
-                hasALM,
             };
         });
     }, [isLoading, pools, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR]);

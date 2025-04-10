@@ -10,7 +10,6 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { formatPercent } from "@/utils/common/formatPercent";
 import { ReactNode } from "react";
 import { customPoolDeployerTitles } from "@/constants/deployers.ts";
-import almLogo from "@/assets/alm-logo.png";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -30,10 +29,9 @@ interface Pool {
     isMyPool: boolean;
     hasActiveFarming: boolean;
     deployer: string;
-    hasALM: boolean;
 }
 
-const PoolPair = ({ pair, fee, hasALM }: Pool) => {
+const PoolPair = ({ pair, fee }: Pool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -54,7 +52,7 @@ const PoolPair = ({ pair, fee, hasALM }: Pool) => {
             )}
 
             <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div>
-            {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null}
+            {/* {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null} */}
         </div>
     );
 };

@@ -47,6 +47,7 @@ const LimitOrderButton = ({
         toggledTrade: trade,
         inputError,
     } = useDerivedSwapInfo();
+
     const amount = trade && trade.inputAmount;
 
     const limitOrderTick = zeroToOne
@@ -66,6 +67,8 @@ const LimitOrderButton = ({
     );
 
     const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance;
+
+    console.log("trade", trade);
 
     const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]);
 

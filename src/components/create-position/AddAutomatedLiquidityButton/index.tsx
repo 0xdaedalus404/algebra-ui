@@ -8,12 +8,13 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
 import { ChainId, Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
-import { deposit, depositNativeToken, SupportedDex } from "@cryptoalgebra/alm-sdk";
+import { deposit, depositNativeToken, SupportedChainId, SupportedDex, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useCallback, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Address, useAccount, useChainId } from "wagmi";
-import { VAULT_DEPOSIT_GUARD } from "@/constants/addresses";
+
+const dex = SupportedDex.CLAMM;
 
 interface AddAutomatedLiquidityButtonProps {
     vault: ExtendedVault | undefined;
@@ -33,21 +34,16 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
     const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;
 
-    const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(amount, VAULT_DEPOSIT_GUARD[chainId]);
+    const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
+        amount,
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][dex] as Address
+    );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
 
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || isApprovePending;
 
     const isReady = approvalStateA === ApprovalState.APPROVED;
-
-    // const { config: addLiquidityConfig } = usePrepareAlgebraPositionManagerMulticall({
-    //     args: calldata && [calldata as `0x${string}`[]],
-    //     enabled: Boolean(calldata && isReady),
-    //     value: BigInt(value || 0),
-    // });
-
-    // const { data: addLiquidityData, write: addLiquidity } = useContractWrite(addLiquidityConfig);
 
     const provider = useEthersSigner();
 
@@ -57,7 +53,6 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
     const callback = useCallback(async () => {
         if (!vault || !amount || !account || !provider) return;
         setIsPending(true);
-        const dex = SupportedDex.CLAMM;
 
         try {
             let tx;

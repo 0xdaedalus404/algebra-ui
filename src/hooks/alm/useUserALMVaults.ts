@@ -21,7 +21,7 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
     const { formatted: currencyBPriceUSD } = useUSDCPrice(vaults?.[0]?.token1);
 
     const { data: userVaults, isLoading } = useSWR(
-        ["userVaults", account, vaults, poolAddress],
+        ["userVaults", account, vaults, poolAddress, currencyAPriceUSD, currencyBPriceUSD],
         async (): Promise<UserALMVault[]> => {
             if (!provider || !account || !vaults) {
                 throw new Error("not ready");
