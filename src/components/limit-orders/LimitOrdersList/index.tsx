@@ -15,7 +15,7 @@ const LimitOrdersList = () => {
 
     const [tab, setTab] = useState(0);
 
-    const { limitOrderClient } = useClients();
+    const { limitOrderClient, infoClient } = useClients();
 
     const { data: limitOrders, loading: isLimitOrdersLoading } = useLimitOrdersListQuery({
         client: limitOrderClient,
@@ -29,6 +29,7 @@ const LimitOrdersList = () => {
         variables: {
             poolIds: limitOrders && limitOrders.limitOrders.map(({ pool }: any) => pool),
         },
+        client: infoClient,
     });
 
     const formattedLimitOrders = useMemo(() => {
@@ -68,6 +69,7 @@ const LimitOrdersList = () => {
 
                 const liquidityForPosition = epoch.filled ? BigInt(initialLiquidity) - BigInt(killedLiquidity) : liquidity;
 
+                console.log(pools);
                 const positionLO = new Position({
                     pool,
                     liquidity: Number(liquidityForPosition),
