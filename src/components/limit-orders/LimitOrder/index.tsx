@@ -90,26 +90,53 @@ const LimitOrder = () => {
         },
         [invertPrice, token0, token1, sellPrice, tickSpacing]
     );
+    const { blockCreation, message } = useMemo(() => {
+        const missingFields: string[] = [];
 
-    const blockCreation = useMemo(() => {
-        if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return true;
+        if (!currencies.INPUT) missingFields.push("currencies.INPUT");
+        if (!currencies.OUTPUT) missingFields.push("currencies.OUTPUT");
+        if (!token0) missingFields.push("token0");
+        if (!token1) missingFields.push("token1");
+        if (tick === undefined) missingFields.push("tick");
+        if (tickSpacing === undefined) missingFields.push("tickSpacing");
+
+        if (
+            missingFields.length > 0 ||
+            !token0 ||
+            !token1 ||
+            tick === undefined ||
+            tickSpacing === undefined ||
+            !currencies.INPUT ||
+            !currencies.OUTPUT
+        ) {
+            return {
+                blocked: true,
+                message: `Missing required data to create order: ${missingFields.join(", ")}`,
+            };
+        }
 
         const _priceTick = invertPrice
             ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
-        if (_priceTick === undefined) return true;
+        if (_priceTick === undefined) {
+            return { blockCreation: true, message: "Unable to calculate price tick" };
+        }
 
         const priceTick = wasInverted ? -_priceTick : _priceTick;
 
-        if (currencies.INPUT.wrapped.equals(token0) && priceTick < tick) return true;
+        if (currencies.INPUT.wrapped.equals(token0) && priceTick < tick) {
+            return { blockCreation: true, message: "Sell price must be above current price when selling token0" };
+        }
 
-        if (currencies.INPUT.wrapped.equals(token1) && priceTick + tickSpacing >= tick) return true;
+        if (currencies.INPUT.wrapped.equals(token1) && priceTick + tickSpacing >= tick) {
+            return { blockCreation: true, message: "Sell price must be below current price when selling token1" };
+        }
 
-        return false;
+        return { blockCreation: false, message: "" };
     }, [token0, token1, currencies, invertPrice, sellPrice, tick, wasInverted, tickSpacing]);
 
-    console.log("BLOCK", blockCreation);
+    console.log("BLOCK", blockCreation, message);
 
     const [plusDisabled, minusDisabled] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return [true, true];

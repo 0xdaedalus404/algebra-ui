@@ -68,8 +68,6 @@ const LimitOrderButton = ({
 
     const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance;
 
-    console.log("trade", trade);
-
     const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]);
 
     const { config: placeLimitOrderConfig } = usePrepareAlgebraLimitOrderPluginPlace({
@@ -99,6 +97,8 @@ const LimitOrderButton = ({
     const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
+
+    console.log(disabled, isPlaceLoading, approvalState === ApprovalState.PENDING);
 
     if (isWrongChain)
         return (

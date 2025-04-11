@@ -18,7 +18,7 @@ export const ALGEBRA_POOL_DEPLOYER: Record<number, Address> = {
 
 export const ALGEBRA_LIMIT_ORDER_PLUGIN: Record<number, Address> = {
     [ChainId.Base]: "0x211BD8917d433B7cC1F4497AbA906554Ab6ee479",
-    [ChainId.BaseSepolia]: ADDRESS_ZERO,
+    [ChainId.BaseSepolia]: "0x822ddb9EECc3794790B8316585FebA5b8F7C7507",
 };
 
 export const ALGEBRA_POSITION_MANAGER: Record<number, Address> = {
