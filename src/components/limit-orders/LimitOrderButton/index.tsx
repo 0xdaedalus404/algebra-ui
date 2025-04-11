@@ -98,8 +98,6 @@ const LimitOrderButton = ({
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
-    console.log(disabled, isPlaceLoading, approvalState === ApprovalState.PENDING);
-
     if (isWrongChain)
         return (
             <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>
