@@ -110,7 +110,7 @@ const LimitOrder = () => {
             !currencies.OUTPUT
         ) {
             return {
-                blocked: true,
+                blockCreation: true,
                 message: `Missing required data to create order: ${missingFields.join(", ")}`,
             };
         }
