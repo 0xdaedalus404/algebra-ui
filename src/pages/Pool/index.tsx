@@ -88,6 +88,7 @@ const PoolPage = () => {
 
     useEffect(() => {
         async function getPositionsFees() {
+            console.log("gettin");
             const fees = await Promise.all(filteredPositions.map(({ positionId, position }) => getPositionFees(position.pool, positionId)));
             setPositionsFees(fees);
         }
@@ -150,7 +151,7 @@ const PoolPage = () => {
                         outOfRange: false,
                         range: "ALM Managed",
                         liquidityUSD: vault.amountsUsd,
-                        feesUSD: 0,
+                        feesUSD: null,
                         apr: Math.abs(vault.vault.apr),
                         inFarming: false,
                     } as FormattedPosition)
@@ -225,7 +226,7 @@ const PoolPage = () => {
 
                 <div className="flex flex-col gap-8 w-full h-full">
                     <PositionCard farming={farmingInfo} closedFarmings={closedFarmings} selectedPosition={selectedPosition} />
-                    <ALMPositionCard userVault={userVaults?.find((v) => v.vault.name === selectedPositionId)} />
+                    <ALMPositionCard poolAddress={poolId} userVault={userVaults?.find((v) => v.vault.name === selectedPositionId)} />
                 </div>
             </div>
         </PageContainer>

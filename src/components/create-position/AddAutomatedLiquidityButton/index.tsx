@@ -10,26 +10,27 @@ import { ApprovalState } from "@/types/approve-state";
 import { ChainId, Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { deposit, depositNativeToken, SupportedChainId, SupportedDex, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useCallback, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import { Address, useAccount, useChainId } from "wagmi";
+import { useUserALMVaultsByPool } from "@/hooks/alm/useUserALMVaults";
 
 const dex = SupportedDex.CLAMM;
 
 interface AddAutomatedLiquidityButtonProps {
     vault: ExtendedVault | undefined;
     amount: CurrencyAmount<Currency> | undefined;
+    poolId?: string;
 }
 
-export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiquidityButtonProps) => {
+export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutomatedLiquidityButtonProps) => {
     const { address: account } = useAccount();
     const chainId = useChainId();
+
+    const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolId as Address, account);
 
     const { open } = useWeb3Modal();
 
     const { selectedNetworkId } = useWeb3ModalState();
-
-    const { poolId } = useParams();
 
     const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;
@@ -84,15 +85,22 @@ export const AddAutomatedLiquidityButton = ({ vault, amount }: AddAutomatedLiqui
         }
     }, [vault, amount?.quotient.toString(), account, provider, useNative]);
 
-    const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
+    const { isLoading: isAddingLiquidityLoading, isSuccess } = useTransactionAwait(
         txHash,
         {
             title: "Add automated liquidity",
             tokenA: currency?.wrapped.address as Address,
             type: TransactionType.POOL,
         },
-        `/pool/${poolId}`
+        poolId ? `/pool/${poolId}` : undefined
     );
+
+    useEffect(() => {
+        if (!isSuccess) return;
+
+        console.log("refetchUserVaults");
+        refetchUserVaults();
+    }, [isSuccess]);
 
     const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
 

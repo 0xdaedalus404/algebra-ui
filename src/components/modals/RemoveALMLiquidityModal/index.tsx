@@ -3,7 +3,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { UserALMVault } from "@/hooks/alm/useUserALMVaults";
+import { UserALMVault, useUserALMVaultsByPool } from "@/hooks/alm/useUserALMVaults";
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useBurnActionHandlers, useBurnState } from "@/state/burnStore";
@@ -14,9 +14,10 @@ import { Address, useAccount } from "wagmi";
 
 interface RemoveALMLiquidityModalProps {
     userVault: UserALMVault | undefined;
+    poolAddress: Address | undefined;
 }
 
-const RemoveALMLiquidityModal = ({ userVault }: RemoveALMLiquidityModalProps) => {
+const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiquidityModalProps) => {
     const [sliderValue, setSliderValue] = useState([50]);
 
     const { address: account } = useAccount();
@@ -30,6 +31,8 @@ const RemoveALMLiquidityModal = ({ userVault }: RemoveALMLiquidityModalProps) =>
     const { token0, token1 } = vault || {};
     const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;
+
+    const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolAddress, account);
 
     const provider = useEthersSigner();
 
@@ -58,12 +61,19 @@ const RemoveALMLiquidityModal = ({ userVault }: RemoveALMLiquidityModalProps) =>
         }
     }, [vault, percent, account, provider, userVault?.shares, percentMultiplier, useNative]);
 
-    const { isLoading: isRemoveLoading } = useTransactionAwait(txHash, {
+    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(txHash, {
         title: "Remove ALM liquidity",
         tokenA: vault?.token0.wrapped.address as Address,
         tokenB: vault?.token1.wrapped.address as Address,
         type: TransactionType.POOL,
     });
+
+    useEffect(() => {
+        if (!isSuccess) return;
+
+        console.log("refetchUserVaults");
+        refetchUserVaults();
+    }, [isSuccess]);
 
     const isDisabled = sliderValue[0] === 0 || isRemoveLoading || isPending;
 

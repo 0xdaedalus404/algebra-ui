@@ -2,7 +2,7 @@ import { Address, formatUnits } from "viem";
 import { ExtendedVault, useALMVaultsByPool } from "./useALMVaults";
 import useSWR from "swr";
 import { useEthersSigner } from "../common/useEthersProvider";
-import { getTotalAmounts, getTotalSupply, getUserBalance, SupportedDex } from "@cryptoalgebra/alm-sdk";
+import { calculateUserDepositTokenPNL, getTotalAmounts, getTotalSupply, getUserBalance, SupportedDex } from "@cryptoalgebra/alm-sdk";
 import { useUSDCPrice } from "../common/useUSDCValue";
 
 export interface UserALMVault {
@@ -10,6 +10,8 @@ export interface UserALMVault {
     amount1: string;
     amountsUsd: number;
     shares: string;
+    pnl: string;
+    roi: number;
     vault: ExtendedVault;
 }
 
@@ -20,7 +22,11 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
     const { formatted: currencyAPriceUSD } = useUSDCPrice(vaults?.[0]?.token0);
     const { formatted: currencyBPriceUSD } = useUSDCPrice(vaults?.[0]?.token1);
 
-    const { data: userVaults, isLoading } = useSWR(
+    const {
+        data: userVaults,
+        isLoading,
+        mutate,
+    } = useSWR(
         ["userVaults", account, vaults, poolAddress, currencyAPriceUSD, currencyBPriceUSD],
         async (): Promise<UserALMVault[]> => {
             if (!provider || !account || !vaults) {
@@ -49,12 +55,25 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
                     formatUnits(BigInt(userAmounts[1].toFixed(0)), vault.token1.decimals),
                 ];
 
+                const { pnl, roi } = await calculateUserDepositTokenPNL(
+                    account,
+                    vault.id,
+                    Math.floor(userAmounts[0]).toString(),
+                    Math.floor(userAmounts[1]).toString(),
+                    vault.token0.decimals,
+                    vault.token1.decimals,
+                    provider,
+                    dex
+                );
+
                 userALMVaults.push({
                     amount0: formattedUserAmounts[0],
                     amount1: formattedUserAmounts[1],
                     shares,
                     amountsUsd: Number(formattedUserAmounts[0]) * currencyAPriceUSD + Number(formattedUserAmounts[1]) * currencyBPriceUSD,
                     vault: vault,
+                    pnl,
+                    roi,
                 });
             }
 
@@ -67,5 +86,5 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
         }
     );
 
-    return { userVaults, isLoading: isLoading || isVaultsLoading };
+    return { userVaults, isLoading: isLoading || isVaultsLoading, refetch: mutate };
 }

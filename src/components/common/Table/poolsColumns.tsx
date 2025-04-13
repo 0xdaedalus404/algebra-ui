@@ -3,13 +3,12 @@ import { HeaderItem } from "./common";
 import { Address } from "wagmi";
 import CurrencyLogo from "../CurrencyLogo";
 import { TokenFieldsFragment } from "@/graphql/generated/graphql";
-import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-import { formatPercent } from "@/utils/common/formatPercent";
 import { ReactNode } from "react";
 import { customPoolDeployerTitles } from "@/constants/deployers.ts";
+import { formatAmount } from "@/utils/common/formatAmount";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -31,7 +30,7 @@ interface Pool {
     deployer: string;
 }
 
-const PoolPair = ({ pair, fee }: Pool) => {
+const PoolPair = ({ pair }: Pool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -51,7 +50,7 @@ const PoolPair = ({ pair, fee }: Pool) => {
                 <Skeleton className="h-[20px] w-[90px] bg-card" />
             )}
 
-            <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div>
+            {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}
             {/* {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null} */}
         </div>
     );
@@ -71,7 +70,7 @@ const AvgAPR = ({
     return (
         <HoverCard>
             <HoverCardTrigger>{children}</HoverCardTrigger>
-            <HoverCardContent>
+            <HoverCardContent className="text-black">
                 <p>Avg. APR - {avgApr}</p>
                 {farmApr && <p>Farm APR - {farmApr}</p>}
                 <p>Max APR - {maxApr}</p>
@@ -107,7 +106,7 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 TVL
             </HeaderItem>
         ),
-        cell: ({ getValue }) => formatUSD.format(getValue() as number),
+        cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
     },
     {
         accessorKey: "volume24USD",
@@ -116,7 +115,7 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 Volume 24H
             </HeaderItem>
         ),
-        cell: ({ getValue }) => formatUSD.format(getValue() as number),
+        cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
     },
     {
         accessorKey: "fees24USD",
@@ -125,7 +124,7 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 Fees 24H
             </HeaderItem>
         ),
-        cell: ({ getValue }) => formatUSD.format(getValue() as number),
+        cell: ({ getValue }) => `$${formatAmount(getValue() as number, 2)}`,
     },
     {
         accessorKey: "avgApr",
@@ -137,11 +136,11 @@ export const poolsColumns: ColumnDef<Pool>[] = [
         cell: ({ getValue, row }) => {
             return (
                 <AvgAPR
-                    avgApr={formatPercent.format(row.original.poolAvgApr / 100)}
-                    maxApr={formatPercent.format(row.original.poolMaxApr / 100)}
-                    farmApr={row.original.hasActiveFarming ? formatPercent.format(row.original.farmApr / 100) : undefined}
+                    avgApr={`${formatAmount(row.original.poolAvgApr, 2)}%`}
+                    maxApr={`${formatAmount(row.original.poolMaxApr, 2)}%`}
+                    farmApr={row.original.hasActiveFarming ? `${formatAmount(row.original.farmApr, 2)}%` : undefined}
                 >
-                    {formatPercent.format((getValue() as number) / 100)}
+                    {`${formatAmount(getValue() as number, 2)}%`}
                 </AvgAPR>
             );
         },
