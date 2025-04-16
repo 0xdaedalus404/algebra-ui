@@ -24,6 +24,7 @@ const LimitOrdersList = () => {
         },
         pollInterval: 10_000,
     });
+    console.log(limitOrders);
 
     const { data: poolForLimitOrders } = useMultiplePoolsQuery({
         variables: {
@@ -69,7 +70,6 @@ const LimitOrdersList = () => {
 
                 const liquidityForPosition = epoch.filled ? BigInt(initialLiquidity) - BigInt(killedLiquidity) : liquidity;
 
-                console.log(pools);
                 const positionLO = new Position({
                     pool,
                     liquidity: Number(liquidityForPosition),
@@ -77,7 +77,7 @@ const LimitOrdersList = () => {
                     tickUpper: Number(tickUpper),
                 });
 
-                const { amount0: amount0LO, amount1: amount1LO, token0PriceLower } = positionLO;
+                const { token0PriceLower } = positionLO;
 
                 const { amount0: amount0Max, amount1: amount1Max } = new Position({
                     pool: new Pool(
@@ -95,7 +95,11 @@ const LimitOrdersList = () => {
                     tickUpper: Number(tickUpper),
                 });
 
-                const amount0 = zeroToOne ? amount0LO : amount1LO;
+                const buyAmount = zeroToOne ? amount1Max : amount0Max;
+                const buyRate = zeroToOne ? token0PriceLower : token0PriceLower.invert();
+                const sellRate = zeroToOne ? token0PriceLower.invert() : token0PriceLower;
+
+                const sellAmount = buyAmount.multiply(sellRate);
 
                 const isClosed = Number(liquidity) === 0;
 
@@ -119,28 +123,28 @@ const LimitOrdersList = () => {
                     rates: {
                         buy: {
                             token: zeroToOne ? pool.token0 : pool.token1,
-                            rate: zeroToOne ? token0PriceLower : token0PriceLower.invert(),
+                            rate: buyRate,
                         },
                         sell: {
                             token: zeroToOne ? pool.token1 : pool.token0,
-                            rate: zeroToOne ? token0PriceLower.invert() : token0PriceLower,
+                            rate: sellRate,
                         },
                     },
                     amounts: {
                         buy: {
                             token: zeroToOne ? pool.token1 : pool.token0,
-                            amount: zeroToOne ? amount1Max : amount0Max,
+                            amount: buyAmount,
                         },
                         sell: {
                             token: zeroToOne ? pool.token0 : pool.token1,
-                            amount: zeroToOne ? amount0 : amount1LO,
+                            amount: sellAmount,
                         },
                     },
                     pool,
                 };
             }
         );
-    }, [limitOrders, poolForLimitOrders]);
+    }, [limitOrders, poolForLimitOrders, chainId]);
 
     const [closedOrders, openedOrders] = useMemo(() => {
         if (!formattedLimitOrders) return [];
@@ -175,7 +179,7 @@ const LimitOrdersList = () => {
                         </button>
                         <button
                             onClick={() => setTab(1)}
-                            className={`relative py-2 px-4 bg-card relative rounded-3xl font-semibold duration-300 ${
+                            className={`relative py-2 px-4 bg-card rounded-3xl font-semibold duration-300 ${
                                 tab === 1 ? "text-primary-text bg-muted-primary" : "hover:bg-card-hover"
                             }`}
                         >

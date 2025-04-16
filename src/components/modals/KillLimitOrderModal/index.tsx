@@ -43,12 +43,12 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: Limit
         <Dialog>
             <DialogTrigger asChild>
                 <Button variant={"outline"} size={"sm"}>
-                    Remove
+                    Withdraw
                 </Button>
             </DialogTrigger>
             <DialogContent className="min-w-[500px] rounded-3xl bg-card-dark" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
-                    <DialogTitle className="font-bold select-none">Remove liquidity</DialogTitle>
+                    <DialogTitle className="font-bold select-none">Withdraw limit order liquidity</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col gap-6">
@@ -81,7 +81,7 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: Limit
                     />
 
                     <Button disabled={value[0] === 0 || isKillLoading} onClick={() => kill && kill()}>
-                        {isKillLoading ? <Loader /> : "Remove Liquidity"}
+                        {isKillLoading ? <Loader /> : "Withdraw Liquidity"}
                     </Button>
                 </div>
             </DialogContent>

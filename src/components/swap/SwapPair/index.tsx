@@ -152,13 +152,13 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
 
     const { formatted: fiatValueInputFormatted } = useUSDCValue(
         tryParseAmount(
-            parsedAmounts[SwapField.INPUT]?.toSignificant((parsedAmounts[SwapField.INPUT]?.currency.decimals || 6) / 2),
+            parsedAmounts[SwapField.INPUT]?.toSignificant((parsedAmounts[SwapField.INPUT]?.currency.decimals || 6)),
             baseCurrency
         )
     );
     const { formatted: fiatValueOutputFormatted } = useUSDCValue(
         tryParseAmount(
-            parsedAmounts[SwapField.OUTPUT]?.toSignificant((parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6) / 2),
+            parsedAmounts[SwapField.OUTPUT]?.toSignificant((parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6)),
             quoteCurrency
         )
     );
@@ -168,7 +168,7 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         [dependentField]:
             showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE
                 ? parsedAmounts[independentField]?.toExact() ?? ""
-                : parsedAmounts[dependentField]?.toFixed(parsedAmounts[dependentField]?.currency.decimals || 6) ?? "",
+                : parsedAmounts[dependentField]?.toExact() ?? "",
     };
 
     return (
