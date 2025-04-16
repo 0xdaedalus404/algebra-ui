@@ -151,14 +151,11 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
     }, [maxInputAmount, onUserInput]);
 
     const { formatted: fiatValueInputFormatted } = useUSDCValue(
-        tryParseAmount(
-            parsedAmounts[SwapField.INPUT]?.toSignificant((parsedAmounts[SwapField.INPUT]?.currency.decimals || 6)),
-            baseCurrency
-        )
+        tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant(parsedAmounts[SwapField.INPUT]?.currency.decimals || 6), baseCurrency)
     );
     const { formatted: fiatValueOutputFormatted } = useUSDCValue(
         tryParseAmount(
-            parsedAmounts[SwapField.OUTPUT]?.toSignificant((parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6)),
+            parsedAmounts[SwapField.OUTPUT]?.toSignificant(parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6),
             quoteCurrency
         )
     );

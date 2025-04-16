@@ -1,3 +1,4 @@
+import { CurrencyAmounts } from "@/components/common/CurrencyAmounts";
 import Loader from "@/components/common/Loader";
 import { LimitOrder } from "@/components/common/Table/limitOrdersColumns";
 import { Button } from "@/components/ui/button";
@@ -7,15 +8,23 @@ import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
 import { usePrepareAlgebraLimitOrderPluginKill } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Address, useChainId, useContractWrite } from "wagmi";
 
-const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: LimitOrder) => {
+const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, amounts }: LimitOrder) => {
     const [value, setValue] = useState([50]);
 
     const chainId = useChainId();
 
     const liquidityToRemove = (BigInt(liquidity) * BigInt(value[0])) / 100n;
+
+    const { amount0Parsed, amount1Parsed } = useMemo(() => {
+        const withdrawAmountToSell = (Number(amounts.sell.amount.toExact()) * value[0]) / 100;
+        return {
+            amount0Parsed: zeroToOne ? withdrawAmountToSell.toString() : undefined,
+            amount1Parsed: zeroToOne ? undefined : withdrawAmountToSell.toString(),
+        };
+    }, [amounts, zeroToOne, value]);
 
     const { config: killConfig } = usePrepareAlgebraLimitOrderPluginKill({
         args: [
@@ -36,7 +45,9 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: Limit
 
     const { isLoading: isKillLoading } = useTransactionAwait(killData?.hash, {
         type: TransactionType.LIMIT_ORDER,
-        title: "Remove liquidity",
+        title: `Withdraw ${amount0Parsed || amount1Parsed} ${amount0Parsed ? pool.token0.symbol : pool.token1.symbol}`,
+        tokenA: amount0Parsed ? (pool.token0.wrapped.address as Address) : undefined,
+        tokenB: amount1Parsed ? (pool.token1.wrapped.address as Address) : undefined,
     });
 
     return (
@@ -46,7 +57,7 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: Limit
                     Withdraw
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[500px] rounded-3xl bg-card-dark" style={{ borderRadius: "32px" }}>
+            <DialogContent className="min-w-[500px] rounded-3xl bg-card" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">Withdraw limit order liquidity</DialogTitle>
                 </DialogHeader>
@@ -78,6 +89,13 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner }: Limit
                         onValueChange={(v) => setValue(v)}
                         className="[&_[role=slider]]:h-4 [&_[role=slider]]:w-4"
                         aria-label="Liquidity Percent"
+                    />
+
+                    <CurrencyAmounts
+                        amount0Parsed={amount0Parsed}
+                        amount1Parsed={amount1Parsed}
+                        token0={pool.token0}
+                        token1={pool.token1}
                     />
 
                     <Button disabled={value[0] === 0 || isKillLoading} onClick={() => kill && kill()}>

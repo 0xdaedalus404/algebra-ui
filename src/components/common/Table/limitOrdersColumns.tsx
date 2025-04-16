@@ -41,6 +41,7 @@ interface Ticks {
 interface Amount {
     token: Token;
     amount: CurrencyAmount<Token>;
+    maxAmount?: CurrencyAmount<Token>;
 }
 
 interface Amounts {
@@ -67,7 +68,9 @@ const TokenAmount = ({ amount }: { amount: Amount }) => (
         <CurrencyLogo currency={amount.token} size={35} />
         <div className="text-left">
             <div className="font-bold">{amount.token.symbol}</div>
-            <div>{amount.amount.toSignificant(3)}</div>
+            <div>
+                {amount.amount.toSignificant(3)} {amount.maxAmount ? `/ ${amount?.maxAmount?.toSignificant(3)}` : ""}
+            </div>
         </div>
     </div>
 );

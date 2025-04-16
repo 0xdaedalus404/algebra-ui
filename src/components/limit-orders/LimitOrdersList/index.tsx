@@ -24,7 +24,6 @@ const LimitOrdersList = () => {
         },
         pollInterval: 10_000,
     });
-    console.log(limitOrders);
 
     const { data: poolForLimitOrders } = useMultiplePoolsQuery({
         variables: {
@@ -77,7 +76,7 @@ const LimitOrdersList = () => {
                     tickUpper: Number(tickUpper),
                 });
 
-                const { token0PriceLower } = positionLO;
+                const { token0PriceLower, token0PriceUpper, amount0, amount1 } = positionLO;
 
                 const { amount0: amount0Max, amount1: amount1Max } = new Position({
                     pool: new Pool(
@@ -96,10 +95,18 @@ const LimitOrdersList = () => {
                 });
 
                 const buyAmount = zeroToOne ? amount1Max : amount0Max;
-                const buyRate = zeroToOne ? token0PriceLower : token0PriceLower.invert();
-                const sellRate = zeroToOne ? token0PriceLower.invert() : token0PriceLower;
 
-                const sellAmount = buyAmount.multiply(sellRate);
+                const minBuyRate = zeroToOne ? token0PriceLower : token0PriceLower.invert();
+                const minSellRate = zeroToOne ? token0PriceLower.invert() : token0PriceLower;
+
+                const maxSellRate = zeroToOne ? token0PriceUpper.invert() : token0PriceUpper;
+
+                const maxSellAmount = maxSellRate.quote(buyAmount);
+                const minSellAmount = minSellRate.quote(buyAmount);
+                const avgSellAmount = maxSellAmount.add(minSellAmount).divide(2);
+
+                const sellAmount_ = zeroToOne ? amount0 : amount1;
+                const sellAmount = sellAmount_;
 
                 const isClosed = Number(liquidity) === 0;
 
@@ -123,11 +130,11 @@ const LimitOrdersList = () => {
                     rates: {
                         buy: {
                             token: zeroToOne ? pool.token0 : pool.token1,
-                            rate: buyRate,
+                            rate: minBuyRate,
                         },
                         sell: {
                             token: zeroToOne ? pool.token1 : pool.token0,
-                            rate: sellRate,
+                            rate: minSellRate,
                         },
                     },
                     amounts: {
@@ -137,7 +144,8 @@ const LimitOrdersList = () => {
                         },
                         sell: {
                             token: zeroToOne ? pool.token0 : pool.token1,
-                            amount: sellAmount,
+                            amount: isClosed ? avgSellAmount : sellAmount,
+                            maxAmount: isClosed ? undefined : avgSellAmount,
                         },
                     },
                     pool,
