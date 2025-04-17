@@ -46,6 +46,7 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice,
         limitOrderPriceFocused,
         lastFocusedField,
+        wasInverted,
     } = useSwapState();
 
     const dependentField: SwapFieldType = independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
@@ -86,29 +87,29 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
     const { parsedLimitOrderInput, parsedLimitOrderOutput } = useMemo(() => {
         if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !baseCurrency) return {};
 
-        const parsedAmountNumber = +parsedAmount.toSignificant(parsedAmount.currency.decimals);
-        const limitPriceNumber = +limitOrderPrice;
+        try {
+            const parsedAmountNumber = parseFloat(parsedAmount.toExact());
+            const limitPriceNumber = parseFloat(limitOrderPrice);
 
-        if (!parsedAmountNumber || !limitPriceNumber) return {};
+            if (independentField === SwapField.INPUT) {
+                const outputAmount = !wasInverted ? parsedAmountNumber * limitPriceNumber : parsedAmountNumber / limitPriceNumber;
+                return {
+                    parsedLimitOrderInput: parsedAmount,
+                    parsedLimitOrderOutput: tryParseAmount(outputAmount.toFixed(quoteCurrency.decimals), quoteCurrency),
+                };
+            } else {
+                const inputAmount = !wasInverted ? parsedAmountNumber / limitPriceNumber : parsedAmountNumber * limitPriceNumber;
 
-        if (independentField === SwapField.INPUT) {
-            const inputAmount = parsedAmount;
-            const outputAmount = tryParseAmount((parsedAmountNumber * limitPriceNumber).toFixed(quoteCurrency.decimals), quoteCurrency);
-
-            return {
-                parsedLimitOrderInput: inputAmount,
-                parsedLimitOrderOutput: outputAmount,
-            };
-        } else {
-            const outputAmount = parsedAmount;
-            const inputAmount = tryParseAmount((parsedAmountNumber / limitPriceNumber).toFixed(baseCurrency.decimals), baseCurrency);
-
-            return {
-                parsedLimitOrderInput: inputAmount,
-                parsedLimitOrderOutput: outputAmount,
-            };
+                return {
+                    parsedLimitOrderInput: tryParseAmount(inputAmount.toFixed(baseCurrency.decimals), baseCurrency),
+                    parsedLimitOrderOutput: parsedAmount,
+                };
+            }
+        } catch (error) {
+            console.error("Error calculating limit order amounts:", error);
+            return {};
         }
-    }, [limitOrderPrice, parsedAmount, quoteCurrency, baseCurrency, independentField]);
+    }, [limitOrderPrice, parsedAmount, quoteCurrency, baseCurrency, independentField, wasInverted]);
 
     const parsedAmounts = useMemo(() => {
         return showWrap
@@ -139,14 +140,14 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                           : smartTrade?.outputAmount,
               };
     }, [
-        baseCurrency,
+        showWrap,
         independentField,
         parsedAmount,
-        showWrap,
-        smartTrade,
         limitOrderPrice,
+        parsedLimitOrderInput,
+        parsedLimitOrderOutput,
+        smartTrade,
         quoteCurrency,
-        pairPrice,
         limitOrderPriceFocused,
         lastFocusedField,
     ]);
