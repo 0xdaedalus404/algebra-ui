@@ -41,6 +41,7 @@ interface Ticks {
 interface Amount {
     token: Token;
     amount: CurrencyAmount<Token>;
+    maxAmount?: CurrencyAmount<Token>;
 }
 
 interface Amounts {
@@ -67,7 +68,9 @@ const TokenAmount = ({ amount }: { amount: Amount }) => (
         <CurrencyLogo currency={amount.token} size={35} />
         <div className="text-left">
             <div className="font-bold">{amount.token.symbol}</div>
-            <div>{amount.amount.toSignificant(3)}</div>
+            <div>
+                {amount.amount.toSignificant(3)} {amount.maxAmount ? `/ ${amount?.maxAmount?.toSignificant(3)}` : ""}
+            </div>
         </div>
     </div>
 );
@@ -83,7 +86,7 @@ const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellTo
     <div className="relative flex h-[25px] bg-card-dark rounded-xl">
         <div className="relative flex w-full h-full font-semibold text-sm">
             <div
-                className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#143e65] border border-[#36f] duration-300 ${
+                className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#ffeab7] border border-card-border duration-300 ${
                     Number(progress) === 100 ? "rounded-2xl" : "rounded-l-2xl"
                 }`}
                 style={{ width: `${progress}%` }}
@@ -91,7 +94,7 @@ const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellTo
                 <CurrencyLogo currency={sellToken} size={22} className="absolute left-1" />
             </div>
             <div
-                className={`flex items-center pr-1 pl-2 h-full bg-[#351d6b] border border-[#996cff] duration-300 ${
+                className={`flex items-center pr-1 pl-2 h-full bg-[#f9ffb7] border border-card-border  duration-300 ${
                     Number(progress) === 100 ? "rounded-2xl" : "rounded-r-2xl"
                 }`}
                 style={{ width: `${100 - progress}%` }}

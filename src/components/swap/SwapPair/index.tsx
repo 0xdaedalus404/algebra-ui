@@ -22,7 +22,7 @@ import { useChainId } from "wagmi";
 
 const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> }) => {
     const chainId = useChainId();
-    const { toggledTrade: trade, currencyBalances, parsedAmount, currencies } = derivedSwap;
+    const { currencyBalances, parsedAmount, currencies } = derivedSwap;
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
@@ -44,7 +44,6 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         independentField,
         typedValue,
         [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice,
-        wasInverted,
         limitOrderPriceFocused,
         lastFocusedField,
     } = useSwapState();
@@ -84,23 +83,32 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
-    //TODO reuse this
-    const parsedLimitOrderOutput = useMemo(() => {
-        if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !pairPrice) return;
+    const { parsedLimitOrderInput, parsedLimitOrderOutput } = useMemo(() => {
+        if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !baseCurrency) return {};
 
-        const independentPrice =
-            independentField === SwapField.OUTPUT
-                ? parsedAmount.divide(pairPrice.asFraction).toSignificant(parsedAmount.currency.decimals / 2) ?? 1
-                : +parsedAmount.toSignificant(parsedAmount.currency.decimals / 2);
+        const parsedAmountNumber = +parsedAmount.toSignificant(parsedAmount.currency.decimals);
+        const limitPriceNumber = +limitOrderPrice;
 
-        if (wasInverted)
-            return tryParseAmount(
-                String((Number(independentPrice) / (+limitOrderPrice || 1)).toFixed(quoteCurrency.decimals / 2)),
-                quoteCurrency
-            );
+        if (!parsedAmountNumber || !limitPriceNumber) return {};
 
-        return tryParseAmount(String((+limitOrderPrice * Number(independentPrice)).toFixed(quoteCurrency.decimals / 2)), quoteCurrency);
-    }, [limitOrderPrice, wasInverted, parsedAmount, quoteCurrency, trade, pairPrice, independentField]);
+        if (independentField === SwapField.INPUT) {
+            const inputAmount = parsedAmount;
+            const outputAmount = tryParseAmount((parsedAmountNumber * limitPriceNumber).toFixed(quoteCurrency.decimals), quoteCurrency);
+
+            return {
+                parsedLimitOrderInput: inputAmount,
+                parsedLimitOrderOutput: outputAmount,
+            };
+        } else {
+            const outputAmount = parsedAmount;
+            const inputAmount = tryParseAmount((parsedAmountNumber / limitPriceNumber).toFixed(baseCurrency.decimals), baseCurrency);
+
+            return {
+                parsedLimitOrderInput: inputAmount,
+                parsedLimitOrderOutput: outputAmount,
+            };
+        }
+    }, [limitOrderPrice, parsedAmount, quoteCurrency, baseCurrency, independentField]);
 
     const parsedAmounts = useMemo(() => {
         return showWrap
@@ -113,7 +121,7 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                       independentField === SwapField.INPUT
                           ? parsedAmount
                           : pairPrice && limitOrderPrice
-                          ? parsedAmount?.divide(pairPrice.asFraction)
+                          ? parsedLimitOrderInput
                           : smartTrade?.inputAmount,
                   [SwapField.OUTPUT]:
                       independentField === SwapField.OUTPUT
@@ -151,14 +159,11 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
     }, [maxInputAmount, onUserInput]);
 
     const { formatted: fiatValueInputFormatted } = useUSDCValue(
-        tryParseAmount(
-            parsedAmounts[SwapField.INPUT]?.toSignificant((parsedAmounts[SwapField.INPUT]?.currency.decimals || 6) / 2),
-            baseCurrency
-        )
+        tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant(parsedAmounts[SwapField.INPUT]?.currency.decimals || 6), baseCurrency)
     );
     const { formatted: fiatValueOutputFormatted } = useUSDCValue(
         tryParseAmount(
-            parsedAmounts[SwapField.OUTPUT]?.toSignificant((parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6) / 2),
+            parsedAmounts[SwapField.OUTPUT]?.toSignificant(parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6),
             quoteCurrency
         )
     );
@@ -168,7 +173,7 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         [dependentField]:
             showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE
                 ? parsedAmounts[independentField]?.toExact() ?? ""
-                : parsedAmounts[dependentField]?.toFixed(parsedAmounts[dependentField]?.currency.decimals || 6) ?? "",
+                : parsedAmounts[dependentField]?.toExact() ?? "",
     };
 
     return (

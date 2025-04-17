@@ -69,7 +69,6 @@ const LimitOrdersList = () => {
 
                 const liquidityForPosition = epoch.filled ? BigInt(initialLiquidity) - BigInt(killedLiquidity) : liquidity;
 
-                console.log(pools);
                 const positionLO = new Position({
                     pool,
                     liquidity: Number(liquidityForPosition),
@@ -77,7 +76,7 @@ const LimitOrdersList = () => {
                     tickUpper: Number(tickUpper),
                 });
 
-                const { amount0: amount0LO, amount1: amount1LO, token0PriceLower } = positionLO;
+                const { token0PriceLower, token0PriceUpper, amount0, amount1 } = positionLO;
 
                 const { amount0: amount0Max, amount1: amount1Max } = new Position({
                     pool: new Pool(
@@ -95,7 +94,19 @@ const LimitOrdersList = () => {
                     tickUpper: Number(tickUpper),
                 });
 
-                const amount0 = zeroToOne ? amount0LO : amount1LO;
+                const buyAmount = zeroToOne ? amount1Max : amount0Max;
+
+                const minBuyRate = zeroToOne ? token0PriceLower : token0PriceLower.invert();
+                const minSellRate = zeroToOne ? token0PriceLower.invert() : token0PriceLower;
+
+                const maxSellRate = zeroToOne ? token0PriceUpper.invert() : token0PriceUpper;
+
+                const maxSellAmount = maxSellRate.quote(buyAmount);
+                const minSellAmount = minSellRate.quote(buyAmount);
+                const avgSellAmount = maxSellAmount.add(minSellAmount).divide(2);
+
+                const sellAmount_ = zeroToOne ? amount0 : amount1;
+                const sellAmount = sellAmount_;
 
                 const isClosed = Number(liquidity) === 0;
 
@@ -119,28 +130,29 @@ const LimitOrdersList = () => {
                     rates: {
                         buy: {
                             token: zeroToOne ? pool.token0 : pool.token1,
-                            rate: zeroToOne ? token0PriceLower : token0PriceLower.invert(),
+                            rate: minBuyRate,
                         },
                         sell: {
                             token: zeroToOne ? pool.token1 : pool.token0,
-                            rate: zeroToOne ? token0PriceLower.invert() : token0PriceLower,
+                            rate: minSellRate,
                         },
                     },
                     amounts: {
                         buy: {
                             token: zeroToOne ? pool.token1 : pool.token0,
-                            amount: zeroToOne ? amount1Max : amount0Max,
+                            amount: buyAmount,
                         },
                         sell: {
                             token: zeroToOne ? pool.token0 : pool.token1,
-                            amount: zeroToOne ? amount0 : amount1LO,
+                            amount: isClosed ? avgSellAmount : sellAmount,
+                            maxAmount: isClosed ? undefined : avgSellAmount,
                         },
                     },
                     pool,
                 };
             }
         );
-    }, [limitOrders, poolForLimitOrders]);
+    }, [limitOrders, poolForLimitOrders, chainId]);
 
     const [closedOrders, openedOrders] = useMemo(() => {
         if (!formattedLimitOrders) return [];
@@ -175,7 +187,7 @@ const LimitOrdersList = () => {
                         </button>
                         <button
                             onClick={() => setTab(1)}
-                            className={`relative py-2 px-4 bg-card relative rounded-3xl font-semibold duration-300 ${
+                            className={`relative py-2 px-4 bg-card rounded-3xl font-semibold duration-300 ${
                                 tab === 1 ? "text-primary-text bg-muted-primary" : "hover:bg-card-hover"
                             }`}
                         >
