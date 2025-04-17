@@ -82,13 +82,13 @@ const LimitOrder = () => {
             }
 
             const limitOrderPrice = invertPrice
-                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(token1.decimals / 2)
-                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(token0.decimals / 2);
+                ? tickToPrice(token1, token0, tick + tickSpacing * direction * -1).toSignificant(8)
+                : tickToPrice(token0, token1, tick + tickSpacing * direction).toSignificant(8);
 
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);
         },
-        [invertPrice, token0, token1, sellPrice, tickSpacing]
+        [invertPrice, token0, token1, sellPrice, tickSpacing, typeLimitOrderPrice]
     );
     const { blockCreation, message } = useMemo(() => {
         const missingFields: string[] = [];
@@ -141,17 +141,20 @@ const LimitOrder = () => {
     const [plusDisabled, minusDisabled] = useMemo(() => {
         if (!currencies.INPUT || !currencies.OUTPUT || !token0 || !token1 || !tick || !tickSpacing) return [true, true];
 
-        const _priceTick = invertPrice
+        const priceTick = invertPrice
+            ? wasInverted
+                ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
+                : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+            : wasInverted
             ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
-        if (_priceTick === undefined) return [true, true];
+        if (priceTick === undefined) return [true, true];
 
-        const priceTick = wasInverted ? -_priceTick : _priceTick;
+        if (currencies.INPUT.wrapped.equals(token0.wrapped) && priceTick - tickSpacing <= tick)
+            return wasInverted ? [true, false] : [false, true];
 
-        if (currencies.INPUT.wrapped.equals(token0) && priceTick - tickSpacing <= tick) return wasInverted ? [true, false] : [false, true];
-
-        if (currencies.INPUT.wrapped.equals(token1) && priceTick + tickSpacing >= tick - tickSpacing)
+        if (currencies.INPUT.wrapped.equals(token1.wrapped) && priceTick + tickSpacing >= tick - tickSpacing)
             return wasInverted ? [true, false] : [false, true];
 
         return [false, false];
@@ -168,9 +171,7 @@ const LimitOrder = () => {
                 return;
             }
 
-            const limitOrderPrice = invert
-                ? newPrice.invert().toSignificant((token1?.decimals || 6) / 2)
-                : newPrice.toSignificant((token0?.decimals || 6) / 2);
+            const limitOrderPrice = invert ? newPrice.invert().toSignificant(8) : newPrice.toSignificant(8);
 
             setSellPrice(limitOrderPrice);
             typeLimitOrderPrice(limitOrderPrice);

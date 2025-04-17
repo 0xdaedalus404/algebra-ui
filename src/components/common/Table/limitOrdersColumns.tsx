@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ChainId, CurrencyAmount, Pool, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId, CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import CurrencyLogo from "../CurrencyLogo";
@@ -55,6 +55,7 @@ export interface LimitOrder {
     killed: boolean;
     owner: Address;
     epoch: Epoch;
+    positionLO: Position;
     zeroToOne: boolean;
     isClosed: boolean;
     ticks: Ticks;
@@ -117,7 +118,7 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
             </div>
         );
 
-    if (ticks.isClosed)
+    if (ticks.isClosed || ticks.isFilled)
         return (
             <div className="flex items-center gap-4 text-left">
                 <CheckCircle2Icon className={"text-green-500"} />
@@ -176,8 +177,8 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
 
 export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
-        accessorKey: "amounts.buy",
-        header: () => <HeaderItem className="ml-2">You buy</HeaderItem>,
+        accessorKey: "amounts.sell",
+        header: () => <HeaderItem className="ml-4">You sell</HeaderItem>,
         cell: ({ getValue }) => (
             <div className="ml-4">
                 <TokenAmount amount={getValue() as Amount} />
@@ -185,8 +186,8 @@ export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
         ),
     },
     {
-        accessorKey: "amounts.sell",
-        header: () => <HeaderItem>You sell</HeaderItem>,
+        accessorKey: "amounts.buy",
+        header: () => <HeaderItem>You buy</HeaderItem>,
         cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
     },
     {

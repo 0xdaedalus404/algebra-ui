@@ -76,7 +76,7 @@ const LimitOrdersList = () => {
                     tickUpper: Number(tickUpper),
                 });
 
-                const { token0PriceLower, token0PriceUpper, amount0, amount1 } = positionLO;
+                const { token0PriceLower, token0PriceUpper } = positionLO;
 
                 const { amount0: amount0Max, amount1: amount1Max } = new Position({
                     pool: new Pool(
@@ -103,10 +103,7 @@ const LimitOrdersList = () => {
 
                 const maxSellAmount = maxSellRate.quote(buyAmount);
                 const minSellAmount = minSellRate.quote(buyAmount);
-                const avgSellAmount = maxSellAmount.add(minSellAmount).divide(2);
-
-                const sellAmount_ = zeroToOne ? amount0 : amount1;
-                const sellAmount = sellAmount_;
+                const sellAmount = maxSellAmount.add(minSellAmount).divide(2);
 
                 const isClosed = Number(liquidity) === 0;
 
@@ -118,6 +115,7 @@ const LimitOrdersList = () => {
                     initialLiquidity,
                     owner,
                     killed,
+                    positionLO,
                     ticks: {
                         tickLower: Number(tickLower),
                         tickUpper: Number(tickUpper),
@@ -144,8 +142,7 @@ const LimitOrdersList = () => {
                         },
                         sell: {
                             token: zeroToOne ? pool.token0 : pool.token1,
-                            amount: isClosed ? avgSellAmount : sellAmount,
-                            maxAmount: isClosed ? undefined : avgSellAmount,
+                            amount: sellAmount,
                         },
                     },
                     pool,

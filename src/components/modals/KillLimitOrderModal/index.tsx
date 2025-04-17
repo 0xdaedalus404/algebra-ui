@@ -11,7 +11,7 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useMemo, useState } from "react";
 import { Address, useChainId, useContractWrite } from "wagmi";
 
-const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, amounts }: LimitOrder) => {
+const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, positionLO }: LimitOrder) => {
     const [value, setValue] = useState([50]);
 
     const chainId = useChainId();
@@ -19,12 +19,14 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, amounts
     const liquidityToRemove = (BigInt(liquidity) * BigInt(value[0])) / 100n;
 
     const { amount0Parsed, amount1Parsed } = useMemo(() => {
-        const withdrawAmountToSell = (Number(amounts.sell.amount.toExact()) * value[0]) / 100;
+        const amount0 = (Number(positionLO.amount0.toExact()) * value[0]) / 100;
+        const amount1 = (Number(positionLO.amount1.toExact()) * value[0]) / 100;
+
         return {
-            amount0Parsed: zeroToOne ? withdrawAmountToSell.toString() : undefined,
-            amount1Parsed: zeroToOne ? undefined : withdrawAmountToSell.toString(),
+            amount0Parsed: zeroToOne ? amount0.toString() : amount1.toString(),
+            amount1Parsed: zeroToOne ? amount1.toString() : amount0.toString(),
         };
-    }, [amounts, zeroToOne, value]);
+    }, [positionLO.amount0, positionLO.amount1, value, zeroToOne]);
 
     const { config: killConfig } = usePrepareAlgebraLimitOrderPluginKill({
         args: [
