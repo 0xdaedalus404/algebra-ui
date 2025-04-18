@@ -1,7 +1,7 @@
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LimitPriceCard from "../LimitPriceCard";
 import LimitOrderButton from "../LimitOrderButton";
@@ -20,21 +20,25 @@ const LimitOrder = () => {
         actions: { typeLimitOrderPrice, limitOrderPriceLastFocused, limitOrderPriceWasInverted },
     } = useSwapState();
 
-    const showWrap = false;
+    const chainId = useChainId();
 
     const tokenA = currencies[SwapField.INPUT]?.wrapped;
     const tokenB = currencies[SwapField.OUTPUT]?.wrapped;
 
+    const showWrap = tokenA?.equals(WNATIVE[chainId]) || tokenB?.wrapped.equals(WNATIVE[chainId]);
+
     const [token0, token1] =
-        tokenA && tokenB && !showWrap ? (tokenA?.sortsBefore(tokenB) ? [tokenA, tokenB] : [tokenB, tokenA]) : [undefined, undefined];
+        tokenA && tokenB && !showWrap
+            ? tokenA.wrapped?.sortsBefore(tokenB.wrapped)
+                ? [tokenA, tokenB]
+                : [tokenB, tokenA]
+            : [undefined, undefined];
 
     const invertPrice = Boolean(currencies[SwapField.INPUT] && token0 && !currencies[SwapField.INPUT]?.wrapped.equals(token0));
 
     const zeroToOne = !invertPrice;
 
     const [wasInverted, setWasInverted] = useState(false);
-
-    const chainId = useChainId();
 
     const limitOrderPoolAddress =
         token0 && token1
@@ -58,7 +62,7 @@ const LimitOrder = () => {
 
         const _newPrice = invertPrice ? getTickToPrice(token1, token0, targetTick) : getTickToPrice(token0, token1, targetTick);
 
-        return _newPrice?.toSignificant(_newPrice.baseCurrency.decimals / 2);
+        return _newPrice?.toSignificant(8);
     }, [limitOrderPool, token0, token1, invertPrice]);
 
     const [sellPrice, setSellPrice] = useState("");

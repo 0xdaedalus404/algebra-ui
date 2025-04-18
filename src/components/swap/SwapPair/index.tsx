@@ -22,13 +22,27 @@ import { useChainId } from "wagmi";
 
 const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> }) => {
     const chainId = useChainId();
+
+    const {
+        independentField,
+        typedValue,
+        [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice,
+        limitOrderPriceFocused,
+        lastFocusedField,
+        wasInverted,
+    } = useSwapState();
+
     const { currencyBalances, parsedAmount, currencies } = derivedSwap;
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];
 
+    const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+
+    const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
+
     const limitOrderPoolAddress =
-        baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId]
+        baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId] && !showWrap
             ? (computeCustomPoolAddress({
                   tokenA: baseCurrency.wrapped,
                   tokenB: quoteCurrency.wrapped,
@@ -39,15 +53,6 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
     const [, limitOrderPool] = usePool(limitOrderPoolAddress);
 
     const pairPrice = getTickToPrice(baseCurrency?.wrapped, quoteCurrency?.wrapped, limitOrderPool?.tickCurrent);
-
-    const {
-        independentField,
-        typedValue,
-        [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice,
-        limitOrderPriceFocused,
-        lastFocusedField,
-        wasInverted,
-    } = useSwapState();
 
     const dependentField: SwapFieldType = independentField === SwapField.INPUT ? SwapField.OUTPUT : SwapField.INPUT;
 
@@ -79,10 +84,6 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         },
         [onUserInput]
     );
-
-    const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
-
-    const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
     const { parsedLimitOrderInput, parsedLimitOrderOutput } = useMemo(() => {
         if (!limitOrderPrice || !parsedAmount || !quoteCurrency || !baseCurrency) return {};
