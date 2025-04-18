@@ -1,7 +1,6 @@
-import { ApolloClient, InMemoryCache, NormalizedCacheObject } from "@apollo/client";
+import { ApolloClient, NormalizedCacheObject } from "@apollo/client";
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
-
-const createApolloClient = (uri: string) => new ApolloClient({ uri, cache: new InMemoryCache() });
+import { createApolloClient } from "../utils/createApolloClient";
 
 export const infoClient: Record<number, ApolloClient<NormalizedCacheObject>> = {
     [ChainId.Base]: createApolloClient(import.meta.env.VITE_INFO_GRAPH),

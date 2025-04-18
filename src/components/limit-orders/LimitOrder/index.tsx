@@ -25,7 +25,7 @@ const LimitOrder = () => {
     const tokenA = currencies[SwapField.INPUT]?.wrapped;
     const tokenB = currencies[SwapField.OUTPUT]?.wrapped;
 
-    const showWrap = tokenA?.equals(WNATIVE[chainId]) || tokenB?.wrapped.equals(WNATIVE[chainId]);
+    const showWrap = tokenA?.wrapped?.equals(WNATIVE[chainId]) && tokenB?.wrapped.equals(WNATIVE[chainId]);
 
     const [token0, token1] =
         tokenA && tokenB && !showWrap
@@ -41,7 +41,7 @@ const LimitOrder = () => {
     const [wasInverted, setWasInverted] = useState(false);
 
     const limitOrderPoolAddress =
-        token0 && token1
+        token0 && token1 && !showWrap
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
@@ -68,6 +68,8 @@ const LimitOrder = () => {
     const [sellPrice, setSellPrice] = useState("");
 
     const isPoolExists = limitOrderPoolExists === PoolState.EXISTS;
+
+    console.log(isPoolExists);
 
     const tick = limitOrderPool?.tickCurrent;
     const tickSpacing = limitOrderPool?.tickSpacing;

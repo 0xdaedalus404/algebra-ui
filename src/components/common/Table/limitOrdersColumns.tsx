@@ -62,6 +62,7 @@ export interface LimitOrder {
     rates: Rates;
     amounts: Amounts;
     pool: Pool;
+    time: Date;
 }
 
 const TokenAmount = ({ amount }: { amount: Amount }) => (
@@ -177,13 +178,15 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
 
 export const limitOrderColumns: ColumnDef<LimitOrder>[] = [
     {
+        accessorKey: "time",
+        header: () => <HeaderItem className="ml-4">Time</HeaderItem>,
+        cell: ({ getValue }) => <div className="ml-4">{(getValue() as Date).toLocaleString()}</div>,
+        sortingFn: (rowA, rowB) => rowA.original.time.getTime() - rowB.original.time.getTime(),
+    },
+    {
         accessorKey: "amounts.sell",
-        header: () => <HeaderItem className="ml-4">You sell</HeaderItem>,
-        cell: ({ getValue }) => (
-            <div className="ml-4">
-                <TokenAmount amount={getValue() as Amount} />
-            </div>
-        ),
+        header: () => <HeaderItem>You sell</HeaderItem>,
+        cell: ({ getValue }) => <TokenAmount amount={getValue() as Amount} />,
     },
     {
         accessorKey: "amounts.buy",
