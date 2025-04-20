@@ -2,7 +2,7 @@ import { Address, formatUnits } from "viem";
 import { ExtendedVault, useALMVaultsByPool } from "./useALMVaults";
 import useSWR from "swr";
 import { useEthersSigner } from "../common/useEthersProvider";
-import { calculateUserDepositTokenPNL, getTotalAmounts, getTotalSupply, getUserBalance, SupportedDex } from "@cryptoalgebra/alm-sdk";
+import { calculateUserDepositTokenPNL, getUserAmounts, SupportedDex } from "@cryptoalgebra/alm-sdk";
 import { useUSDCPrice } from "../common/useUSDCValue";
 
 export interface UserALMVault {
@@ -37,29 +37,28 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
             const dex = SupportedDex.CLAMM;
 
             for (const vault of vaults) {
-                const [totalAmounts, totalSupply, shares] = await Promise.all([
-                    getTotalAmounts(vault.id, provider, dex, true, vault.token0.decimals, vault.token1.decimals),
-                    getTotalSupply(vault.id, provider, dex),
-                    getUserBalance(account, vault.id, provider, dex),
-                ]);
+                const [userAmount0, userAmount1, shares] = await getUserAmounts(
+                    account,
+                    vault.id,
+                    provider,
+                    dex,
+                    vault.token0.decimals,
+                    vault.token1.decimals,
+                    true
+                );
 
                 if (shares === "0") continue;
 
-                const userAmounts = [
-                    (Number(shares) * Number(totalAmounts[0].toBigInt())) / Number(totalSupply),
-                    (Number(shares) * Number(totalAmounts[1].toBigInt())) / Number(totalSupply),
-                ];
-
                 const formattedUserAmounts = [
-                    formatUnits(BigInt(userAmounts[0].toFixed(0)), vault.token0.decimals),
-                    formatUnits(BigInt(userAmounts[1].toFixed(0)), vault.token1.decimals),
+                    formatUnits(userAmount0.toBigInt(), vault.token0.decimals),
+                    formatUnits(userAmount1.toBigInt(), vault.token1.decimals),
                 ];
 
                 const { pnl, roi } = await calculateUserDepositTokenPNL(
                     account,
                     vault.id,
-                    Math.floor(userAmounts[0]).toString(),
-                    Math.floor(userAmounts[1]).toString(),
+                    userAmount0.toString(),
+                    userAmount1.toString(),
                     vault.token0.decimals,
                     vault.token1.decimals,
                     provider,

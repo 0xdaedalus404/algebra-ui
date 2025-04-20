@@ -43,14 +43,14 @@ const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiquidityM
         if (!vault || !percent || !account || !provider) return;
         setIsPending(true);
 
-        const amountToWithdraw = Number(userVault.shares) * percentMultiplier;
+        const shareToWithdraw = Number(userVault.shares) * percentMultiplier;
 
         try {
             let tx;
             if (useNative) {
-                tx = await withdrawNativeToken(account, amountToWithdraw, vault.id, provider, SupportedDex.CLAMM);
+                tx = await withdrawNativeToken(account, shareToWithdraw, vault.id, provider, SupportedDex.CLAMM);
             } else {
-                tx = await withdraw(account, amountToWithdraw, vault.id, provider, SupportedDex.CLAMM);
+                tx = await withdraw(account, shareToWithdraw, vault.id, provider, SupportedDex.CLAMM);
             }
 
             setTxHash(tx.hash as Address);
