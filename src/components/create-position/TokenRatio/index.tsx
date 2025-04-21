@@ -62,7 +62,7 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
             <div className="flex w-full h-full font-semibold">
                 {Number(token0Ratio) > 0 && (
                     <div
-                        className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#ffeab7] border border-card-border duration-300 ${
+                        className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#143e65] border border-[#36f] duration-300 ${
                             Number(token0Ratio) === 100 ? "rounded-2xl" : "rounded-l-2xl"
                         }`}
                         style={{ width: `${token0Ratio}%` }}
@@ -73,7 +73,7 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
                 )}
                 {Number(token1Ratio) > 0 && (
                     <div
-                        className={`flex items-center pr-1 pl-2 h-full bg-[#f9ffb7] border border-card-border duration-300 ${
+                        className={`flex items-center pr-1 pl-2 h-full bg-[#351d6b] border border-[#996cff] duration-300 ${
                             Number(token1Ratio) === 100 ? "rounded-2xl" : "rounded-r-2xl"
                         }`}
                         style={{ width: `${token1Ratio}%` }}
@@ -86,5 +86,4 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
         </div>
     );
 };
-
 export default TokenRatio;

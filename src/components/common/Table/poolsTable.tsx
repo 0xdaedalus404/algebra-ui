@@ -78,11 +78,11 @@ const PoolsTable = <TData, TValue>({
                             placeholder="Search pool"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
                             onChange={(event) => table.getColumn(searchID)?.setFilterValue(event.target.value)}
-                            className="border border-muted-primary text-primary-text border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-xl"
+                            className="border border-border border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-xl"
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
-                    <ul className="flex gap-1 p-1 border rounded-xl border-muted-primary w-fit h-12 max-xs:hidden">
+                    <ul className="flex gap-1 p-1 border rounded-xl border-border/60 w-fit h-12 max-xs:hidden">
                         <li>
                             <Button
                                 onClick={() => table.setGlobalFilter(undefined)}
@@ -106,7 +106,7 @@ const PoolsTable = <TData, TValue>({
                     </ul>
                     <div className="flex gap-2 max-md:gap-4 items-center w-fit ml-auto max-sm:hidden">
                         <label className="flex gap-2 items-center" htmlFor="farmingAvailable">
-                            <Tractor className="w-5 h-5 max-md:w-6 max-md:h-6" color="#8E5129" />
+                            <Tractor className="w-5 h-5 max-md:w-6 max-md:h-6" color="#d84eff" />
                             <span className="max-md:hidden">Farming Available</span>
                         </label>
                         <Switch
@@ -122,7 +122,7 @@ const PoolsTable = <TData, TValue>({
                 </div>
             )}
             <Table>
-                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30 border-t border-card-border border-opacity-60">
+                <TableHeader className="[&_tr]:border-b [&_tr]:border-opacity-30 border-t border-opacity-60">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id} className="hover:bg-transparent">
                             {headerGroup.headers.map((header) => (
@@ -146,7 +146,7 @@ const PoolsTable = <TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="border-card-border bg-card hover:bg-card-hover cursor-pointer"
+                                    className="border-card-border/40 bg-card-dark hover:bg-card-hover cursor-pointer"
                                     onClick={() => {
                                         if (action) {
                                             action(row.original.id);

@@ -25,7 +25,7 @@ const FilterPopover = ({ children }: { children: React.ReactNode }) => {
                     {children}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent sideOffset={5} className="text-black">
+            <PopoverContent sideOffset={5}>
                 <div className="flex flex-col gap-2">
                     <label className="flex justify-between items-center">
                         Open

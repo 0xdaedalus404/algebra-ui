@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { FormattedPosition } from "@/types/formatted-position";
 import { formatPlural } from "@/utils/common/formatPlural";
-import { formatUSD } from "@/utils/common/formatUSD";
 import { Link } from "react-router-dom";
 import { Address } from "viem";
 import FilterPopover from "../FilterPopover";
 import { SlidersHorizontal } from "lucide-react";
+import { formatAmount } from "@/utils/common/formatAmount";
 
 interface MyPositionsToolbar {
     positionsData: FormattedPosition[];
@@ -21,16 +21,16 @@ const MyPositionsToolbar = ({ positionsData, poolId }: MyPositionsToolbar) => {
         <div className="flex flex-col md:flex-row items-center justify-between w-full mb-6">
             <div className="flex items-center gap-4 flex-wrap">
                 <h3 className="font-semibold text-xl text-left">My Positions</h3>
-                <div className="self-center w-[1px] h-[20px] border border-card-border"></div>
-                <div className="text-gray-600 font-semibold">{`${positionsData?.length} ${formatPlural(
+                <div className="self-center w-[1px] h-[20px] border border-card-border/40"></div>
+                <div className="text-gray-300 font-semibold">{`${positionsData?.length} ${formatPlural(
                     positionsData.length,
                     "position",
                     "positions"
                 )}`}</div>
-                <div className="self-center w-[1px] h-[20px] border border-card-border"></div>
-                <div className="text-cyan-600 font-semibold">{`${formatUSD.format(myLiquidityUSD || 0)} TVL`}</div>
-                <div className="self-center w-[1px] h-[20px] border border-card-border"></div>
-                <div className="text-green-600 font-semibold">{`${formatUSD.format(myFeesUSD || 0)} Fees`}</div>
+                <div className="self-center w-[1px] h-[20px] border border-card-border/40"></div>
+                <div className="text-cyan-300 font-semibold">{`$${formatAmount(myLiquidityUSD || 0, 2)} TVL`}</div>
+                <div className="self-center w-[1px] h-[20px] border border-card-border/40"></div>
+                <div className="text-green-300 font-semibold">{`$${formatAmount(myFeesUSD || 0, 2)} Fees`}</div>
             </div>
             <div className="flex w-full md:w-fit mt-4 md:mt-0 gap-4">
                 <FilterPopover>

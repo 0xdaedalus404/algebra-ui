@@ -72,7 +72,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
                             <div className="font-bold text-xs">LIQUIDITY</div>
                             <div className="font-semibold text-2xl">
                                 {positionLiquidityUSD ? (
-                                    <span className="text-cyan-300">{positionLiquidityUSD}</span>
+                                    <span className="text-cyan-300 drop-shadow-cyan">{positionLiquidityUSD}</span>
                                 ) : (
                                     <Skeleton className="w-[100px] h-[30px]" />
                                 )}
@@ -82,7 +82,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
                             <div className="font-bold text-xs">APR</div>
                             <div className="font-semibold text-2xl">
                                 {positionAPR ? (
-                                    <span className="text-fuchsia-400">{positionAPR}</span>
+                                    <span className="text-fuchsia-400 drop-shadow-pink">{positionAPR}</span>
                                 ) : (
                                     <Skeleton className="w-[100px] h-[30px]" />
                                 )}

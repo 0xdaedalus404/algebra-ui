@@ -14,7 +14,6 @@ import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
-// import MarketDepthChart from "../MarketDepthChart";
 
 const getTokenTitle = (chartPair: SwapChartPairType, currencyA: Currency, currencyB: Currency) => {
     switch (chartPair) {
@@ -216,9 +215,9 @@ const SwapChart = () => {
             });
         } else {
             series = chart?.addAreaSeries({
-                topColor: "rgba(255, 138, 52, 0.6)",
-                bottomColor: "rgba(255, 138, 52, 0)",
-                lineColor: "rgba(255, 138, 52, 1)",
+                topColor: "rgba(39, 151, 255, 0.6)",
+                bottomColor: "rgba(39, 151, 255, 0)",
+                lineColor: "rgba(39, 151, 255, 1)",
             });
         }
 

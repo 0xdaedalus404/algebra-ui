@@ -31,7 +31,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
     return (
         <PageContainer>
             {isLimitOrder && (
-                <div className="w-full mb-12 p-2 bg-red-200 border border-2 font-bold border-red-700 text-red-500 rounded-lg">
+                <div className="w-full mb-12 p-2  border-2 font-bold border-red-700 text-red-500 rounded-lg">
                     💀 WARNING! This product is in the Beta stage. Use at your own risk & DYOR. 💀
                 </div>
             )}

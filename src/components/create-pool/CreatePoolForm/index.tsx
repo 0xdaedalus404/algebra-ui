@@ -208,7 +208,7 @@ const CreatePoolForm = () => {
                         <button
                             key={v}
                             onClick={() => handlePoolDeployerChange(v)}
-                            className={cn("px-3 py-2 rounded-lg border", poolDeployer === v ? "border-yellow-500" : "border-gray-600")}
+                            className={cn("px-3 py-2 rounded-lg border", poolDeployer === v ? "border-primary-button" : "border-gray-600")}
                         >
                             {v}
                         </button>

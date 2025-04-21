@@ -1,7 +1,9 @@
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
 import { useAlgebraPositionManagerTokenUri } from "@/generated";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { useChainId } from "wagmi";
 
 interface PositionNFTProps {
     positionId: number;
@@ -16,7 +18,11 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
 
     const json = uri && JSON.parse(atob(uri.slice("data:application/json;base64,".length)));
 
-    const openSeaLink = `https://testnets.opensea.io/assets/holesky/${ALGEBRA_POSITION_MANAGER}/${positionId}`;
+    const chainId = useChainId();
+
+    const openSeaLink = `https://${chainId === ChainId.BaseSepolia ? "testnets." : ""}opensea.io/assets/base/${
+        ALGEBRA_POSITION_MANAGER[chainId]
+    }/${positionId}`;
 
     useEffect(() => {
         if (!imgRef?.current || !json) return;

@@ -46,7 +46,7 @@ const chains = [base, baseSepolia];
 const wagmiConfig = defaultWagmiConfig({
     chains,
     projectId,
-    metadata: { name: "CLAMM DEX", description: "CLAMM DEX app", url: "https://app.clamm.io", icons: [""] },
+    metadata: { name: "Algebra Integral", description: "DEX Engine", url: "https://integral.algebra.finance", icons: [""] },
 });
 
 createWeb3Modal({
@@ -59,9 +59,9 @@ createWeb3Modal({
     },
     defaultChain: base,
     themeVariables: {
-        "--w3m-accent": "#ff8a34",
+        "--w3m-accent": "#2797ff",
     },
-    themeMode: "light",
+    themeMode: "dark",
 });
 
 function App({ children }: { children: React.ReactNode }) {

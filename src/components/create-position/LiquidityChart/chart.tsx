@@ -37,33 +37,33 @@ const CustomBar = ({ x, y, width, height, fill, percent, isCurrent }: CustomBarP
         <g>
             <defs>
                 <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="100%">
-                    <stop offset="0" stopColor="#ff8a34" />
-                    <stop offset="1" stopColor="rgba(255, 138, 52, 0.05)" />
+                    <stop offset="0" stopColor="#2797ff" />
+                    <stop offset="1" stopColor="rgba(35, 133, 222, 0.05)" />
                 </linearGradient>
             </defs>
             {percent && (
-                <text x={x + 10} y={y - 10} fill="black" fontSize={"14px"} fontWeight={600} textAnchor="middle">{`${percent.toFixed(
+                <text x={x + 10} y={y - 10} fill="white" fontSize={"14px"} fontWeight={600} textAnchor="middle">{`${percent.toFixed(
                     0
                 )}%`}</text>
             )}
             {isCurrent && (
-                <text x={x + 10} y={y - 10} fill="black" fontSize={"14px"} fontWeight={600} textAnchor="middle">
+                <text x={x + 10} y={y - 10} fill="white" fontSize={"14px"} fontWeight={600} textAnchor="middle">
                     Current Price
                 </text>
             )}
-            <rect x={x} y={y} fill={fill} width={width} height={height} rx="4" />
+            <rect x={x} y={y} fill={fill} width={width > 0 ? width : 0} height={height} rx="4" />
         </g>
     );
 };
 
-const CustomTooltip = ({ props, currencyA, currencyB, isSorted }: CustomTooltipProps) => {
-    const price0 = isSorted ? props?.payload?.[0]?.payload.price0 : props?.payload?.[0]?.payload.price1;
-    const price1 = isSorted ? props?.payload?.[0]?.payload.price1 : props?.payload?.[0]?.payload.price0;
+const CustomTooltip = ({ props, currencyA, currencyB }: CustomTooltipProps) => {
+    const price0 = props?.payload?.[0]?.payload.price0;
+    const price1 = props?.payload?.[0]?.payload.price1;
     // const tvlToken0 = props?.payload?.[0]?.payload.tvlToken0
     // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
 
     return (
-        <div className="flex flex-col gap-2 p-4 rounded-2xl bg-white border border-card-border">
+        <div className="flex flex-col gap-2 p-4 rounded-2xl bg-[#13192894] backdrop-blur-sm">
             <div className="flex gap-4 justify-between">
                 <div>{`${currencyA?.symbol} Price:`}</div>
                 <div>{`${
@@ -136,7 +136,14 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                         if (!props?.payload || props.index % 2 === 0) return <text></text>;
 
                         return (
-                            <text x={props.x} y={props.y + 20} fill="black" textAnchor="middle" fontSize={"12px"} width={"12px"}>
+                            <text
+                                className="fill-primary-foreground"
+                                x={props.x}
+                                y={props.y + 20}
+                                textAnchor="middle"
+                                fontSize={"12px"}
+                                width={"12px"}
+                            >
                                 {Number(props.payload.value).toFixed(3)}
                             </text>
                         );
@@ -155,11 +162,10 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                     shape={(props) => {
                         const price = props[isSorted ? "price0" : "price1"];
                         let percent = 0;
-                        if (price === +Number(leftPrice).toFixed(18) || price === +Number(rightPrice).toFixed(18)) {
+                        if (price === +Number(leftPrice).toFixed(8) || price === +Number(rightPrice).toFixed(8)) {
                             const currentPriceIdx = formattedData.findIndex((v: any) => v.isCurrent);
                             const currentPriceRealIndex = formattedData[currentPriceIdx].index;
                             percent =
-                                (isSorted ? 1 : -1) *
                                 (props.payload.index < currentPriceRealIndex ? -1 : 1) *
                                 ((Math.max(props.payload.index, currentPriceRealIndex) -
                                     Math.min(props.payload.index, currentPriceRealIndex)) /
@@ -181,14 +187,14 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                     }}
                 >
                     {formattedData?.map((entry: any, index: number) => {
-                        let fill = "#e8e8e8";
+                        let fill = "#3b3c4e";
 
                         const value = isSorted ? entry.price0 : entry.price1;
 
                         if (focusBar === index) {
-                            fill = "rgba(255, 138, 52, 0.5)";
+                            fill = "#cdd1ff";
                         } else if (entry.isCurrent) {
-                            fill = "#ffdf34";
+                            fill = "#cd27f0";
                         } else if (leftPrice && rightPrice) {
                             if (Number(value) >= Number(leftPrice) && Number(value) <= Number(rightPrice)) {
                                 fill = "url(#colorUv)";

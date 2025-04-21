@@ -28,8 +28,8 @@ module.exports = {
                 primary: {
                     DEFAULT: "hsl(var(--primary))",
                     foreground: "hsl(var(--primary-foreground))",
-                    button: "#ff8a34",
-                    text: "#8E5129",
+                    button: "#2797ff",
+                    text: "#56adff",
                 },
                 secondary: {
                     DEFAULT: "hsl(var(--secondary))",
@@ -42,7 +42,7 @@ module.exports = {
                 muted: {
                     DEFAULT: "hsl(var(--muted))",
                     foreground: "hsl(var(--muted-foreground))",
-                    primary: "#DDD6C6",
+                    primary: "#0a2b49",
                 },
                 accent: {
                     DEFAULT: "hsl(var(--accent))",
@@ -53,10 +53,10 @@ module.exports = {
                     foreground: "hsl(var(--popover-foreground))",
                 },
                 card: {
-                    DEFAULT: "#fff",
+                    DEFAULT: "#1A1D2B",
                     foreground: "hsl(var(--card-foreground))",
-                    hover: "#e0e0e0",
-                    dark: "#f3f3f3",
+                    hover: "#2e3242",
+                    dark: "#101321",
                     light: "#31333e",
                 },
             },
@@ -88,7 +88,7 @@ module.exports = {
                 "card-gradient": "linear-gradient(224deg, #1A1D2B 1.67%, #090B15 97.94%)",
             },
             borderColor: {
-                "card-border": "#E0E0E0",
+                "card-border": "#5F5F82",
             },
             dropShadow: {
                 cyan: "0 0 5px rgba(7, 142, 253, 0.8)",

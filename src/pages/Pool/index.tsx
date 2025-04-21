@@ -88,7 +88,6 @@ const PoolPage = () => {
 
     useEffect(() => {
         async function getPositionsFees() {
-            console.log("gettin");
             const fees = await Promise.all(filteredPositions.map(({ positionId, position }) => getPositionFees(position.pool, positionId)));
             setPositionsFees(fees);
         }
@@ -261,7 +260,7 @@ const NoAccount = () => {
 const LoadingState = () => (
     <div className="flex flex-col w-full gap-4 p-4">
         {[1, 2, 3, 4].map((v) => (
-            <Skeleton key={`position-skeleton-${v}`} className="w-full h-[50px] bg-card-dark rounded-xl" />
+            <Skeleton key={`position-skeleton-${v}`} className="w-full h-[50px] bg-card-light rounded-xl" />
         ))}
     </div>
 );

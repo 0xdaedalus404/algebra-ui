@@ -69,7 +69,7 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
 
     return (
         <div
-            className={`${classString} flex items-center justify-center bg-muted-primary text-black`}
+            className={`${classString} flex items-center justify-center bg-white text-black`}
             style={{ minWidth: `${size}px`, minHeight: `${size}px`, width: `${size}px`, height: `${size}px`, ...style }}
         >
             {currency.symbol?.slice(0, 2)}
