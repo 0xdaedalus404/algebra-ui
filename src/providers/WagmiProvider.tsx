@@ -1,7 +1,7 @@
 import React from "react";
 import { WagmiAdapter } from "@reown/appkit-adapter-wagmi";
 import { WagmiProvider as _WagmiProvider } from "wagmi";
-import { AppKitNetwork, baseSepolia, holesky } from "@reown/appkit/networks";
+import { AppKitNetwork, baseSepolia } from "@reown/appkit/networks";
 import { createAppKit } from "@reown/appkit/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -9,7 +9,7 @@ const PROJECT_ID = import.meta.env.VITE_REOWN_PROJECT_ID;
 
 const queryClient = new QueryClient();
 
-const networks: [AppKitNetwork, ...AppKitNetwork[]] = [holesky, baseSepolia];
+const networks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia];
 
 const wagmiAdapter = new WagmiAdapter({
     networks,
@@ -22,6 +22,8 @@ createAppKit({
     networks,
     projectId: PROJECT_ID,
 });
+
+export const wagmiConfig = wagmiAdapter.wagmiConfig;
 
 export default function WagmiProvider({ children }: { children: React.ReactNode }) {
     return (

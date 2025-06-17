@@ -3,7 +3,7 @@ import LiquidityChart from "@/components/create-position/LiquidityChart";
 import PresetTabs from "@/components/create-position/PresetTabs";
 import RangeSelector from "@/components/create-position/RangeSelector";
 import { Switch } from "@/components/ui/switch";
-import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
+import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { ManageLiquidity } from "@/types/manage-liquidity";
@@ -16,11 +16,11 @@ interface ManualProps {
 }
 
 export function CreateManualPosition({ poolAddress }: ManualProps) {
-    const { data: token0 } = useAlgebraPoolToken0({
+    const { data: token0 } = useReadAlgebraPoolToken0({
         address: poolAddress,
     });
 
-    const { data: token1 } = useAlgebraPoolToken1({
+    const { data: token1 } = useReadAlgebraPoolToken1({
         address: poolAddress,
     });
 

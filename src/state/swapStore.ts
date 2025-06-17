@@ -1,5 +1,5 @@
 import { STABLECOINS } from "@/constants/tokens";
-import { useAlgebraPoolGlobalState, useAlgebraPoolTickSpacing } from "@/generated";
+import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { usePool } from "@/hooks/pools/usePool";
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
@@ -22,8 +22,8 @@ import {
 import { Currency as CurrencyBN, CurrencyAmount as CurrencyAmountBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import JSBI from "jsbi";
 import { useCallback, useMemo } from "react";
-import { parseUnits } from "viem";
-import { Address, useAccount, useBalance } from "wagmi";
+import { parseUnits, Address } from "viem";
+import { useAccount, useBalance } from "wagmi";
 import { create } from "zustand";
 
 interface SwapState {
@@ -78,7 +78,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO,
     },
     [SwapField.OUTPUT]: {
-        currencyId: STABLECOINS[ChainId.Base].USDC.address as Account,
+        currencyId: STABLECOINS[ChainId.Base].USDC.address as Address,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,
@@ -253,12 +253,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
     const { data: inputCurrencyBalance } = useBalance({
         address: account,
         token: addressA,
-        watch: true,
     });
     const { data: outputCurrencyBalance } = useBalance({
         address: account,
         token: addressB,
-        watch: true,
     });
 
     const currencyBalances = {
@@ -310,11 +308,11 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
               tokenB: currencies[SwapField.OUTPUT]!.wrapped,
           }).toLowerCase() as Address);
 
-    const { data: globalState } = useAlgebraPoolGlobalState({
+    const { data: globalState } = useReadAlgebraPoolGlobalState({
         address: poolAddress,
     });
 
-    const { data: tickSpacing } = useAlgebraPoolTickSpacing({
+    const { data: tickSpacing } = useReadAlgebraPoolTickSpacing({
         address: poolAddress,
     });
 

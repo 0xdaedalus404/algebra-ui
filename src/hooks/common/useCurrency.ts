@@ -1,8 +1,9 @@
-import { Address, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
 import { Currency, ExtendedNative, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
 import { useAlgebraToken } from "./useAlgebraToken";
+import { Address } from "viem";
 
 export function useCurrency(address: Address | undefined, withNative?: boolean): Currency | ExtendedNative | undefined {
     const chainId = useChainId();

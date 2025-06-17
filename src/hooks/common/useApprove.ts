@@ -7,7 +7,6 @@ import {
     SmartRouter,
     SmartRouterTrade,
 } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Address, erc20ABI, useContractWrite, usePrepareContractWrite } from "wagmi";
 
 import { ALGEBRA_ROUTER } from "@/constants/addresses";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
@@ -16,6 +15,8 @@ import { useNeedAllowance } from "./useNeedAllowance";
 import { useTransactionAwait } from "./useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore.ts";
 import { formatBalance } from "@/utils/common/formatBalance.ts";
+import { Address, erc20Abi } from "viem";
+import { useWriteContract } from "wagmi";
 
 export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyAmountBN<CurrencyBN> | undefined, spender: Address) {
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined;
@@ -28,16 +29,18 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyA
         return needAllowance ? ApprovalState.NOT_APPROVED : ApprovalState.APPROVED;
     }, [amountToApprove, needAllowance, spender]);
 
-    const { config } = usePrepareContractWrite({
-        address: amountToApprove ? (amountToApprove.currency.wrapped.address as Address) : undefined,
-        abi: erc20ABI,
-        functionName: "approve",
-        args: [spender, amountToApprove ? BigInt(amountToApprove.quotient.toString()) : 0] as [Address, bigint],
-    });
+    const config = amountToApprove
+        ? {
+              address: amountToApprove.currency.wrapped.address as Address,
+              abi: erc20Abi,
+              functionName: "approve" as const,
+              args: [spender, BigInt(amountToApprove.quotient.toString())] as [Address, bigint],
+          }
+        : undefined;
 
-    const { data: approvalData, writeAsync: approve } = useContractWrite(config);
+    const { data: approvalData, writeContract: approve } = useWriteContract();
 
-    const { isLoading, isSuccess } = useTransactionAwait(approvalData?.hash, {
+    const { isLoading, isSuccess } = useTransactionAwait(approvalData, {
         title: `Approve ${formatBalance(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
         tokenA: token?.address as Address,
         type: TransactionType.SWAP,
@@ -47,9 +50,9 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyA
         approvalState: isLoading
             ? ApprovalState.PENDING
             : isSuccess && approvalState === ApprovalState.APPROVED
-            ? ApprovalState.APPROVED
-            : approvalState,
-        approvalCallback: approve,
+              ? ApprovalState.APPROVED
+              : approvalState,
+        approvalCallback: () => config && approve(config),
     };
 }
 

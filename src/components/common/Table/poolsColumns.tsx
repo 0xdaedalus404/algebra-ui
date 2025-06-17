@@ -1,6 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { HeaderItem } from "./common";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import CurrencyLogo from "../CurrencyLogo";
 import { TokenFieldsFragment } from "@/graphql/generated/graphql";
 import { Skeleton } from "@/components/ui/skeleton";

@@ -22,8 +22,8 @@ import {
 } from "@cryptoalgebra/alm-sdk";
 import { CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useState } from "react";
-import { parseUnits } from "viem";
-import { Address, useAccount, useChainId } from "wagmi";
+import { Address, parseUnits } from "viem";
+import { useAccount, useChainId } from "wagmi";
 import { BigNumber } from "ethers";
 
 interface RemoveALMLiquidityModalProps {

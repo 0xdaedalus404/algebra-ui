@@ -8,12 +8,13 @@ import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useCallback, useMemo } from "react";
-import { Address, useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { ChainId, TradeType, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useSmartRouterCallback } from "@/hooks/routing/useSmartRouterCallback.ts";
+import { Address } from "viem";
+import { useAppKit } from "@reown/appkit/react";
 
 const SwapButton = ({
     derivedSwap,
@@ -22,13 +23,13 @@ const SwapButton = ({
     callOptions,
 }: {
     derivedSwap: IDerivedSwapInfo;
-    smartTrade: SmartRouterTrade<TradeType>;
+    smartTrade: SmartRouterTrade<TradeType> | undefined;
     isSmartTradeLoading: boolean;
-    callOptions: { calldata: Address; value: Address };
+    callOptions: { calldata: Address | undefined; value: Address | undefined };
 }) => {
-    const { open } = useWeb3Modal();
+    const { open } = useAppKit();
 
-    const { selectedNetworkId } = useWeb3ModalState();
+    const  selectedNetworkId  = useChainId();
 
     const { address: account } = useAccount();
 

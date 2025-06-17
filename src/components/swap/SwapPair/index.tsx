@@ -20,7 +20,7 @@ import { usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
 
-const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> }) => {
+const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> | undefined }) => {
     const chainId = useChainId();
 
     const {
@@ -123,8 +123,8 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                       independentField === SwapField.INPUT
                           ? parsedAmount
                           : pairPrice && limitOrderPrice
-                          ? parsedLimitOrderInput
-                          : smartTrade?.inputAmount,
+                            ? parsedLimitOrderInput
+                            : smartTrade?.inputAmount,
                   [SwapField.OUTPUT]:
                       independentField === SwapField.OUTPUT
                           ? limitOrderPrice
@@ -135,10 +135,10 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                                   : undefined
                               : parsedAmount
                           : limitOrderPrice
-                          ? quoteCurrency && parsedAmount
-                              ? parsedLimitOrderOutput
-                              : undefined
-                          : smartTrade?.outputAmount,
+                            ? quoteCurrency && parsedAmount
+                                ? parsedLimitOrderOutput
+                                : undefined
+                            : smartTrade?.outputAmount,
               };
     }, [
         showWrap,
@@ -174,8 +174,8 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         [independentField]: typedValue,
         [dependentField]:
             showWrap && independentField !== SwapField.LIMIT_ORDER_PRICE
-                ? parsedAmounts[independentField]?.toExact() ?? ""
-                : parsedAmounts[dependentField]?.toExact() ?? "",
+                ? (parsedAmounts[independentField]?.toExact() ?? "")
+                : (parsedAmounts[dependentField]?.toExact() ?? ""),
     };
 
     return (

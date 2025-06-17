@@ -1,4 +1,4 @@
-import { useAlgebraPositionManagerFarmingApprovals } from "@/generated";
+import { useReadAlgebraPositionManagerFarmingApprovals } from "@/generated";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useState } from "react";
 
@@ -9,7 +9,7 @@ export function useFarmCheckApprove(tokenId: bigint) {
         data,
         isLoading: isApproveLoading,
         refetch,
-    } = useAlgebraPositionManagerFarmingApprovals({
+    } = useReadAlgebraPositionManagerFarmingApprovals({
         args: [tokenId],
     });
 

@@ -1,7 +1,8 @@
 import { Currency, DEFAULT_TICK_SPACING, Pool, Route, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useSwapPools } from "./useSwapPools";
-import { Address, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
+import { Address } from "viem";
 
 /**
  * Returns true if poolA is equivalent to poolB

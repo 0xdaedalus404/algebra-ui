@@ -1,7 +1,8 @@
-import { getAlgebraPool } from "@/generated";
 import { Position } from "@cryptoalgebra/custom-pools-sdk";
 import { PoolFeeDataFieldsFragment, PoolFieldsFragment } from "@/graphql/generated/graphql";
-import { Address } from "wagmi";
+import { Address } from "viem";
+import { readAlgebraPoolLiquidity } from "@/generated";
+import { wagmiConfig } from "@/providers/WagmiProvider";
 
 export async function getPositionAPR(
     poolId: Address,
@@ -12,12 +13,10 @@ export async function getPositionAPR(
 ) {
     if (!pool || !poolFeeData || !nativePrice) return;
 
-    const algebraPool = getAlgebraPool({
-        address: poolId,
-    });
-
     try {
-        const liquidity = await algebraPool.read.liquidity();
+        const liquidity = await readAlgebraPoolLiquidity(wagmiConfig, {
+            address: poolId,
+        });
 
         // Today fees
         const poolDayFees = poolFeeData && Boolean(poolFeeData.length) && Number(poolFeeData[0].feesUSD);

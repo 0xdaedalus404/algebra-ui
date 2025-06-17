@@ -18,7 +18,7 @@ const SwapParams = ({
     isSmartTradeLoading,
 }: {
     derivedSwap: IDerivedSwapInfo;
-    smartTrade: SmartRouterTrade<TradeType>;
+    smartTrade: SmartRouterTrade<TradeType> | undefined;
     isSmartTradeLoading: boolean;
 }) => {
     const [isOpen, setIsOpen] = useState(false);

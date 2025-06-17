@@ -3,7 +3,8 @@ import { Input } from "@/components/ui/input";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useMemo } from "react";
-import { Address, useAccount, useBalance } from "wagmi";
+import { Address } from "viem";
+import { useAccount, useBalance } from "wagmi";
 
 interface EnterAmountsCardProps {
     currency: Currency | undefined;
@@ -17,7 +18,6 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
     const { data: balance, isLoading } = useBalance({
         address: account,
         token: currency?.isNative ? undefined : (currency?.wrapped.address as Address),
-        watch: true,
     });
 
     const balanceString = useMemo(() => {

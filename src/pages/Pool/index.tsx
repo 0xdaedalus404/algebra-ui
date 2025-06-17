@@ -16,15 +16,16 @@ import { getPositionAPR } from "@/utils/positions/getPositionAPR";
 import { getPositionFees } from "@/utils/positions/getPositionFees";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { Position, ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { MoveRightIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Address, useAccount } from "wagmi";
+import { useAccount } from "wagmi";
 import JSBI from "jsbi";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useUserALMVaultsByPool } from "@/hooks/alm/useUserALMVaults";
 import ALMPositionCard from "@/components/position/ALMPositionCard";
+import { Address } from "viem";
+import { useAppKit } from "@reown/appkit/react";
 
 const PoolPage = () => {
     const { address: account } = useAccount();
@@ -153,7 +154,7 @@ const PoolPage = () => {
                         feesUSD: null,
                         apr: Math.abs(vault.vault.apr),
                         inFarming: false,
-                    } as FormattedPosition)
+                    }) as FormattedPosition
             ) || [];
 
         const positionsData = filteredPositions.map(({ positionId, position }, idx) => {
@@ -246,7 +247,7 @@ const NoPositions = ({ poolId }: { poolId: Address }) => (
 );
 
 const NoAccount = () => {
-    const { open } = useWeb3Modal();
+    const { open } = useAppKit();
 
     return (
         <div className="flex flex-col items-start p-8 bg-card border border-card-border rounded-3xl animate-fade-in">

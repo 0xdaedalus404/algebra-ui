@@ -1,25 +1,25 @@
 import { ALGEBRA_POSITION_MANAGER, FARMING_CENTER } from "@/constants/addresses";
-import { algebraPositionManagerABI } from "@/generated";
-import { useChainId, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useChainId } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { useEffect } from "react";
 import { useFarmCheckApprove } from "./useFarmCheckApprove";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { useWriteAlgebraPositionManagerApproveForFarming } from "@/generated";
 
 export function useFarmApprove(tokenId: bigint) {
     const chainId = useChainId();
     const APPROVE = true;
 
-    const { config } = usePrepareContractWrite({
-        address: tokenId ? ALGEBRA_POSITION_MANAGER[chainId] : undefined,
-        abi: algebraPositionManagerABI,
-        functionName: "approveForFarming",
-        args: [tokenId, APPROVE, FARMING_CENTER[chainId]],
-    });
+    const config = tokenId
+        ? {
+              address: ALGEBRA_POSITION_MANAGER[chainId],
+              args: [tokenId, APPROVE, FARMING_CENTER[chainId]] as const,
+          }
+        : undefined;
 
-    const { data: data, writeAsync: onApprove } = useContractWrite(config);
+    const { data: data, writeContractAsync: onApprove } = useWriteAlgebraPositionManagerApproveForFarming();
 
-    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+    const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Approve Position #${tokenId}`,
         tokenId: tokenId.toString(),
         type: TransactionType.FARM,
@@ -36,6 +36,6 @@ export function useFarmApprove(tokenId: bigint) {
     return {
         isLoading,
         isSuccess,
-        onApprove,
+        onApprove: () => config && onApprove(config),
     };
 }

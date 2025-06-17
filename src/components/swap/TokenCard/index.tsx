@@ -6,7 +6,8 @@ import { formatUSD } from "@/utils/common/formatUSD";
 import { Currency, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronRight } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
-import { Address, useAccount, useBalance } from "wagmi";
+import { Address } from "viem";
+import { useAccount, useBalance } from "wagmi";
 
 interface TokenSwapCardProps {
     handleTokenSelection: (currency: Currency) => void;
@@ -43,7 +44,6 @@ const TokenCard = ({
     const { data: balance, isLoading } = useBalance({
         address: account,
         token: currency?.isNative ? undefined : (currency?.wrapped.address as Address),
-        watch: true,
     });
 
     const balanceString = useMemo(() => {

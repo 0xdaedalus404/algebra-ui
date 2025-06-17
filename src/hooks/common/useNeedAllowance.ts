@@ -1,6 +1,7 @@
 import { Currency, CurrencyAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { Currency as CurrencyBN, CurrencyAmount as CurrencyAmountBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { Address, erc20ABI, useAccount, useContractRead } from "wagmi";
+import { Address, erc20Abi } from "viem";
+import { useAccount, useReadContract } from "wagmi";
 
 export function useNeedAllowance(
     currency: Currency | CurrencyBN | null | undefined,
@@ -9,12 +10,10 @@ export function useNeedAllowance(
 ) {
     const { address: account } = useAccount();
 
-    const { data: allowance } = useContractRead({
+    const { data: allowance } = useReadContract({
         address: currency?.wrapped.address as Address,
-        abi: erc20ABI,
+        abi: erc20Abi,
         functionName: "allowance",
-        watch: true,
-        cacheTime: 5_000,
         args: account && spender && [account, spender],
     });
 

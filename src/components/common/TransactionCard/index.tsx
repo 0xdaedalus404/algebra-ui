@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { Transaction, TransactionType } from "@/state/pendingTransactionsStore";
 import Loader from "../Loader";
 import { FarmingPositionImg } from "@/components/farming/FarmingPositionImg";
-import { useNetwork } from "wagmi";
+import { useAppKitNetwork } from "@reown/appkit/react";
 
 export const TransactionCard = ({ hash, transaction }: { hash: Address; transaction: Transaction }) => {
     const currencyA = useCurrency(transaction.data.tokenA, true);
@@ -16,7 +16,7 @@ export const TransactionCard = ({ hash, transaction }: { hash: Address; transact
 
     const txType = transaction.data.type;
 
-    const { chain } = useNetwork();
+    const { caipNetwork: chain } = useAppKitNetwork();
 
     return (
         <Link to={`${chain?.blockExplorers?.default.url}/tx/${hash}`} target={"_blank"}>

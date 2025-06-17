@@ -1,9 +1,12 @@
 import "./styles/_colors.css";
 import "./App.css";
 import Layout from "./components/common/Layout";
+import { Outlet } from "react-router-dom";
 
-function App({ children }: { children: React.ReactNode }) {
-    return <Layout>{children}</Layout>;
+function App() {
+    return <Layout>
+        <Outlet />
+    </Layout>;
 }
 
 export default App;

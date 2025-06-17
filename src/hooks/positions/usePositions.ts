@@ -1,11 +1,12 @@
 import { algebraPositionManagerABI } from "@/abis";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
-import { useAlgebraPositionManagerBalanceOf } from "@/generated";
 import { useDepositsQuery } from "@/graphql/generated/graphql";
 import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { Address, useAccount, useChainId, useContractReads } from "wagmi";
+import { useAccount, useChainId, useReadContracts } from "wagmi";
 import { useClients } from "../graphql/useClients";
+import { Address } from "viem";
+import { useReadAlgebraPositionManagerBalanceOf } from "@/generated";
 
 export interface PositionFromTokenId {
     tokenId: number;
@@ -39,14 +40,13 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         isError,
         error,
         refetch,
-    } = useContractReads({
+    } = useReadContracts<readonly { result: any; error: any }[]>({
         contracts: inputs.map((x) => ({
             address: ALGEBRA_POSITION_MANAGER[chainId],
             abi: algebraPositionManagerABI,
             functionName: "positions",
             args: [[Number(x)]],
         })),
-        cacheTime: 10_000,
     });
 
     const { address: account } = useAccount();
@@ -107,9 +107,8 @@ export function usePositions() {
     const { address: account } = useAccount();
     const chainId = useChainId();
 
-    const { data: balanceResult, isLoading: balanceLoading } = useAlgebraPositionManagerBalanceOf({
+    const { data: balanceResult, isLoading: balanceLoading } = useReadAlgebraPositionManagerBalanceOf({
         args: account ? [account] : undefined,
-        cacheTime: 10_000,
     });
 
     const tokenIdsArgs: [Address, number][] = useMemo(() => {
@@ -124,14 +123,13 @@ export function usePositions() {
         return tokenRequests;
     }, [account, balanceResult]);
 
-    const { data: tokenIdResults, isLoading: someTokenIdsLoading } = useContractReads({
+    const { data: tokenIdResults, isLoading: someTokenIdsLoading } = useReadContracts<readonly { result: any; error: any }[]>({
         contracts: tokenIdsArgs.map((args) => ({
             address: ALGEBRA_POSITION_MANAGER[chainId],
             abi: algebraPositionManagerABI,
             functionName: "tokenOfOwnerByIndex",
             args,
         })),
-        cacheTime: 10_000,
     });
 
     const tokenIds = useMemo(() => {

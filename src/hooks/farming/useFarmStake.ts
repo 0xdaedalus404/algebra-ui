@@ -1,14 +1,15 @@
 import { FARMING_CENTER } from "@/constants/addresses";
-import { farmingCenterABI } from "@/generated";
-import { Address, useChainId, useContractWrite, usePrepareContractWrite } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
-import { encodeFunctionData } from "viem";
+import { Address, encodeFunctionData } from "viem";
 import { MaxUint128 } from "@cryptoalgebra/custom-pools-sdk";
 import { useFarmCheckApprove } from "./useFarmCheckApprove";
 import { useEffect, useState } from "react";
 import { Deposit } from "@/graphql/generated/graphql";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useClients } from "../graphql/useClients";
+import { useChainId } from "wagmi";
+import { useWriteFarmingCenterEnterFarming, useWriteFarmingCenterMulticall } from "@/generated";
+import { farmingCenterABI } from "@/abis";
 
 export function useFarmStake({
     tokenId,
@@ -33,9 +34,8 @@ export function useFarmStake({
 
     const address = tokenId && approved ? FARMING_CENTER[chainId] : undefined;
 
-    const { config } = usePrepareContractWrite({
+    const config = {
         address,
-        abi: farmingCenterABI,
         functionName: "enterFarming",
         args: [
             {
@@ -45,12 +45,12 @@ export function useFarmStake({
                 nonce,
             },
             tokenId,
-        ],
-    });
+        ] as const,
+    };
 
-    const { data: data, writeAsync: onStake } = useContractWrite(config);
+    const { data: data, writeContractAsync: onStake } = useWriteFarmingCenterEnterFarming();
 
-    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+    const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Stake Position #${tokenId}`,
         tokenId: tokenId.toString(),
         type: TransactionType.FARM,
@@ -85,7 +85,7 @@ export function useFarmStake({
     return {
         isLoading: isQueryLoading || isLoading,
         isSuccess,
-        onStake,
+        onStake: () => config && onStake(config),
     };
 }
 
@@ -138,16 +138,17 @@ export function useFarmUnstake({
 
     const calldatas = [exitFarmingCalldata, rewardClaimCalldata, bonusRewardClaimCalldata];
 
-    const { config } = usePrepareContractWrite({
-        address: account && tokenId ? FARMING_CENTER[chainId] : undefined,
-        abi: farmingCenterABI,
-        functionName: "multicall",
-        args: [calldatas],
-    });
+    const config =
+        account && tokenId
+            ? {
+                  address: account && tokenId ? FARMING_CENTER[chainId] : undefined,
+                  args: [calldatas] as const,
+              }
+            : undefined;
 
-    const { data: data, writeAsync: onUnstake } = useContractWrite(config);
+    const { data, writeContractAsync: onUnstake } = useWriteFarmingCenterMulticall();
 
-    const { isLoading, isSuccess } = useTransactionAwait(data?.hash, {
+    const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Unstake Position #${tokenId}`,
         tokenId: tokenId.toString(),
         type: TransactionType.FARM,
@@ -182,6 +183,6 @@ export function useFarmUnstake({
     return {
         isLoading: isLoading || isQueryLoading,
         isSuccess,
-        onUnstake,
+        onUnstake: () => config && onUnstake(config),
     };
 }

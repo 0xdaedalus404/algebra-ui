@@ -1,13 +1,13 @@
-import { useAlgebraPoolLiquidity } from "@/generated";
 import { useNativePriceQuery, usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql";
 import { Position } from "@cryptoalgebra/custom-pools-sdk";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import { useClients } from "../graphql/useClients";
+import { useReadAlgebraPoolLiquidity } from "@/generated";
 
 export function usePositionAPR(poolId: Address | undefined, position: Position | undefined, positionId?: string | undefined) {
     const { infoClient } = useClients();
 
-    const { data: liquidity } = useAlgebraPoolLiquidity({
+    const { data: liquidity } = useReadAlgebraPoolLiquidity({
         address: poolId,
     });
 

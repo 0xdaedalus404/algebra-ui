@@ -2,7 +2,7 @@ import { algebraQuoterV2ABI } from "@/abis";
 import { ALGEBRA_QUOTER_V2 } from "@/constants/addresses";
 import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { useChainId, useContractReads } from "wagmi";
+import { useChainId, useReadContracts } from "wagmi";
 import { useAllRoutes } from "./useAllRoutes";
 
 export function useQuotesResults({
@@ -32,8 +32,8 @@ export function useQuotesResults({
                     ? `0x${amountIn.quotient.toString(16)}`
                     : undefined
                 : amountOut
-                ? `0x${amountOut.quotient.toString(16)}`
-                : undefined,
+                  ? `0x${amountOut.quotient.toString(16)}`
+                  : undefined,
         ]);
     }, [amountIn, amountOut, routes, exactInput]);
 
@@ -43,15 +43,13 @@ export function useQuotesResults({
         data: quotesResults,
         isLoading,
         refetch,
-    } = useContractReads({
+    } = useReadContracts({
         contracts: quoteInputs.map((quote: any) => ({
             address: ALGEBRA_QUOTER_V2[chainId],
             abi: algebraQuoterV2ABI,
             functionName: functionName,
             args: quote,
         })),
-        watch: true,
-        cacheTime: 10_000,
     });
 
     return {

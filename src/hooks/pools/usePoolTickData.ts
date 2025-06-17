@@ -1,7 +1,7 @@
 import { TickFieldsFragment, useAllTicksLazyQuery } from "@/graphql/generated/graphql";
 import { Pool, TickMath, Token, computeCustomPoolAddress, tickToPrice } from "@cryptoalgebra/custom-pools-sdk";
 import { useState } from "react";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import keyBy from "lodash.keyby";
 import { useClients } from "../graphql/useClients";
 

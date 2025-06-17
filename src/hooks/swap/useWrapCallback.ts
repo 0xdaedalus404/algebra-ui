@@ -1,11 +1,12 @@
 import { WNATIVE_EXTENDED } from "@/constants/routing";
-import { usePrepareWrappedNativeDeposit, usePrepareWrappedNativeWithdraw } from "@/generated";
 import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { Address, useAccount, useBalance, useChainId, useContractWrite } from "wagmi";
+import { useAccount, useBalance, useChainId } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { Address } from "viem";
+import { useWriteWrappedNativeDeposit, useWriteWrappedNativeWithdraw } from "@/generated";
 
 export const WrapType = {
     NOT_APPLICABLE: "NOT_APPLICABLE",
@@ -25,35 +26,38 @@ export default function useWrapCallback(
 
     const inputAmount = useMemo(() => tryParseAmount(typedValue, inputCurrency), [inputCurrency, typedValue]);
 
-    const { config: wrapConfig } = usePrepareWrappedNativeDeposit({
-        address: WNATIVE[chainId].address as Address,
-        value: inputAmount ? BigInt(inputAmount.quotient.toString()) : undefined,
-    });
+    const wrapConfig = inputAmount
+        ? {
+              address: WNATIVE[chainId]?.address as Address,
+              value: BigInt(inputAmount.quotient.toString()),
+          }
+        : undefined;
 
-    const { data: wrapData, write: wrap } = useContractWrite(wrapConfig);
+    const { data: wrapData, writeContract: wrap } = useWriteWrappedNativeDeposit();
 
-    const { isLoading: isWrapLoading } = useTransactionAwait(wrapData?.hash, {
+    const { isLoading: isWrapLoading } = useTransactionAwait(wrapData, {
         title: `Wrap ${inputAmount?.toSignificant(3)} ${DEFAULT_NATIVE_SYMBOL}`,
         tokenA: WNATIVE[chainId].address as Address,
         type: TransactionType.SWAP,
     });
 
-    const { config: unwrapConfig } = usePrepareWrappedNativeWithdraw({
-        address: WNATIVE[chainId].address as Address,
-        args: inputAmount ? [BigInt(inputAmount.quotient.toString())] : undefined,
-    });
+    const unwrapConfig = inputAmount
+        ? {
+              address: WNATIVE[chainId].address as Address,
+              args: [BigInt(inputAmount.quotient.toString())] as const,
+          }
+        : undefined;
 
-    const { data: unwrapData, write: unwrap } = useContractWrite(unwrapConfig);
+    const { data: unwrapData, writeContract: unwrap } = useWriteWrappedNativeWithdraw();
 
-    const { isLoading: isUnwrapLoading } = useTransactionAwait(unwrapData?.hash, {
+    const { isLoading: isUnwrapLoading } = useTransactionAwait(unwrapData, {
         title: `Unwrap ${inputAmount?.toSignificant(3)} W${DEFAULT_NATIVE_SYMBOL}`,
         tokenA: WNATIVE[chainId].address as Address,
         type: TransactionType.SWAP,
     });
 
     const { data: balance } = useBalance({
-        enabled: Boolean(inputCurrency),
-        address: account,
+        address: inputCurrency ? account : undefined,
         token: inputCurrency?.isNative ? undefined : (inputCurrency?.address as Address),
     });
 
@@ -68,24 +72,24 @@ export default function useWrapCallback(
         if (inputCurrency.isNative && weth.equals(outputCurrency)) {
             return {
                 wrapType: WrapType.WRAP,
-                execute: sufficientBalance && inputAmount ? wrap : undefined,
+                execute: sufficientBalance && inputAmount ? () => wrapConfig && wrap(wrapConfig) : undefined,
                 loading: isWrapLoading,
                 inputError: sufficientBalance
                     ? undefined
                     : hasInputAmount
-                    ? `Insufficient ${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
-                    : `Enter ${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
+                      ? `Insufficient ${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
+                      : `Enter ${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
             };
         } else if (weth.equals(inputCurrency) && outputCurrency.isNative) {
             return {
                 wrapType: WrapType.UNWRAP,
-                execute: sufficientBalance && inputAmount ? unwrap : undefined,
+                execute: sufficientBalance && inputAmount ? () => unwrapConfig && unwrap(unwrapConfig) : undefined,
                 loading: isUnwrapLoading,
                 inputError: sufficientBalance
                     ? undefined
                     : hasInputAmount
-                    ? `Insufficient W${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
-                    : `Enter W${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
+                      ? `Insufficient W${DEFAULT_NATIVE_SYMBOL[chainId]} balance`
+                      : `Enter W${DEFAULT_NATIVE_SYMBOL[chainId]} amount`,
             };
         } else {
             return NOT_APPLICABLE;

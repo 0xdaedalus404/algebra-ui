@@ -9,11 +9,12 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
 import { ChainId, Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { deposit, depositNativeToken, SupportedChainId, SupportedDex, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { useCallback, useEffect, useState } from "react";
-import { Address, useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useUserALMVaultsByPool } from "@/hooks/alm/useUserALMVaults";
 import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
+import { Address } from "viem";
+import { useAppKit } from "@reown/appkit/react";
 
 const dex = SupportedDex.CLAMM;
 
@@ -31,9 +32,9 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const { refetch: refetchUserVaults } = useUserALMVaultsByPool(poolId as Address, account);
 
-    const { open } = useWeb3Modal();
+    const { open } = useAppKit();
 
-    const { selectedNetworkId } = useWeb3ModalState();
+    const  selectedNetworkId  = useChainId();
 
     const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address, encodeFunctionData } from "viem";
-import { useChainId, useContractWrite, useSendTransaction } from "wagmi";
+import { useChainId, useSendTransaction } from "wagmi";
 
 import { ALGEBRA_ROUTER } from "@/constants/addresses";
 
@@ -10,6 +10,7 @@ import { algebraRouterABI } from "@/abis";
 import { Currency } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { useUserState } from "@/state/userStore";
+import { useWriteAlgebraRouterMulticall } from "@/generated";
 
 export function useSmartRouterCallback(
     currencyA: Currency | undefined,
@@ -21,17 +22,19 @@ export function useSmartRouterCallback(
     const [txHash, setTxHash] = useState<Address>();
     const chainId = useChainId();
 
-    const { data: swapData, writeAsync } = useContractWrite({
-        address: ALGEBRA_ROUTER[chainId],
-        abi: algebraRouterABI,
-        functionName: "multicall",
-        args: calldata ? [[calldata]] : undefined,
-        value: BigInt(value || 0),
-    });
+    const config = calldata
+        ? {
+              address: ALGEBRA_ROUTER[chainId],
+              args: [[calldata]] as const,
+              value: BigInt(value || 0),
+          }
+        : undefined;
+
+    const { data: swapData, writeContractAsync: writeAsync } = useWriteAlgebraRouterMulticall();
 
     useEffect(() => {
-        if (swapData?.hash) {
-            setTxHash(swapData.hash);
+        if (swapData) {
+            setTxHash(swapData);
         }
     }, [swapData]);
 
@@ -57,8 +60,8 @@ export function useSmartRouterCallback(
         };
         try {
             const txHash = await sendTransactionAsync(txData);
-            setTxHash(txHash.hash);
-            console.log("Transaction Hash:", txHash.hash);
+            setTxHash(txHash);
+            console.log("Transaction Hash:", txHash);
             return txHash;
         } catch (error) {
             console.error("Send transaction Error:", error);
@@ -75,7 +78,7 @@ export function useSmartRouterCallback(
 
     return useMemo(
         () => ({
-            callback: isExpertMode ? expertCallback : writeAsync,
+            callback: isExpertMode ? expertCallback : () => config && writeAsync(config),
             isLoading,
         }),
         [expertCallback, isExpertMode, writeAsync, isLoading]

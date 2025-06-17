@@ -1,7 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
-import { useWeb3ModalState } from "@web3modal/wagmi/react";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useChainId } from "wagmi";
 
 import { CurrencyAmount, Currency, TickMath, Percent, ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
@@ -27,7 +26,7 @@ const Notification = ({ tick }: { tick?: number }) => (
 );
 
 const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) => {
-    const { selectedNetworkId } = useWeb3ModalState();
+    const  selectedNetworkId  = useChainId();
 
     const { address: account } = useAccount();
 
@@ -60,7 +59,6 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
     const { data: inputBalance } = useBalance({
         address: account,
         token: currencyIn?.isNative ? undefined : (currencyIn?.address as Address),
-        cacheTime: 10_000,
     });
 
     const { approvalState, approvalCallback } = useApproveCallbackFromTrade(trade, DEFAULT_SLIPPAGE);

@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
-import { usePrepareAlgebraLimitOrderPluginKill } from "@/generated";
+import { useWriteAlgebraLimitOrderPluginKill } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useMemo, useState } from "react";
-import { Address, useChainId, useContractWrite } from "wagmi";
+import { Address } from "viem";
+import { useChainId } from "wagmi";
 
 const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, positionLO }: LimitOrder) => {
     const [value, setValue] = useState([50]);
@@ -28,7 +29,7 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, positio
         };
     }, [positionLO.amount0, positionLO.amount1, value, zeroToOne]);
 
-    const { config: killConfig } = usePrepareAlgebraLimitOrderPluginKill({
+    const killConfig = {
         args: [
             {
                 token0: pool.token0.address as Address,
@@ -40,12 +41,12 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, positio
             BigInt(liquidityToRemove),
             zeroToOne,
             owner,
-        ],
-    });
+        ] as const,
+    };
 
-    const { data: killData, write: kill } = useContractWrite(killConfig);
+    const { data: killData, writeContract: kill } = useWriteAlgebraLimitOrderPluginKill();
 
-    const { isLoading: isKillLoading } = useTransactionAwait(killData?.hash, {
+    const { isLoading: isKillLoading } = useTransactionAwait(killData, {
         type: TransactionType.LIMIT_ORDER,
         title: `Withdraw ${amount0Parsed || amount1Parsed} ${amount0Parsed ? pool.token0.symbol : pool.token1.symbol}`,
         tokenA: amount0Parsed ? (pool.token0.wrapped.address as Address) : undefined,
@@ -100,7 +101,7 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, positio
                         token1={pool.token1}
                     />
 
-                    <Button disabled={value[0] === 0 || isKillLoading} onClick={() => kill && kill()}>
+                    <Button disabled={value[0] === 0 || isKillLoading} onClick={() => kill && kill(killConfig)}>
                         {isKillLoading ? <Loader /> : "Withdraw Liquidity"}
                     </Button>
                 </div>

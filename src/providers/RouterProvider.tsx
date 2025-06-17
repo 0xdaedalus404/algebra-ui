@@ -15,7 +15,7 @@ const router = createBrowserRouter([
         errorElement: <Page404 />,
     },
     {
-        element: <App children />,
+        element: <App />,
         children: [
             {
                 path: "swap",

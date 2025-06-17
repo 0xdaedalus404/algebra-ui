@@ -9,7 +9,7 @@ import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { Button } from "@/components/ui/button";
 import { formatCurrency } from "@/utils/common/formatCurrency";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import { formatUSD } from "@/utils/common/formatUSD";
 import { Skeleton } from "@/components/ui/skeleton";
 import Loader from "@/components/common/Loader";
@@ -79,8 +79,8 @@ const SwapChart = () => {
         chartPair === SwapChartPair.A && tokenA
             ? mainnetTokensMapping[tokenA.address.toLowerCase() as Address]
             : tokenB
-            ? mainnetTokensMapping[tokenB.address.toLowerCase() as Address]
-            : "";
+              ? mainnetTokensMapping[tokenB.address.toLowerCase() as Address]
+              : "";
 
     // const [isMarketDepthOpen, setIsMarketDepthOpen] = useState(false)
     const [isPoolSwitcherOpen, setIsPoolSwitcherOpen] = useState(false);
@@ -245,10 +245,10 @@ const SwapChart = () => {
         chartPair === SwapChartPair.AB
             ? currencies.OUTPUT?.symbol
             : chartPair === SwapChartPair.BA
-            ? currencies.INPUT?.symbol
-            : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B
-            ? ""
-            : "";
+              ? currencies.INPUT?.symbol
+              : chartPair === SwapChartPair.A || chartPair === SwapChartPair.B
+                ? ""
+                : "";
 
     const crosshairMoveHandler = useCallback(
         (param: any) => {

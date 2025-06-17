@@ -9,10 +9,11 @@ import { tickToPrice, priceToClosestTick, nearestUsableTick, encodeSqrtRatioX96,
 import { getTickToPrice } from "@cryptoalgebra/custom-pools-sdk";
 
 import { useCallback, useMemo } from "react";
-import { Address, useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { create } from "zustand";
 import { PoolState, PoolStateType, usePool } from "@/hooks/pools/usePool";
 import { PresetsType } from "@/types/presets";
+import { Address } from "viem";
 
 export type FullRange = true;
 
@@ -203,12 +204,10 @@ export function useDerivedMintInfo(
     const { data: token0Balance } = useBalance({
         address: account,
         token: addressA,
-        watch: true,
     });
     const { data: token1Balance } = useBalance({
         address: account,
         token: addressB,
-        watch: true,
     });
 
     const currencyBalances: { [field in Field]?: CurrencyAmount<Currency> } = {
@@ -297,20 +296,20 @@ export function useDerivedMintInfo(
                 typeof existingPosition?.tickLower === "number"
                     ? existingPosition.tickLower
                     : (invertPrice && typeof rightRangeTypedValue === "boolean") ||
-                      (!invertPrice && typeof leftRangeTypedValue === "boolean")
-                    ? tickSpaceLimits[Bound.LOWER]
-                    : invertPrice
-                    ? tryParseTick(token1, token0, rightRangeTypedValue.toString(), tickSpacing)
-                    : tryParseTick(token0, token1, leftRangeTypedValue.toString(), tickSpacing),
+                        (!invertPrice && typeof leftRangeTypedValue === "boolean")
+                      ? tickSpaceLimits[Bound.LOWER]
+                      : invertPrice
+                        ? tryParseTick(token1, token0, rightRangeTypedValue.toString(), tickSpacing)
+                        : tryParseTick(token0, token1, leftRangeTypedValue.toString(), tickSpacing),
             [Bound.UPPER]:
                 typeof existingPosition?.tickUpper === "number"
                     ? existingPosition.tickUpper
                     : (!invertPrice && typeof rightRangeTypedValue === "boolean") ||
-                      (invertPrice && typeof leftRangeTypedValue === "boolean")
-                    ? tickSpaceLimits[Bound.UPPER]
-                    : invertPrice
-                    ? tryParseTick(token1, token0, leftRangeTypedValue.toString(), tickSpacing)
-                    : tryParseTick(token0, token1, rightRangeTypedValue.toString(), tickSpacing),
+                        (invertPrice && typeof leftRangeTypedValue === "boolean")
+                      ? tickSpaceLimits[Bound.UPPER]
+                      : invertPrice
+                        ? tryParseTick(token1, token0, leftRangeTypedValue.toString(), tickSpacing)
+                        : tryParseTick(token0, token1, rightRangeTypedValue.toString(), tickSpacing),
         };
     }, [existingPosition, feeAmount, invertPrice, leftRangeTypedValue, rightRangeTypedValue, token0, token1, tickSpaceLimits, tickSpacing]);
 

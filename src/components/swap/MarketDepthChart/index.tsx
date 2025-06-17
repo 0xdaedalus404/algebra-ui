@@ -6,7 +6,7 @@ import { formatCurrency } from "@/utils/common/formatCurrency";
 import { ADDRESS_ZERO, CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Address } from "wagmi";
+import { Address } from "viem";
 
 const NOT_SELECTED = Number.MAX_VALUE;
 
@@ -234,8 +234,8 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close, poolAddress }: 
                                               hoveredIndex !== NOT_SELECTED
                                                   ? "bg-blue-500/80"
                                                   : v.tick <= (tickAfterSwap || -NOT_SELECTED)
-                                                  ? "bg-yellow-600"
-                                                  : "bg-red-800/40"
+                                                    ? "bg-yellow-600"
+                                                    : "bg-red-800/40"
                                           }`}
                                           style={{ width: `${(v.activeLiquidity * 100) / maxLiquidity}%` }}
                                       ></div>
@@ -274,8 +274,8 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close, poolAddress }: 
                                               -idx >= hoveredIndex && hoveredIndex !== NOT_SELECTED
                                                   ? "bg-blue-500/80"
                                                   : v.tick >= (tickAfterSwap || NOT_SELECTED)
-                                                  ? "bg-yellow-600"
-                                                  : "bg-green-800/40"
+                                                    ? "bg-yellow-600"
+                                                    : "bg-green-800/40"
                                           } rounded-l-lg ml-auto`}
                                           style={{ width: `${(v.activeLiquidity * 100) / maxLiquidity}%` }}
                                       ></div>

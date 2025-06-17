@@ -1,10 +1,11 @@
 import { Currency, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useMemo, useState } from "react";
 import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
-import { Address, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
 import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql";
 import { useClients } from "../graphql/useClients";
 import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { Address } from "viem";
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency

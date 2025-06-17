@@ -2,7 +2,6 @@ import Navigation from "@/components/common/Navigation";
 import AlgebraLogo from "@/assets/algebra-logo.svg";
 import AlgebraIntegral from "@/assets/algebra-itegral.svg";
 import { NavLink } from "react-router-dom";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
 import { Button } from "@/components/ui/button";
 import { AlignJustify, UnplugIcon, WalletIcon } from "lucide-react";
 import Loader from "../Loader";
@@ -10,10 +9,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useState } from "react";
 import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
+import { useAppKit } from "@reown/appkit/react";
 
 const Header = () => (
     <header className="sticky top-4 z-10 grid grid-cols-3 justify-between items-center py-1 px-2 bg-card border border-card-border rounded-3xl gap-4">
@@ -37,7 +37,9 @@ const Algebra = () => (
 );
 
 const Account = () => {
-    const { open } = useWeb3Modal();
+    const { open } = useAppKit();
+
+    const  selectedNetworkId  = useChainId();
 
     const { pendingTransactions } = usePendingTransactionsStore();
 
@@ -50,7 +52,6 @@ const Account = () => {
             ? Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading).length
             : 0;
 
-    const { selectedNetworkId } = useWeb3ModalState();
 
     if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId))
         return (

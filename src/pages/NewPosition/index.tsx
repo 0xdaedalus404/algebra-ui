@@ -1,7 +1,7 @@
 import PageContainer from "@/components/common/PageContainer";
 import PageTitle from "@/components/common/PageTitle";
 import { useParams } from "react-router-dom";
-import { Address, useChainId } from "wagmi";
+import { useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CreateAutomatedPosition } from "./CreateAutomatedPosition";
@@ -11,6 +11,7 @@ import { useALMVaultsByPool } from "@/hooks/alm/useALMVaults";
 import { CUSTOM_POOL_DEPLOYER_ALM } from "@/constants/addresses";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
+import { Address } from "viem";
 
 type NewPositionPageParams = Record<"pool", Address>;
 
@@ -32,6 +33,8 @@ const NewPositionPage = () => {
         data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ALM[chainId]
             ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ALM[chainId].toLowerCase()
             : false;
+
+    console.log(data?.pool?.deployer, CUSTOM_POOL_DEPLOYER_ALM[chainId], isALMPool);
 
     const { vaults } = useALMVaultsByPool(isALMPool ? poolAddress : undefined);
 

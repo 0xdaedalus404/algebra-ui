@@ -1,9 +1,10 @@
 import deepMerge from "lodash.merge";
 import { useEffect } from "react";
-import { Address, useAccount, usePublicClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { waitForTransactionReceipt } from "viem/actions";
+import { Address } from "viem";
 
 export enum TransactionType {
     SWAP = "SWAP",
@@ -109,7 +110,7 @@ export function usePendingTransactions() {
     const config = usePublicClient();
 
     useEffect(() => {
-        if (!account) return;
+        if (!account || !config) return;
         const pendingTransactionsList = Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading);
         for (const [txHash] of pendingTransactionsList) {
             waitForTransactionReceipt(config, { confirmations: 1, hash: txHash as Address })

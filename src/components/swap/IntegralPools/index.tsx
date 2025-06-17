@@ -10,7 +10,7 @@ import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { ChevronDownIcon } from "lucide-react";
 import { memo, useState } from "react";
-import { Address } from "wagmi";
+import { Address } from "viem";
 
 const IntegralPools = () => {
     const { currencies, poolAddress } = useDerivedSwapInfo();
@@ -87,9 +87,7 @@ const IntegralPoolsList = memo(({ poolAddress, onPoolSelect }: { poolAddress: Ad
         <div className="flex flex-col gap-2">
             {pools?.pools
                 .filter((pool) => poolAddress?.toLowerCase() !== pool.id.toLowerCase())
-                .map((pool, idx) => (
-                    <IntegralPoolsListItem key={`integral-pool-item-${idx}`} pool={pool} onPoolSelect={onPoolSelect} />
-                ))}
+                .map((pool, idx) => <IntegralPoolsListItem key={`integral-pool-item-${idx}`} pool={pool} onPoolSelect={onPoolSelect} />)}
         </div>
     );
 });

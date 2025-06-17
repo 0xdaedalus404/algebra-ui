@@ -164,7 +164,7 @@ export function useSmartRouterBestRoute(
     }, [trade, keepPreviousDataRef]);
 
     const isValidating = fetchStatus === "fetching";
-    const isLoading = status === "loading" || isPlaceholderData;
+    const isLoading = status === "pending" || isPlaceholderData;
 
     const refresh = useCallback(async () => {
         await refreshPools();

@@ -3,7 +3,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
+import { useWriteAlgebraPositionManagerMulticall } from "@/generated";
 import { Deposit } from "@/graphql/generated/graphql";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useClients } from "@/hooks/graphql/useClients";
@@ -13,7 +13,8 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { useEffect, useMemo, useState } from "react";
-import { Address, useAccount, useContractWrite } from "wagmi";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
 
 interface RemoveLiquidityModalProps {
     positionId: number;
@@ -56,15 +57,16 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         });
     }, [positionId, positionSDK, txDeadline, feeValue0, feeValue1, liquidityPercentage, account, percent]);
 
-    const { config: removeLiquidityConfig } = usePrepareAlgebraPositionManagerMulticall({
-        args: calldata && [calldata as `0x${string}`[]],
-        value: BigInt(value || 0),
-        enabled: Boolean(calldata),
-    });
+    const removeLiquidityConfig = calldata
+        ? {
+              args: [calldata as `0x${string}`[]] as const,
+              value: BigInt(value || 0),
+          }
+        : calldata;
 
-    const { data: removeLiquidityData, write: removeLiquidity } = useContractWrite(removeLiquidityConfig);
+    const { data: removeLiquidityData, writeContract: removeLiquidity } = useWriteAlgebraPositionManagerMulticall();
 
-    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(removeLiquidityData?.hash, {
+    const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(removeLiquidityData, {
         title: "Remove liquidity",
         tokenA: position?.token0 as Address,
         tokenB: position?.token1 as Address,
@@ -167,7 +169,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                         token1={liquidityValue1?.currency}
                     />
 
-                    <Button disabled={isDisabled} onClick={() => removeLiquidity && removeLiquidity()}>
+                    <Button disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
                         {isRemoveLoading ? <Loader /> : "Remove Liquidity"}
                     </Button>
                 </div>

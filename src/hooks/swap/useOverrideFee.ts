@@ -1,12 +1,13 @@
 import { ALGEBRA_ROUTER } from "@/constants/addresses";
 import { MAX_UINT128 } from "@/constants/max-uint128";
-import { getAlgebraBasePlugin, getAlgebraPool } from "@/generated";
+import { readAlgebraPoolPlugin, simulateAlgebraBasePluginBeforeSwap } from "@/generated";
+import { wagmiConfig } from "@/providers/WagmiProvider";
 import { ADDRESS_ZERO, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useEffect, useState } from "react";
 import { useChainId } from "wagmi";
 
-export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
+export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType> | undefined) {
     const [overrideFees, setOverrideFees] = useState<{
         fee: number | undefined;
         fees: number[][];
@@ -17,7 +18,7 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
     useEffect(() => {
         if (!smartTrade) return undefined;
 
-        async function getFees() {
+        const getFees = async() => {
             const fees: number[][] = [];
 
             for (const route of smartTrade.routes) {
@@ -38,33 +39,28 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType>) {
 
                     const isZeroToOne = split[0].wrapped.sortsBefore(split[1].wrapped);
 
-                    const poolContract = getAlgebraPool({
+                    const plugin = await readAlgebraPoolPlugin(wagmiConfig, {
                         address: pool.address,
-                    });
-
-                    const plugin = await poolContract.read.plugin();
-
-                    const pluginContract = getAlgebraBasePlugin({
-                        address: plugin,
                     });
 
                     let beforeSwap: [string, number, number];
 
                     try {
-                        beforeSwap = await pluginContract.simulate
-                            .beforeSwap(
-                                [
-                                    ALGEBRA_ROUTER[chainId],
-                                    ADDRESS_ZERO,
-                                    isZeroToOne,
-                                    smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
-                                    MAX_UINT128,
-                                    false,
-                                    "0x",
-                                ],
-                                { account: pool.address }
-                            )
-                            .then((v) => v.result as [string, number, number]);
+                        const { result } = await simulateAlgebraBasePluginBeforeSwap(wagmiConfig, {
+                            address: plugin,
+                            args: [
+                                ALGEBRA_ROUTER[chainId],
+                                ADDRESS_ZERO,
+                                isZeroToOne,
+                                smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
+                                MAX_UINT128,
+                                false,
+                                "0x",
+                            ] as const,
+                            account: pool.address,
+                        });
+
+                        beforeSwap = result as [string, number, number];
                     } catch (error) {
                         beforeSwap = ["", 0, 0];
                     }

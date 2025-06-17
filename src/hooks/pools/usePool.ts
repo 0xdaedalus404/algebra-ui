@@ -1,16 +1,16 @@
-import {
-    useAlgebraPoolGlobalState,
-    useAlgebraPoolLiquidity,
-    useAlgebraPoolTickSpacing,
-    useAlgebraPoolToken0,
-    useAlgebraPoolToken1,
-} from "@/generated";
 import { Pool } from "@cryptoalgebra/custom-pools-sdk";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import { useCurrency } from "../common/useCurrency";
 import { useMemo } from "react";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 import { useClients } from "../graphql/useClients";
+import {
+    useReadAlgebraPoolGlobalState,
+    useReadAlgebraPoolLiquidity,
+    useReadAlgebraPoolTickSpacing,
+    useReadAlgebraPoolToken0,
+    useReadAlgebraPoolToken1,
+} from "@/generated";
 
 export const PoolState = {
     LOADING: "LOADING",
@@ -26,21 +26,21 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
         data: tickSpacing,
         isLoading: isTickSpacingLoading,
         isError: isTickSpacingError,
-    } = useAlgebraPoolTickSpacing({
+    } = useReadAlgebraPoolTickSpacing({
         address,
     });
     const {
         data: globalState,
         isLoading: isGlobalStateLoading,
         isError: isGlobalStateError,
-    } = useAlgebraPoolGlobalState({
+    } = useReadAlgebraPoolGlobalState({
         address,
     });
     const {
         data: liquidity,
         isLoading: isLiquidityLoading,
         isError: isLiquidityError,
-    } = useAlgebraPoolLiquidity({
+    } = useReadAlgebraPoolLiquidity({
         address,
     });
 
@@ -48,14 +48,14 @@ export function usePool(address: Address | undefined): [PoolStateType, Pool | nu
         data: token0Address,
         isLoading: isLoadingToken0,
         isError: isToken0Error,
-    } = useAlgebraPoolToken0({
+    } = useReadAlgebraPoolToken0({
         address,
     });
     const {
         data: token1Address,
         isLoading: isLoadingToken1,
         isError: isToken1Error,
-    } = useAlgebraPoolToken1({
+    } = useReadAlgebraPoolToken1({
         address,
     });
 

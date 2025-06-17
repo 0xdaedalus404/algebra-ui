@@ -1,13 +1,15 @@
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { TransactionInfo, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
+import { useAppKitNetwork } from "@reown/appkit/react";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Address, useAccount, useNetwork, useWaitForTransaction } from "wagmi";
+import { Address } from "viem";
+import { useAccount, useWaitForTransactionReceipt } from "wagmi";
 
 export const ViewTxOnExplorer = ({ hash }: { hash: Address | undefined }) => {
-    const { chain } = useNetwork();
+    const { caipNetwork: chain } = useAppKitNetwork();
 
     return hash ? (
         <ToastAction altText="View on explorer" asChild>
@@ -36,7 +38,7 @@ export function useTransactionAwait(hash: Address | undefined, transactionInfo: 
         actions: { addPendingTransaction, updatePendingTransaction },
     } = usePendingTransactionsStore();
 
-    const { data, isError, isLoading, isSuccess } = useWaitForTransaction({
+    const { data, isError, isLoading, isSuccess } = useWaitForTransactionReceipt({
         hash,
     });
 

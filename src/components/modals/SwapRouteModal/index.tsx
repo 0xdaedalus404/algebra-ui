@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/credenza";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { ArrowRight } from "lucide-react";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
 import { Route, Currency, Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";

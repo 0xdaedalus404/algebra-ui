@@ -1,11 +1,12 @@
+import { wagmiConfig } from "@/providers/WagmiProvider";
 import { providers } from "ethers";
 import { useMemo } from "react";
 import useSWR from "swr";
-import type { Chain, Client, Transport } from "viem";
-import { useChainId, usePublicClient, WalletClient } from "wagmi";
-import { getWalletClient } from "wagmi/actions";
+import type { Account, Chain, Client, Transport } from "viem";
+import { useChainId, usePublicClient } from "wagmi";
+import { getConnectorClient } from "wagmi/actions";
 
-export function clientToProvider(client: Client<Transport, Chain>): providers.JsonRpcProvider {
+export function clientToJsonRpcProvider(client: Client<Transport, Chain>) {
     const { chain, transport } = client;
     const network = {
         chainId: chain.id,
@@ -19,18 +20,8 @@ export function clientToProvider(client: Client<Transport, Chain>): providers.Js
     return new providers.JsonRpcProvider(transport.url, network);
 }
 
-/** Action to convert a viem Client to an ethers.js Provider. */
-export function useEthersProvider() {
-    const chainId = useChainId();
-    const client = usePublicClient({ chainId });
-
-    return useMemo(() => {
-        return clientToProvider(client);
-    }, [client]);
-}
-
-export function walletToProvider(walletClient: WalletClient) {
-    const { chain, transport } = walletClient;
+export function clientToWeb3Provider(client: Client<Transport, Chain, Account>) {
+    const { chain, transport } = client;
     const network = {
         chainId: chain.id,
         name: chain.name,
@@ -41,13 +32,24 @@ export function walletToProvider(walletClient: WalletClient) {
 }
 
 /** Action to convert a viem Client to an ethers.js Provider. */
+export function useEthersProvider() {
+    const chainId = useChainId();
+    const client = usePublicClient({ chainId });
+
+    return useMemo(() => {
+        if (!client) throw new Error("No client");
+        return clientToJsonRpcProvider(client);
+    }, [client]);
+}
+
+/** Action to convert a viem Client to an ethers.js Provider. */
 export function useEthersSigner() {
     const chainId = useChainId();
 
     const { data: provider } = useSWR(["ethersProvider", chainId], async () => {
-        const client = await getWalletClient({ chainId });
+        const client = await getConnectorClient(wagmiConfig, { chainId });
         if (!client) throw new Error("No wallet client");
-        return walletToProvider(client);
+        return clientToWeb3Provider(client);
     });
 
     return provider;

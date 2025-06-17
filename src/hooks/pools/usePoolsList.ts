@@ -21,6 +21,10 @@ export function usePoolsList() {
     const [pools, updatePools] = useState<IPools[]>();
 
     useEffect(() => {
+        if (!publicClient || !chainId) {
+            return;
+        }
+
         publicClient
             .getLogs({
                 address: ALGEBRA_FACTORY[chainId],

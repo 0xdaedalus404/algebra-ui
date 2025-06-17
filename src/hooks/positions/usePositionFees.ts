@@ -1,8 +1,8 @@
 import { MAX_UINT128 } from "@/constants/max-uint128";
-import { useAlgebraPositionManagerOwnerOf, usePrepareAlgebraPositionManagerCollect } from "@/generated";
+import { useReadAlgebraPositionManagerOwnerOf, useSimulateAlgebraPositionManagerCollect } from "@/generated";
 import { Currency, CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { Address } from "wagmi";
+import { Address } from "viem";
 
 interface PositionFeesResult {
     amount0: CurrencyAmount<Currency> | undefined;
@@ -10,14 +10,14 @@ interface PositionFeesResult {
 }
 
 export function usePositionFees(pool?: Pool, tokenId?: number, asWNative = false): PositionFeesResult {
-    const { data: owner } = useAlgebraPositionManagerOwnerOf({
+    const { data: owner } = useReadAlgebraPositionManagerOwnerOf({
         args: tokenId ? [BigInt(tokenId)] : undefined,
     });
 
     const isReady = tokenId && owner;
 
-    const { config: amountsConfig } = usePrepareAlgebraPositionManagerCollect({
-        args: Boolean(isReady)
+    const { data: amountsConfig } = useSimulateAlgebraPositionManagerCollect({
+        args: isReady
             ? [
                   {
                       tokenId: BigInt(tokenId || 0),
@@ -27,7 +27,6 @@ export function usePositionFees(pool?: Pool, tokenId?: number, asWNative = false
                   },
               ]
             : undefined,
-        enabled: Boolean(isReady),
     });
 
     const amounts = amountsConfig?.result;

@@ -3,14 +3,14 @@ import { ChainId, CurrencyAmount, Pool, Position, Price, Token } from "@cryptoal
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
 import CurrencyLogo from "../CurrencyLogo";
-import { usePrepareAlgebraLimitOrderPluginWithdraw } from "@/generated";
-import { Address, useContractWrite } from "wagmi";
+import { useWriteAlgebraLimitOrderPluginWithdraw } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import Loader from "../Loader";
-import { useWeb3ModalState } from "@web3modal/wagmi/react";
 import KillLimitOrderModal from "@/components/modals/KillLimitOrderModal";
 import { HeaderItem } from "./common";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { Address } from "viem";
+import { useChainId } from "wagmi";
 
 interface Epoch {
     id: string;
@@ -144,7 +144,7 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
 };
 
 const Action = (props: LimitOrder) => {
-    const { selectedNetworkId } = useWeb3ModalState();
+    const  selectedNetworkId  = useChainId();
 
     if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId)) return;
 
@@ -158,19 +158,19 @@ const Action = (props: LimitOrder) => {
 };
 
 const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
-    const { config: withdrawConfig } = usePrepareAlgebraLimitOrderPluginWithdraw({
-        args: [BigInt(epoch.id), owner],
-    });
+    const withdrawConfig = {
+        args: [BigInt(epoch.id), owner] as const,
+    };
 
-    const { data: withdrawData, write: withdraw } = useContractWrite(withdrawConfig);
+    const { writeContract: withdraw, data: withdrawData } = useWriteAlgebraLimitOrderPluginWithdraw();
 
-    const { isLoading: isWithdrawLoading } = useTransactionAwait(withdrawData?.hash, {
+    const { isLoading: isWithdrawLoading } = useTransactionAwait(withdrawData, {
         type: TransactionType.LIMIT_ORDER,
         title: "Collect Limit Order",
     });
 
     return (
-        <Button size={"sm"} onClick={() => withdraw && withdraw()}>
+        <Button size={"sm"} onClick={() => withdraw && withdraw(withdrawConfig)}>
             {isWithdrawLoading ? <Loader /> : "Withdraw"}
         </Button>
     );

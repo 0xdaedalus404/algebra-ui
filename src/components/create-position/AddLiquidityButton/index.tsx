@@ -2,7 +2,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
 import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
-import { usePrepareAlgebraPositionManagerMulticall } from "@/generated";
+import { useWriteAlgebraPositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { IDerivedMintInfo } from "@/state/mintStore";
@@ -10,10 +10,11 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
 import { Percent, Currency, NonfungiblePositionManager, Field, ZERO, ChainId } from "@cryptoalgebra/custom-pools-sdk";
-import { useWeb3Modal, useWeb3ModalState } from "@web3modal/wagmi/react";
+import { useAppKit } from "@reown/appkit/react";
 import JSBI from "jsbi";
 import { useMemo } from "react";
-import { Address, useAccount, useChainId, useContractWrite } from "wagmi";
+import { Address } from "viem";
+import { useAccount, useChainId } from "wagmi";
 
 interface AddLiquidityButtonProps {
     baseCurrency: Currency | undefined | null;
@@ -28,9 +29,9 @@ const DEFAULT_ADD_IN_RANGE_SLIPPAGE_TOLERANCE = new Percent(50, 10_000);
 export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, poolAddress }: AddLiquidityButtonProps) => {
     const { address: account } = useAccount();
 
-    const { open } = useWeb3Modal();
+    const { open } = useAppKit();
 
-    const { selectedNetworkId } = useWeb3ModalState();
+    const  selectedNetworkId  = useChainId();
 
     const { txDeadline } = useUserState();
 
@@ -73,16 +74,18 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
         );
     }, [mintInfo, approvalStateA, approvalStateB]);
 
-    const { config: addLiquidityConfig } = usePrepareAlgebraPositionManagerMulticall({
-        args: calldata && [calldata as `0x${string}`[]],
-        enabled: Boolean(calldata && isReady),
-        value: BigInt(value || 0),
-    });
+    const addLiquidityConfig =
+        calldata && isReady
+            ? {
+                  args: calldata && ([calldata as `0x${string}`[]] as const),
+                  value: BigInt(value),
+              }
+            : undefined;
 
-    const { data: addLiquidityData, write: addLiquidity } = useContractWrite(addLiquidityConfig);
+    const { data: addLiquidityData, writeContract: addLiquidity } = useWriteAlgebraPositionManagerMulticall();
 
     const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
-        addLiquidityData?.hash,
+        addLiquidityData,
         {
             title: "Add liquidity",
             tokenA: baseCurrency?.wrapped.address as Address,
@@ -131,7 +134,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
         );
 
     return (
-        <Button disabled={!isReady} onClick={() => addLiquidity && addLiquidity()}>
+        <Button disabled={!isReady} onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}>
             {isAddingLiquidityLoading ? <Loader /> : "Create Position"}
         </Button>
     );

@@ -2,11 +2,11 @@ import { getVaultsByPool, SupportedDex, AlgebraVault, getExtendedAlgebraVault } 
 import useSWR from "swr";
 import { useEthersProvider } from "../common/useEthersProvider";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
-import { useAlgebraPoolToken0, useAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "../common/useCurrency";
 import { Address, formatUnits } from "viem";
 import { useChainId } from "wagmi";
 import { useUSDCPrice } from "../common/useUSDCValue";
+import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 
 export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
     name: string;
@@ -20,10 +20,10 @@ export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
 }
 
 export function useALMVaultsByPool(poolAddress: Address | undefined) {
-    const { data: token0Address } = useAlgebraPoolToken0({
+    const { data: token0Address } = useReadAlgebraPoolToken0({
         address: poolAddress,
     });
-    const { data: token1Address } = useAlgebraPoolToken1({
+    const { data: token1Address } = useReadAlgebraPoolToken1({
         address: poolAddress,
     });
 

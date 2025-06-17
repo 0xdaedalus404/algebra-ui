@@ -1,4 +1,5 @@
-import { getFarmingCenter } from "@/generated";
+import { simulateFarmingCenterCollectRewards } from "@/generated";
+import { wagmiConfig } from "@/providers/WagmiProvider";
 import { Address } from "viem";
 
 export async function getFarmingRewards({
@@ -15,18 +16,20 @@ export async function getFarmingRewards({
     tokenId: bigint;
 }): Promise<{ reward: bigint; bonusReward: bigint }> {
     try {
-        const farmingCenter = getFarmingCenter({});
         const {
             result: [reward, bonusReward],
-        } = await farmingCenter.simulate.collectRewards([
-            {
-                rewardToken,
-                bonusRewardToken,
-                pool,
-                nonce,
-            },
-            tokenId,
-        ]);
+        } = await simulateFarmingCenterCollectRewards(wagmiConfig, {
+            args: [
+                {
+                    rewardToken,
+                    bonusRewardToken,
+                    pool,
+                    nonce,
+                },
+                tokenId,
+            ],
+        });
+
         return {
             reward,
             bonusReward,

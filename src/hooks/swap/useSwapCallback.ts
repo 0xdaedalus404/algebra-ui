@@ -1,13 +1,15 @@
 import { formatBalance } from "@/utils/common/formatBalance";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import { Address, useAccount, useContractWrite } from "wagmi";
+import { useAccount } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
-import { getAlgebraRouter, usePrepareAlgebraRouterMulticall } from "@/generated";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { ApprovalStateType } from "@/types/approve-state";
 import { TransactionType } from "@/state/pendingTransactionsStore";
+import { Address } from "viem";
+import { simulateAlgebraRouterMulticall, useWriteAlgebraRouterMulticall } from "@/generated";
+import { wagmiConfig } from "@/providers/WagmiProvider";
 
 interface SwapCallEstimate {
     calldata: string;
@@ -43,39 +45,29 @@ export function useSwapCallback(
 
             setBestCall(undefined);
 
-            const algebraRouter = getAlgebraRouter({});
-
             const calls = await Promise.all(
-                swapCalldata.map(({ calldata, value: _value }) => {
+                swapCalldata.map(async ({ calldata, value: _value }) => {
                     const value = BigInt(_value);
 
-                    return algebraRouter.estimateGas
-                        .multicall([calldata], {
+                    try {
+                        const result = await simulateAlgebraRouterMulticall(wagmiConfig, {
+                            args: [calldata],
                             account,
                             value,
-                        })
-                        .then((gasEstimate) => ({
+                        });
+
+                        return {
                             calldata,
                             value,
-                            gasEstimate,
-                        }))
-                        .catch((gasError) => {
-                            return algebraRouter.simulate
-                                .multicall([calldata], {
-                                    account,
-                                    value,
-                                })
-                                .then(() => ({
-                                    calldata,
-                                    value,
-                                    error: new Error(`Unexpected issue with estimating the gas. Please try again. ${gasError}`),
-                                }))
-                                .catch((callError) => ({
-                                    calldata,
-                                    value,
-                                    error: new Error(callError),
-                                }));
-                        });
+                            gasEstimate: result.request.gas,
+                        };
+                    } catch (error) {
+                        return {
+                            calldata,
+                            value,
+                            error: error as Error,
+                        };
+                    }
                 })
             );
 
@@ -97,16 +89,21 @@ export function useSwapCallback(
         swapCalldata && findBestCall();
     }, [swapCalldata, approvalState, account]);
 
-    const { config: swapConfig } = usePrepareAlgebraRouterMulticall({
-        args: bestCall && [bestCall.calldata],
-        value: BigInt(bestCall?.value || 0),
-        enabled: Boolean(bestCall),
-        gas: bestCall ? (bestCall.gasEstimate * (10000n + 2000n)) / 10000n : undefined,
-    });
+    const swapConfig = useMemo(
+        () =>
+            bestCall
+                ? {
+                      args: [bestCall.calldata] as const,
+                      value: BigInt(bestCall.value),
+                      gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n,
+                  }
+                : undefined,
+        [bestCall]
+    );
 
-    const { data: swapData, writeAsync: swapCallback } = useContractWrite(swapConfig);
+    const { data: swapData, writeContractAsync: swapCallback } = useWriteAlgebraRouterMulticall();
 
-    const { isLoading, isSuccess } = useTransactionAwait(swapData?.hash, {
+    const { isLoading, isSuccess } = useTransactionAwait(swapData, {
         title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,
         tokenA: trade?.inputAmount.currency.wrapped.address as Address,
         tokenB: trade?.outputAmount.currency.wrapped.address as Address,
@@ -125,10 +122,10 @@ export function useSwapCallback(
 
         return {
             state: SwapCallbackState.VALID,
-            callback: swapCallback,
+            callback: () => swapConfig && swapCallback(swapConfig),
             error: null,
             isLoading,
             isSuccess,
         };
-    }, [trade, isLoading, swapCalldata, swapCallback, swapConfig, isSuccess]);
+    }, [trade, isLoading, swapCallback, swapConfig, isSuccess]);
 }

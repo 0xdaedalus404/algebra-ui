@@ -1,9 +1,10 @@
 import { useMemo } from "react";
-import { Address, useToken } from "wagmi";
+import { useToken } from "wagmi";
 import { Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ExtendedNative } from "@cryptoalgebra/custom-pools-sdk";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
+import { Address } from "viem";
 
 export function useAlgebraToken(address: Address | undefined, chainId: number) {
     const isETH = address === ADDRESS_ZERO;

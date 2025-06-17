@@ -1,5 +1,5 @@
 import { myPositionsColumns } from "@/components/common/Table/myPositionsColumns";
-import { Address } from "wagmi";
+import { Address } from "viem";
 import { FormattedPosition } from "@/types/formatted-position";
 import MyPositionsTable from "@/components/common/Table/myPositionsTable";
 

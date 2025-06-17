@@ -1,5 +1,5 @@
 import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
-import { useAlgebraPositionManagerTokenUri } from "@/generated";
+import { useReadAlgebraPositionManagerTokenUri } from "@/generated";
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -10,7 +10,7 @@ interface PositionNFTProps {
 }
 
 const PositionNFT = ({ positionId }: PositionNFTProps) => {
-    const { data: uri } = useAlgebraPositionManagerTokenUri({
+    const { data: uri } = useReadAlgebraPositionManagerTokenUri({
         args: positionId ? [BigInt(positionId)] : undefined,
     });
 
