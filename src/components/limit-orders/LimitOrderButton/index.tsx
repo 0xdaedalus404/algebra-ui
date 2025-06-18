@@ -5,13 +5,12 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useDerivedSwapInfo, useLimitOrderInfo } from "@/state/swapStore";
 import { ChainId, Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount, useChainId } from "wagmi";
-import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER, DEFAULT_CHAIN_NAME } from "config";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { SwapField } from "@/types/swap-field";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
 import { Address } from "viem";
 import { useWriteAlgebraLimitOrderPluginPlace } from "@/generated";
 import { useAppKit } from "@reown/appkit/react";
@@ -43,7 +42,7 @@ const LimitOrderButton = ({
 
     const { open } = useAppKit();
 
-    const  selectedNetworkId  = useChainId();
+    const selectedNetworkId = useChainId();
 
     const {
         currencies: { [SwapField.INPUT]: inputCurrency },
@@ -103,7 +102,7 @@ const LimitOrderButton = ({
     if (isWrongChain)
         return (
             <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>
-                {`Connect to ${DEFAULT_CHAIN_NAME[ChainId.Base]}`}
+                {`Connect to ${DEFAULT_CHAIN_NAME}`}
             </Button>
         );
 

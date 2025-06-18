@@ -7,8 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { ReactNode } from "react";
-import { customPoolDeployerTitles } from "@/constants/deployers.ts";
 import { formatAmount } from "@/utils/common/formatAmount";
+import { customPoolDeployerTitles } from "@/state/poolsStore";
 
 interface Pair {
     token0: TokenFieldsFragment;

@@ -1,5 +1,4 @@
-import { algebraQuoterV2ABI } from "@/abis";
-import { ALGEBRA_QUOTER_V2 } from "@/constants/addresses";
+import { algebraQuoterV2ABI, ALGEBRA_QUOTER_V2 } from "config";
 import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId, useReadContracts } from "wagmi";

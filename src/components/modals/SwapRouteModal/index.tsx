@@ -14,7 +14,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
 import { Route, Currency, Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import { customPoolDeployerTitles } from "@/constants/deployers";
+import { customPoolDeployerTitles } from "@/state/poolsStore";
 
 interface ISwapRouteModal {
     isOpen: boolean;

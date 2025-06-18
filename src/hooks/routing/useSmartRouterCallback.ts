@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address, encodeFunctionData } from "viem";
 import { useChainId, useSendTransaction } from "wagmi";
-
-import { ALGEBRA_ROUTER } from "@/constants/addresses";
-
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { algebraRouterABI } from "@/abis";
+import { algebraRouterABI, ALGEBRA_ROUTER } from "config";
 import { Currency } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { useUserState } from "@/state/userStore";

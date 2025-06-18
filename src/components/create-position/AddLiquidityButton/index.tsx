@@ -1,7 +1,6 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
-import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
+import { ALGEBRA_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
 import { useWriteAlgebraPositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -31,7 +30,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     const { open } = useAppKit();
 
-    const  selectedNetworkId  = useChainId();
+    const selectedNetworkId = useChainId();
 
     const { txDeadline } = useUserState();
 
@@ -100,12 +99,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return (
-            <Button
-                variant={"destructive"}
-                onClick={() => open({ view: "Networks" })}
-            >{`Connect to ${DEFAULT_CHAIN_NAME[chainId]}`}</Button>
-        );
+        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
     if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 

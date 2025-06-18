@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Deposit } from "@/graphql/generated/graphql";
 import { useFarmApprove } from "@/hooks/farming/useFarmApprove";
 import { useFarmCheckApprove } from "@/hooks/farming/useFarmCheckApprove";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { Farming } from "@/types/farming-info";
 import { FormattedPosition } from "@/types/formatted-position";
 import { useState } from "react";

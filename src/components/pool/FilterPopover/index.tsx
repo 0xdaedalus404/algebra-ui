@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { PositionsStatus } from "@/types/position-filter-status";
 import { usePositionFilterStore } from "@/state/positionFilterStore";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 
 const FilterPopover = ({ children }: { children: React.ReactNode }) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);

@@ -1,4 +1,4 @@
-import { STABLECOINS } from "@/constants/tokens";
+import { STABLECOINS } from "config";
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
 import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";

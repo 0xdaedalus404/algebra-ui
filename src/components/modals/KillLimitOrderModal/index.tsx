@@ -4,7 +4,7 @@ import { LimitOrder } from "@/components/common/Table/limitOrdersColumns";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { useWriteAlgebraLimitOrderPluginKill } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";

@@ -1,7 +1,7 @@
 import { useChainId } from "wagmi";
 import { Currency, ExtendedNative, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
+import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "config";
 import { useAlgebraToken } from "./useAlgebraToken";
 import { Address } from "viem";
 
@@ -13,7 +13,7 @@ export function useCurrency(address: Address | undefined, withNative?: boolean):
 
     const token = useAlgebraToken(isNative || isWNative ? ADDRESS_ZERO : address, chainId);
 
-    const extendedEther = ExtendedNative.onChain(chainId, DEFAULT_NATIVE_SYMBOL[chainId], DEFAULT_NATIVE_NAME[chainId]);
+    const extendedEther = ExtendedNative.onChain(chainId, DEFAULT_NATIVE_SYMBOL, DEFAULT_NATIVE_NAME);
 
     if (withNative) return isNative || isWNative ? extendedEther : token;
 

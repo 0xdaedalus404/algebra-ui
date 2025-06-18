@@ -1,5 +1,5 @@
 import { Deposit } from "@/graphql/generated/graphql";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { FarmingPositionImg } from "../FarmingPositionImg";
 
 interface FarmingPositionCardProps {

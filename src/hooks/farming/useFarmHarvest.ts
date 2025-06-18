@@ -1,4 +1,4 @@
-import { FARMING_CENTER } from "@/constants/addresses";
+import { FARMING_CENTER } from "config";
 import { getRewardsCalldata } from "@/utils/farming/getRewardsCalldata";
 import { useChainId } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
@@ -6,7 +6,7 @@ import { Address, encodeFunctionData } from "viem";
 import { Deposit } from "@/graphql/generated/graphql";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useWriteFarmingCenterMulticall } from "@/generated";
-import { farmingCenterABI } from "@/abis";
+import { farmingCenterABI } from "config/abis";
 
 export function useFarmHarvest({
     tokenId,

@@ -1,14 +1,16 @@
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { INFO_GRAPH_URL, LIMIT_ORDERS_GRAPH_URL, BLOCKS_GRAPH_URL, FARMING_GRAPH_URL } from "./config/graphql-urls";
 import type { CodegenConfig } from "@graphql-codegen/cli";
 import "dotenv/config";
 
 const config: CodegenConfig = {
     overwrite: true,
     schema: [
-        process.env.VITE_INFO_GRAPH,
-        process.env.VITE_LIMIT_ORDERS_GRAPH,
-        process.env.VITE_BLOCKS_GRAPH,
-        process.env.VITE_FARMING_GRAPH,
-    ] as string[],
+        INFO_GRAPH_URL[ChainId.Base],
+        LIMIT_ORDERS_GRAPH_URL[ChainId.Base],
+        BLOCKS_GRAPH_URL[ChainId.Base],
+        FARMING_GRAPH_URL[ChainId.Base],
+    ],
     documents: "src/graphql/queries/!(*.d).{ts,tsx}",
     generates: {
         "src/graphql/generated/graphql.tsx": {

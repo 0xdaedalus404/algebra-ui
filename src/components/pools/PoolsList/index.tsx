@@ -2,7 +2,7 @@ import { poolsColumns } from "@/components/common/Table/poolsColumns";
 import { useActiveFarmingsQuery, usePoolsListQuery } from "@/graphql/generated/graphql";
 import { useMemo } from "react";
 import { Address } from "viem";
-import { ETERNAL_FARMINGS_API, POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } from "@/constants/api";
+import { ETERNAL_FARMINGS_API, POOL_AVG_APR_API, POOL_MAX_APR_API, fetcher } from "config";
 import useSWR from "swr";
 import PoolsTable from "@/components/common/Table/poolsTable";
 import { usePositions } from "@/hooks/positions/usePositions";

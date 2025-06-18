@@ -1,4 +1,3 @@
-import { MAX_UINT128 } from "@/constants/max-uint128";
 import { usePool } from "@/hooks/pools/usePool";
 import { useInfoTickData } from "@/hooks/pools/usePoolTickData";
 import { useDerivedSwapInfo } from "@/state/swapStore";
@@ -6,7 +5,7 @@ import { formatCurrency } from "@/utils/common/formatCurrency";
 import { ADDRESS_ZERO, CurrencyAmount, INITIAL_POOL_FEE, Pool, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ArrowDownIcon, ArrowRightIcon, ArrowUpIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { Address } from "viem";
+import { Address, maxUint128 } from "viem";
 
 const NOT_SELECTED = Number.MAX_VALUE;
 
@@ -85,7 +84,7 @@ const MarketDepthChart = ({ currencyA, currencyB, isOpen, close, poolAddress }: 
                         ? TickMath.getSqrtRatioAtTick(ticksResult.ticksProcessed[i - 1].tickIdx)
                         : undefined;
 
-                    const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, MAX_UINT128.toString()) : undefined;
+                    const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, maxUint128.toString()) : undefined;
 
                     const outputRes0 = pool && maxAmountToken0 ? await pool.getOutputAmount(maxAmountToken0, nextSqrtX96) : undefined;
 

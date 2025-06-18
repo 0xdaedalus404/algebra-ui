@@ -1,6 +1,6 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_NAME } from "config";
 import { ExtendedVault } from "@/hooks/alm/useALMVaults";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
@@ -34,7 +34,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const { open } = useAppKit();
 
-    const  selectedNetworkId  = useChainId();
+    const selectedNetworkId = useChainId();
 
     const currency = vault?.depositToken;
     const useNative = currency?.isNative ? currency : undefined;
@@ -113,12 +113,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return (
-            <Button
-                variant={"destructive"}
-                onClick={() => open({ view: "Networks" })}
-            >{`Connect to ${DEFAULT_CHAIN_NAME[chainId]}`}</Button>
-        );
+        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
     // if (mintInfo.errorMessage) return <Button disabled>{mintInfo.errorMessage}</Button>;
 

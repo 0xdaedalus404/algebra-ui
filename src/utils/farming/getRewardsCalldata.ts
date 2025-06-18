@@ -1,7 +1,7 @@
 import { MaxUint128 } from "@cryptoalgebra/custom-pools-sdk";
 import { Address, encodeFunctionData } from "viem";
 import { isSameRewards } from "./isSameRewards";
-import { farmingCenterABI } from "@/abis";
+import { farmingCenterABI } from "config/abis";
 
 export function getRewardsCalldata({
     rewardToken,

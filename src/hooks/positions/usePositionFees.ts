@@ -1,8 +1,7 @@
-import { MAX_UINT128 } from "@/constants/max-uint128";
 import { useReadAlgebraPositionManagerOwnerOf, useSimulateAlgebraPositionManagerCollect } from "@/generated";
 import { Currency, CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
-import { Address } from "viem";
+import { Address, maxUint128 } from "viem";
 
 interface PositionFeesResult {
     amount0: CurrencyAmount<Currency> | undefined;
@@ -22,8 +21,8 @@ export function usePositionFees(pool?: Pool, tokenId?: number, asWNative = false
                   {
                       tokenId: BigInt(tokenId || 0),
                       recipient: owner as Address,
-                      amount0Max: MAX_UINT128,
-                      amount1Max: MAX_UINT128,
+                      amount0Max: maxUint128,
+                      amount1Max: maxUint128,
                   },
               ]
             : undefined,

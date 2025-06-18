@@ -1,5 +1,5 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { usePositionFilterStore } from "@/state/positionFilterStore";
 import {
     ColumnDef,

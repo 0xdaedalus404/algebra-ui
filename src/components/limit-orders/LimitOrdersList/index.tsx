@@ -6,7 +6,7 @@ import { useLimitOrdersListQuery, useMultiplePoolsQuery } from "@/graphql/genera
 import { useClients } from "@/hooks/graphql/useClients";
 import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
 import LimitOrdersTable from "@/components/common/Table/limitOrdersTable";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 
 const LimitOrdersList = () => {
     const { address: account } = useAccount();

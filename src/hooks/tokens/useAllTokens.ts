@@ -1,4 +1,4 @@
-import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
+import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "config";
 import { TokenFieldsFragment, useAllTokensQuery } from "@/graphql/generated/graphql";
 import { useTokensState } from "@/state/tokensStore";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
@@ -37,8 +37,8 @@ export function useAllTokens(showNativeToken: boolean = true) {
         if (showNativeToken)
             tokens.set(ADDRESS_ZERO, {
                 id: ADDRESS_ZERO,
-                symbol: DEFAULT_NATIVE_SYMBOL[chainId],
-                name: DEFAULT_NATIVE_NAME[chainId],
+                symbol: DEFAULT_NATIVE_SYMBOL,
+                name: DEFAULT_NATIVE_NAME,
                 decimals: 18,
                 derivedMatic: 1,
             });

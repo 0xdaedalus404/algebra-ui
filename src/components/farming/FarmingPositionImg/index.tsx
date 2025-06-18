@@ -1,5 +1,5 @@
 import { useReadAlgebraPositionManagerTokenUri } from "@/generated";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { useEffect, useRef } from "react";
 
 export const FarmingPositionImg = ({ positionId, size, className }: { positionId: bigint; size: number; className?: string }) => {

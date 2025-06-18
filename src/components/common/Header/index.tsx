@@ -12,7 +12,7 @@ import { TransactionCard } from "../TransactionCard";
 import { useAccount, useChainId } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
-import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_NAME } from "config";
 import { useAppKit } from "@reown/appkit/react";
 
 const Header = () => (
@@ -39,7 +39,7 @@ const Algebra = () => (
 const Account = () => {
     const { open } = useAppKit();
 
-    const  selectedNetworkId  = useChainId();
+    const selectedNetworkId = useChainId();
 
     const { pendingTransactions } = usePendingTransactionsStore();
 
@@ -51,7 +51,6 @@ const Account = () => {
         account && pendingTransactions[account]
             ? Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading).length
             : 0;
-
 
     if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId))
         return (
@@ -65,7 +64,7 @@ const Account = () => {
                     size={"sm"}
                     variant={"destructive"}
                     className="hidden md:block"
-                >{`Connect to ${DEFAULT_CHAIN_NAME[ChainId.Base]}`}</Button>
+                >{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>
                 <Button
                     onClick={() =>
                         open({

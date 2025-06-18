@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { useMediaQuery } from "@/hooks/common/useMediaQuery";
 import {
     Dialog,

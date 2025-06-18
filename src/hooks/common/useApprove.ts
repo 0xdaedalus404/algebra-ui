@@ -8,7 +8,7 @@ import {
     SmartRouterTrade,
 } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 
-import { ALGEBRA_ROUTER } from "@/constants/addresses";
+import { ALGEBRA_ROUTER } from "config";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
 
 import { useNeedAllowance } from "./useNeedAllowance";

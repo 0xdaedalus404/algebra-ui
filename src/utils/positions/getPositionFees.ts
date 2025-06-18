@@ -1,7 +1,7 @@
-import { MAX_UINT128 } from "@/constants/max-uint128";
 import { readAlgebraPositionManagerOwnerOf, simulateAlgebraPositionManagerCollect } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
 import { CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { maxUint128 } from "viem";
 
 export async function getPositionFees(pool: Pool, positionId: number) {
     try {
@@ -17,8 +17,8 @@ export async function getPositionFees(pool: Pool, positionId: number) {
                 {
                     tokenId: BigInt(positionId),
                     recipient: owner,
-                    amount0Max: MAX_UINT128,
-                    amount1Max: MAX_UINT128,
+                    amount0Max: maxUint128,
+                    amount1Max: maxUint128,
                 },
             ],
             account: owner,

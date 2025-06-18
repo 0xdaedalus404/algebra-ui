@@ -3,7 +3,7 @@ import React from "react";
 import USDTLogo from "@/assets/tokens/usdt.png";
 import USDCLogo from "@/assets/tokens/usdc.svg";
 import EtherLogo from "@/assets/tokens/ether.svg";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
 

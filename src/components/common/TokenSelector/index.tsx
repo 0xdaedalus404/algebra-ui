@@ -12,7 +12,7 @@ import CurrencyLogo from "../CurrencyLogo";
 import { ADDRESS_ZERO, Currency, ExtendedNative, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useTokensState } from "@/state/tokensStore";
 import { Copy } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { formatBalance } from "@/utils/common/formatBalance";
 
 const TokenSelectorView = {

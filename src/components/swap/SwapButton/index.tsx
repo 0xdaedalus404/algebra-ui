@@ -1,6 +1,6 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "@/constants/default-chain-id";
+import { DEFAULT_CHAIN_NAME } from "config";
 import { useApproveCallbackFromSmartTrade } from "@/hooks/common/useApprove";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
@@ -29,7 +29,7 @@ const SwapButton = ({
 }) => {
     const { open } = useAppKit();
 
-    const  selectedNetworkId  = useChainId();
+    const selectedNetworkId = useChainId();
 
     const { address: account } = useAccount();
 
@@ -124,11 +124,7 @@ const SwapButton = ({
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
     if (isWrongChain)
-        return (
-            <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${
-                DEFAULT_CHAIN_NAME[ChainId.Base]
-            }`}</Button>
-        );
+        return <Button variant={"destructive"} onClick={() => open({ view: "Networks" })}>{`Connect to ${DEFAULT_CHAIN_NAME}`}</Button>;
 
     if (showWrap && wrapInputError) return <Button disabled>{wrapInputError}</Button>;
 

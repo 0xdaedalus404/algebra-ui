@@ -1,4 +1,4 @@
-import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
+import { ALGEBRA_POSITION_MANAGER } from "config";
 import { useReadAlgebraPositionManagerTokenUri } from "@/generated";
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { ExternalLinkIcon } from "lucide-react";

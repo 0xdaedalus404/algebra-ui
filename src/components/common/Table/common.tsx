@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 import { ChevronDownIcon } from "lucide-react";
 
 interface HeaderItemProps {

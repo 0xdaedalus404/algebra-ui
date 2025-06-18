@@ -1,4 +1,4 @@
-import { BASES_TO_CHECK_TRADES_AGAINST } from "@/constants/routing";
+import { BASES_TO_CHECK_TRADES_AGAINST } from "config";
 import { Currency, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";

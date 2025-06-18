@@ -1,5 +1,4 @@
-import { algebraPositionManagerABI } from "@/abis";
-import { ALGEBRA_POSITION_MANAGER } from "@/constants/addresses";
+import { algebraPositionManagerABI, ALGEBRA_POSITION_MANAGER } from "config";
 import { useDepositsQuery } from "@/graphql/generated/graphql";
 import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";

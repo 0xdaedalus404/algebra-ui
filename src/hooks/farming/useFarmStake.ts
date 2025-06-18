@@ -1,4 +1,4 @@
-import { FARMING_CENTER } from "@/constants/addresses";
+import { FARMING_CENTER } from "config";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { Address, encodeFunctionData } from "viem";
 import { MaxUint128 } from "@cryptoalgebra/custom-pools-sdk";
@@ -9,7 +9,7 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useClients } from "../graphql/useClients";
 import { useChainId } from "wagmi";
 import { useWriteFarmingCenterEnterFarming, useWriteFarmingCenterMulticall } from "@/generated";
-import { farmingCenterABI } from "@/abis";
+import { farmingCenterABI } from "config/abis";
 
 export function useFarmStake({
     tokenId,

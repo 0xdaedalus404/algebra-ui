@@ -5,7 +5,7 @@ import { CurrencyAmount, INITIAL_POOL_FEE, Pool, Token, TickMath, Price, Currenc
 import { useEffect, useMemo, useState } from "react";
 import { Chart } from "./chart";
 import { Skeleton } from "@/components/ui/skeleton";
-import { MAX_UINT128 } from "@/constants/max-uint128";
+import { maxUint128 } from "viem";
 
 interface LiquidityChartProps {
     currencyA: Currency | undefined;
@@ -75,7 +75,7 @@ const LiquidityChart = ({ currencyA, currencyB, pool, currentPrice, priceLower, 
                         ? TickMath.getSqrtRatioAtTick(ticksResult.ticksProcessed[i - 1].tickIdx)
                         : undefined;
 
-                    const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, MAX_UINT128.toString()) : undefined;
+                    const maxAmountToken0 = currencyA ? CurrencyAmount.fromRawAmount(currencyA.wrapped, maxUint128.toString()) : undefined;
 
                     const outputRes0 = pool && maxAmountToken0 ? await pool.getOutputAmount(maxAmountToken0, nextSqrtX96) : undefined;
 

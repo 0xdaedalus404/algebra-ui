@@ -16,10 +16,9 @@ import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import Summary from "../Summary";
 import SelectPair from "../SelectPair";
-import { STABLECOINS } from "@/constants/tokens";
+import { STABLECOINS, CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { cn } from "@/lib/utils";
-import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { cn } from "@/utils/common/cn";
 
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";

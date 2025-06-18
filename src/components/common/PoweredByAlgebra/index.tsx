@@ -1,6 +1,6 @@
 import AlgebraLogo from "@/assets/algebra-logo.svg";
 import AlgebraIntegral from "@/assets/algebra-itegral.svg";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/common/cn";
 
 const PoweredByAlgebra = ({ className }: { className?: string }) => {
     return (

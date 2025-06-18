@@ -1,11 +1,11 @@
-import { ALGEBRA_ROUTER } from "@/constants/addresses";
-import { MAX_UINT128 } from "@/constants/max-uint128";
+import { ALGEBRA_ROUTER } from "config";
 import { readAlgebraPoolPlugin, simulateAlgebraBasePluginBeforeSwap } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
 import { ADDRESS_ZERO, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useEffect, useState } from "react";
 import { useChainId } from "wagmi";
+import { maxUint128 } from "viem";
 
 export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType> | undefined) {
     const [overrideFees, setOverrideFees] = useState<{
@@ -18,7 +18,7 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType> | undefin
     useEffect(() => {
         if (!smartTrade) return undefined;
 
-        const getFees = async() => {
+        const getFees = async () => {
             const fees: number[][] = [];
 
             for (const route of smartTrade.routes) {
@@ -53,7 +53,7 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType> | undefin
                                 ADDRESS_ZERO,
                                 isZeroToOne,
                                 smartTrade.tradeType === TradeType.EXACT_INPUT ? amountIn : amountOut,
-                                MAX_UINT128,
+                                maxUint128,
                                 false,
                                 "0x",
                             ] as const,
@@ -89,7 +89,7 @@ export function useOverrideFee(smartTrade: SmartRouterTrade<TradeType> | undefin
                 fee: 100 - p,
                 fees,
             });
-        }
+        };
 
         getFees();
     }, [smartTrade, chainId]);

@@ -1,9 +1,8 @@
-import { WNATIVE_EXTENDED } from "@/constants/routing";
 import { Currency, WNATIVE, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
-import { DEFAULT_NATIVE_SYMBOL } from "@/constants/default-chain-id";
+import { DEFAULT_NATIVE_SYMBOL, WNATIVE_EXTENDED } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useWriteWrappedNativeDeposit, useWriteWrappedNativeWithdraw } from "@/generated";

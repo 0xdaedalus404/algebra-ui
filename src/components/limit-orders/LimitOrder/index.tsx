@@ -5,7 +5,7 @@ import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryPar
 import { useCallback, useEffect, useMemo, useState } from "react";
 import LimitPriceCard from "../LimitPriceCard";
 import LimitOrderButton from "../LimitOrderButton";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
 
@@ -152,8 +152,8 @@ const LimitOrder = () => {
                 ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
                 : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
             : wasInverted
-            ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
-            : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+              ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+              : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
         if (priceTick === undefined) return [true, true];
 

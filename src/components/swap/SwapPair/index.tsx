@@ -15,7 +15,7 @@ import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
 import { useChainId } from "wagmi";

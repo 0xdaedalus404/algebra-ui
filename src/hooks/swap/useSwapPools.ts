@@ -4,7 +4,7 @@ import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
 import { useChainId } from "wagmi";
 import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql";
 import { useClients } from "../graphql/useClients";
-import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "@/constants/addresses";
+import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { Address } from "viem";
 
 /**

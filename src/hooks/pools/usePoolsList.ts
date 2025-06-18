@@ -1,5 +1,5 @@
-import { algebraFactoryABI } from "@/abis/algebraFactory";
-import { ALGEBRA_FACTORY } from "@/constants/addresses";
+import { algebraFactoryABI } from "config/abis/algebraFactory";
+import { ALGEBRA_FACTORY } from "config";
 import { useEffect, useState } from "react";
 import { Address, decodeEventLog, parseAbiItem } from "viem";
 import { useChainId, usePublicClient } from "wagmi";

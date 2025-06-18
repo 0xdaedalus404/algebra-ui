@@ -1,4 +1,4 @@
-import { STABLECOINS } from "@/constants/tokens";
+import { DEFAULT_CHAIN_ID, STABLECOINS } from "config";
 import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { usePool } from "@/hooks/pools/usePool";
@@ -8,7 +8,6 @@ import { SwapField, SwapFieldType } from "@/types/swap-field";
 import { TradeStateType } from "@/types/trade-state";
 import {
     ADDRESS_ZERO,
-    ChainId,
     Currency,
     CurrencyAmount,
     Percent,
@@ -78,7 +77,7 @@ export const useSwapState = create<SwapState>((set, get) => ({
         currencyId: ADDRESS_ZERO,
     },
     [SwapField.OUTPUT]: {
-        currencyId: STABLECOINS[ChainId.Base].USDC.address as Address,
+        currencyId: STABLECOINS[DEFAULT_CHAIN_ID].USDC.address as Address,
     },
     [SwapField.LIMIT_ORDER_PRICE]: "",
     wasInverted: false,

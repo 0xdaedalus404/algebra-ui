@@ -1,4 +1,4 @@
-import { ALGEBRA_POSITION_MANAGER, FARMING_CENTER } from "@/constants/addresses";
+import { ALGEBRA_POSITION_MANAGER, FARMING_CENTER } from "config";
 import { useChainId } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { useEffect } from "react";

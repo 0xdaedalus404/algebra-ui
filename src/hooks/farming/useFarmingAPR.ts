@@ -1,4 +1,4 @@
-import { ETERNAL_FARMINGS_API, fetcher } from "@/constants/api";
+import { ETERNAL_FARMINGS_API, fetcher } from "config";
 import { useMemo } from "react";
 import useSWR from "swr";
 
