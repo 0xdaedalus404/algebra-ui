@@ -5,3 +5,4 @@ export * from "./tokens";
 export * from "./graphql-urls";
 export * from "./apr-urls";
 export * from "./default-chain";
+export * from "./wagmi";

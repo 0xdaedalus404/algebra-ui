@@ -111,9 +111,9 @@ const PoolsTable = <TData, TValue>({
                         </label>
                         <Switch
                             id="farmingAvailable"
-                            checked={table.getColumn("plugins")?.getFilterValue() === true}
+                            checked={table.getColumn("deployer")?.getFilterValue() === true}
                             onCheckedChange={() => {
-                                const column = table.getColumn("plugins");
+                                const column = table.getColumn("deployer");
                                 if (column?.getFilterValue() === undefined) column?.setFilterValue(true);
                                 else column?.setFilterValue(undefined);
                             }}
