@@ -66,7 +66,7 @@ const Search = ({
             type="text"
             placeholder="Search name or paste address"
             autoComplete="off"
-            className="w-full text-black px-4 py-3 bg-card-dark rounded-xl border border-card-border"
+            className="w-full px-4 py-3 bg-card-dark rounded-xl border"
             onChange={(e) => handleInput(e.target.value)}
         />
     );

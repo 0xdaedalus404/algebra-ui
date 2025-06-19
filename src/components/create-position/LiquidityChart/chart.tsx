@@ -2,13 +2,14 @@
 import { BarChart, ResponsiveContainer, XAxis, Bar, Cell, Tooltip } from "recharts";
 import { useState } from "react";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { cn } from "@/utils";
 
 interface CustomBarProps {
     x: number;
     y: number;
     width: number;
     height: number;
-    fill: string;
+    fill: "primary" | "accent" | "muted" | "hover";
     percent: number | undefined;
     isCurrent: boolean;
 }
@@ -32,7 +33,7 @@ interface ChartProps {
     zoom: number;
 }
 
-const CustomBar = ({ x, y, width, height, fill, percent, isCurrent }: CustomBarProps) => {
+const CustomBar = ({ x, y, width, height, percent, isCurrent, fill }: CustomBarProps) => {
     return (
         <g>
             <defs>
@@ -51,7 +52,22 @@ const CustomBar = ({ x, y, width, height, fill, percent, isCurrent }: CustomBarP
                     Current Price
                 </text>
             )}
-            <rect x={x} y={y} fill={fill} width={width > 0 ? width : 0} height={height} rx="4" />
+            <rect
+                x={x}
+                y={y}
+                className={cn(
+                    fill === "primary"
+                        ? "fill-primary"
+                        : fill === "accent"
+                          ? "fill-accent"
+                          : fill === "muted"
+                            ? "fill-muted"
+                            : "fill-accent-foreground"
+                )}
+                width={width > 0 ? width : 0}
+                height={height}
+                rx="4"
+            />
         </g>
     );
 };
@@ -63,7 +79,7 @@ const CustomTooltip = ({ props, currencyA, currencyB }: CustomTooltipProps) => {
     // const tvlToken1 = props?.payload?.[0]?.payload.tvlToken1
 
     return (
-        <div className="flex flex-col gap-2 p-4 rounded-2xl bg-[#13192894] backdrop-blur-sm">
+        <div className="flex flex-col gap-2 p-4 rounded-2xl bg-card-dark backdrop-blur-sm">
             <div className="flex gap-4 justify-between">
                 <div>{`${currencyA?.symbol} Price:`}</div>
                 <div>{`${
@@ -156,10 +172,11 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                 />
 
                 <Bar
+                    className="fill-muted"
                     dataKey="activeLiquidity"
-                    fill="#2172E5"
                     isAnimationActive={false}
                     shape={(props) => {
+                        console.log("props", props.fill);
                         const price = props[isSorted ? "price0" : "price1"];
                         let percent = 0;
                         if (price === +Number(leftPrice).toFixed(8) || price === +Number(rightPrice).toFixed(8)) {
@@ -187,17 +204,17 @@ export function Chart({ formattedData, currencyA, currencyB, leftPrice, rightPri
                     }}
                 >
                     {formattedData?.map((entry: any, index: number) => {
-                        let fill = "#3b3c4e";
+                        let fill = "muted";
 
                         const value = isSorted ? entry.price0 : entry.price1;
 
                         if (focusBar === index) {
-                            fill = "#cdd1ff";
+                            fill = "hover";
                         } else if (entry.isCurrent) {
-                            fill = "#cd27f0";
+                            fill = "accent";
                         } else if (leftPrice && rightPrice) {
                             if (Number(value) >= Number(leftPrice) && Number(value) <= Number(rightPrice)) {
-                                fill = "url(#colorUv)";
+                                fill = "primary";
                             }
                         }
 

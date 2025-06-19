@@ -76,7 +76,7 @@ const LimitOrdersTable = <TData, TValue>({
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id} className="hover:bg-transparent">
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl text-white font-semibold">
+                                <TableHead key={header.id} className="rounded-xl font-semibold">
                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}

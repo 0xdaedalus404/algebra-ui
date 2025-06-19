@@ -138,7 +138,7 @@ const MyPositionsTable = <TData, TValue>({
                             data-state={row.getIsSelected() && "selected"}
                             className={`border-card-border ${isSelected ? "bg-card-dark" : "bg-card"} ${
                                 (action || link) && "cursor-pointer"
-                            } ${action || link ? (isSelected ? "hover:bg-muted-primary" : "hover:bg-card-hover") : "hover:bg-card-dark"} ${
+                            } ${action || link ? (isSelected ? "hover:bg-muted" : "hover:bg-card-hover") : "hover:bg-card-dark"} ${
                                 isStatusActive && !expandActive && "collapse border-0 opacity-0"
                             } ${isStatusOnFarming && !expandOnFarming && "collapse border-0 opacity-0"}
                             ${isStatusClosed && !expandClosed && "collapse border-0 opacity-0"} ${
@@ -174,7 +174,7 @@ const MyPositionsTable = <TData, TValue>({
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id} className="hover:bg-transparent">
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl text-white font-semibold [&_svg]:mt-auto">
+                                <TableHead key={header.id} className="rounded-xl font-semibold [&_svg]:mt-auto">
                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}

@@ -28,11 +28,6 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            {isLimitOrder && (
-                <div className="w-full mb-12 p-2  border-2 font-bold border-red-700 text-red-500 rounded-lg">
-                    💀 WARNING! This product is in the Beta stage. Use at your own risk & DYOR. 💀
-                </div>
-            )}
             <PageTitle title={isLimitOrder ? "Limit Order" : "Swap"} />
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">

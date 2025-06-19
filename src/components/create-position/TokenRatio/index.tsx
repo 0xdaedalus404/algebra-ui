@@ -1,5 +1,6 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { IDerivedMintInfo } from "@/state/mintStore";
+import { nearestUsableTick, priceToClosestTick, TickMath } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 
 interface TokenRatioProps {
@@ -9,12 +10,11 @@ interface TokenRatioProps {
 const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
     const {
         currencies: { CURRENCY_A: currencyA, CURRENCY_B: currencyB },
-        ticksAtLimit,
     } = mintInfo;
 
-    const { LOWER: tickLowerAtLimit, UPPER: tickUpperAtLimit } = ticksAtLimit;
-
     const [token0Ratio, token1Ratio] = useMemo(() => {
+        const tickUpperAtLimit =
+            mintInfo.upperPrice && nearestUsableTick(TickMath.MAX_TICK, mintInfo.tickSpacing) === priceToClosestTick(mintInfo.upperPrice);
         const currentPrice = mintInfo.price?.toSignificant(5);
 
         const left = mintInfo.lowerPrice?.toSignificant(5);
@@ -30,14 +30,6 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
 
         if (!right && left) return ["100", "0"];
 
-        if (mintInfo.depositADisabled) {
-            return ["0", "100"];
-        }
-
-        if (mintInfo.depositBDisabled) {
-            return ["100", "0"];
-        }
-
         if (left && right && currentPrice) {
             const leftRange = +currentPrice - +left;
             const rightRange = +right - +currentPrice;
@@ -47,41 +39,47 @@ const TokenRatio = ({ mintInfo }: TokenRatioProps) => {
             const leftRate = (+leftRange * 100) / totalSum;
             const rightRate = (+rightRange * 100) / totalSum;
 
-            if (mintInfo.invertPrice) {
-                return [String(leftRate), String(rightRate)];
-            } else {
-                return [String(rightRate), String(leftRate)];
+            if (!mintInfo.invertPrice) {
+                return [String(rightRate >= 100 ? 100 : rightRate), String(leftRate >= 100 ? 100 : leftRate)];
             }
+            return [String(leftRate >= 100 ? 100 : leftRate), String(rightRate >= 100 ? 100 : rightRate)];
         }
 
-        return ["0", "0"];
-    }, [mintInfo, tickLowerAtLimit, tickUpperAtLimit]);
+        return [null, null];
+    }, [mintInfo.invertPrice, mintInfo.lowerPrice, mintInfo.price, mintInfo.tickSpacing, mintInfo.upperPrice]);
+
+    if (!token0Ratio && !token1Ratio) return null;
 
     return (
-        <div className="relative flex h-[30px] bg-card-dark rounded-xl">
-            <div className="flex w-full h-full font-semibold">
+        <div className="relative flex h-[50px] min-h-[50px] rounded-xl p-2 bg-card-dark">
+            <div className="flex h-full w-full font-semibold">
                 {Number(token0Ratio) > 0 && (
                     <div
-                        className={`flex items-center justify-end pl-1 pr-2 h-full bg-[#143e65] border border-[#36f] duration-300 ${
-                            Number(token0Ratio) === 100 ? "rounded-2xl" : "rounded-l-2xl"
+                        className={`flex h-2 items-center justify-end bg-primary duration-300 ${
+                            Number(token0Ratio) === 100 ? "rounded-xl" : "rounded-l-xl"
                         }`}
                         style={{ width: `${token0Ratio}%` }}
-                    >
-                        <CurrencyLogo currency={currencyA} size={26} className="absolute left-1" />
-                        {`${Number(token0Ratio).toFixed()}%`}
-                    </div>
+                    />
                 )}
+                <div className="absolute left-2 top-5 flex gap-2">
+                    <CurrencyLogo currency={currencyA} size={24} />
+                    {Number(token0Ratio) > 0 ? <span>{`${Number(token0Ratio).toFixed()}%`}</span> : <span>0%</span>}
+                </div>
+
+                {Number(token0Ratio) > 0 && Number(token1Ratio) > 0 ? <div className="h-full w-1" /> : null}
+
                 {Number(token1Ratio) > 0 && (
                     <div
-                        className={`flex items-center pr-1 pl-2 h-full bg-[#351d6b] border border-[#996cff] duration-300 ${
-                            Number(token1Ratio) === 100 ? "rounded-2xl" : "rounded-r-2xl"
+                        className={`flex h-2 items-center justify-end bg-accent duration-300 ${
+                            Number(token1Ratio) === 100 ? "rounded-xl" : "rounded-r-xl"
                         }`}
                         style={{ width: `${token1Ratio}%` }}
-                    >
-                        {`${Number(token1Ratio).toFixed()}%`}
-                        <CurrencyLogo currency={currencyB} size={26} className="absolute right-1" />
-                    </div>
+                    />
                 )}
+                <div className="absolute right-2 top-5 flex gap-2">
+                    <CurrencyLogo currency={currencyB} size={24} />
+                    {Number(token1Ratio) > 0 ? <span>{`${Number(token1Ratio).toFixed()}%`}</span> : <span>0%</span>}
+                </div>
             </div>
         </div>
     );

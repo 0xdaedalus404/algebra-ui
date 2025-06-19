@@ -1,0 +1,23 @@
+:root {
+    --primary-100: #9250ff;
+    --primary-200: #c880ff;
+    --primary-300: #ffe5ff;
+    --accent-100: #ff4d4d;
+    --accent-200: #ffecda;
+
+    --text-100: #ffffff;
+    --text-200: #e0e0e0;
+    --bg-100: #333333;
+    --bg-200: #434343;
+    --bg-300: #5c5c5c;
+}
+
+@media (prefers-color-scheme: light) {
+    :root {
+        --text-100: #333333;
+        --text-200: #5c5c5c;
+        --bg-100: #eaeaea;
+        --bg-200: #e0e0e0;
+        --bg-300: #b8b8b8;
+    }
+}

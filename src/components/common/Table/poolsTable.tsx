@@ -126,7 +126,7 @@ const PoolsTable = <TData, TValue>({
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id} className="hover:bg-transparent">
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id} className="rounded-xl text-white font-semibold [&_svg]:mt-auto">
+                                <TableHead key={header.id} className="rounded-xl font-semibold [&_svg]:mt-auto">
                                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}

@@ -144,7 +144,7 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
 };
 
 const Action = (props: LimitOrder) => {
-    const  selectedNetworkId  = useChainId();
+    const selectedNetworkId = useChainId();
 
     if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId)) return;
 

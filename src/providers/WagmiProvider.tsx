@@ -20,6 +20,7 @@ createAppKit({
     networks: wagmiNetworks,
     projectId: PROJECT_ID,
     defaultNetwork: wagmiNetworks.find(({ id }) => id === DEFAULT_CHAIN_ID)!,
+    themeMode: "dark",
 });
 
 export const wagmiConfig = wagmiAdapter.wagmiConfig;
