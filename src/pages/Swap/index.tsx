@@ -9,8 +9,7 @@ import { useSmartRouterBestRoute } from "@/hooks/routing/useSmartRouterBestRoute
 import { Currency as CurrencyBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useAccount } from "wagmi";
 import { SwapPageProps, SwapPageView } from "./types";
-import LimitOrder from "@/components/limit-orders/LimitOrder";
-import LimitOrdersList from "@/components/limit-orders/LimitOrdersList";
+import { LimitOrder, LimitOrdersList } from "@/modules/LimitOrdersModule/components";
 
 const SwapPage = ({ type }: SwapPageProps) => {
     const { address: account } = useAccount();

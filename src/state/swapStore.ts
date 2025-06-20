@@ -1,7 +1,6 @@
 import { DEFAULT_CHAIN_ID, STABLECOINS } from "config";
 import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { usePool } from "@/hooks/pools/usePool";
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
@@ -11,11 +10,9 @@ import {
     Currency,
     CurrencyAmount,
     Percent,
-    Position,
     TickMath,
     Trade,
     TradeType,
-    ZERO,
     computePoolAddress,
 } from "@cryptoalgebra/custom-pools-sdk";
 import { Currency as CurrencyBN, CurrencyAmount as CurrencyAmountBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
@@ -186,34 +183,6 @@ export function tryParseAmount<T extends Currency>(
         console.debug(`Failed to parse input amount: "${value}"`, error);
     }
     return undefined;
-}
-
-export function useLimitOrderInfo(
-    poolAddress: Address | undefined,
-    amount: CurrencyAmount<Currency> | undefined,
-    limitOrderTick: number | undefined
-) {
-    const [, pool] = usePool(poolAddress);
-
-    return useMemo(() => {
-        if (!amount || !pool || typeof limitOrderTick !== "number") return undefined;
-
-        const amount0 = amount.currency.wrapped.equals(pool.token0) ? amount.quotient : ZERO;
-        const amount1 = amount.currency.wrapped.equals(pool.token1) ? amount.quotient : ZERO;
-
-        if (amount0 !== undefined && amount1 !== undefined) {
-            return Position.fromAmounts({
-                pool,
-                tickLower: limitOrderTick,
-                tickUpper: limitOrderTick + 60,
-                amount0,
-                amount1,
-                useFullPrecision: true,
-            });
-        } else {
-            return undefined;
-        }
-    }, [limitOrderTick, amount]);
 }
 
 export function useDerivedSwapInfo(): IDerivedSwapInfo {

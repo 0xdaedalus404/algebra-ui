@@ -10,12 +10,12 @@ import {
     TradeType,
     tryParseAmount,
 } from "@cryptoalgebra/custom-pools-sdk";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
+import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER, STABLECOINS } from "config";
 import { usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
@@ -177,6 +177,10 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                 ? (parsedAmounts[independentField]?.toExact() ?? "")
                 : (parsedAmounts[dependentField]?.toExact() ?? ""),
     };
+
+    useEffect(() => {
+        handleOutputSelect(STABLECOINS[chainId].USDC);
+    }, [chainId, handleOutputSelect]);
 
     return (
         <div className="flex flex-col gap-1 relative">

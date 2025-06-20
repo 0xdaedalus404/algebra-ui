@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { CreateAutomatedPosition } from "./CreateAutomatedPosition";
 import { CreateManualPosition } from "./CreateManualPosition";
 import { cn } from "@/utils/common/cn";
-import { useALMVaultsByPool } from "@/hooks/alm/useALMVaults";
+import { useALMVaultsByPool } from "@/modules/ALMModule/hooks/useALMVaults";
 import { CUSTOM_POOL_DEPLOYER_ALM } from "config";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";

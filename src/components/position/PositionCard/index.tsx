@@ -9,13 +9,12 @@ import TokenRatio from "@/components/create-position/TokenRatio";
 import { useDerivedMintInfo } from "@/state/mintStore";
 import CollectFees from "../CollectFees";
 import RemoveLiquidityModal from "@/components/modals/RemoveLiquidityModal";
-import { Farming } from "@/types/farming-info";
+import { Farming } from "@/modules/FarmingModule/types/farming-info";
 import { EternalFarming } from "@/graphql/generated/graphql";
-import ActiveFarmingCard from "../ActiveFarmingCard";
-import ClosedFarmingCard from "../ClosedFarmingCard";
 import { IncreaseLiquidityModal } from "@/components/modals/IncreaseLiquidityModal";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { formatAmount } from "@/utils/common/formatAmount";
+import { ActiveFarmingCard, ClosedFarmingCard } from "@/modules/FarmingModule/components";
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
