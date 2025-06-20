@@ -11,6 +11,7 @@ import { HeaderItem } from "./common";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
+import { ALGEBRA_LIMIT_ORDER_PLUGIN } from "config/contract-addresses";
 
 interface Epoch {
     id: string;
@@ -158,11 +159,14 @@ const Action = (props: LimitOrder) => {
 };
 
 const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrder) => {
+    const chainId = useChainId();
+
     const withdrawConfig = {
+        address: ALGEBRA_LIMIT_ORDER_PLUGIN[chainId],
         args: [BigInt(epoch.id), owner] as const,
     };
 
-    const { writeContract: withdraw, data: withdrawData } = useWriteAlgebraLimitOrderPluginWithdraw();
+    const { writeContract: withdraw, data: withdrawData } = useWriteAlgebraLimitOrderPluginWithdraw({});
 
     const { isLoading: isWithdrawLoading } = useTransactionAwait(withdrawData, {
         type: TransactionType.LIMIT_ORDER,

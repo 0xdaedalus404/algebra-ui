@@ -3,7 +3,7 @@ import { Farming } from "@/types/farming-info";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useFarmHarvest } from "@/hooks/farming/useFarmHarvest";
 import { useFarmUnstake } from "@/hooks/farming/useFarmStake";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { getFarmingRewards } from "@/utils/farming/getFarmingRewards";
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
@@ -17,6 +17,7 @@ interface ActiveFarmingCardProps {
 
 const ActiveFarmingCard = ({ farming, selectedPosition }: ActiveFarmingCardProps) => {
     const { address: account } = useAccount();
+    const chainId = useChainId();
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
@@ -40,6 +41,7 @@ const ActiveFarmingCard = ({ farming, selectedPosition }: ActiveFarmingCardProps
         pool: farming.farming.pool,
         nonce: farming.farming.nonce,
         account: account ?? ADDRESS_ZERO,
+        chainId,
     };
 
     const { onHarvest, isLoading: isHarvesting, isSuccess: isHarvested } = useFarmHarvest(farmingArgs);

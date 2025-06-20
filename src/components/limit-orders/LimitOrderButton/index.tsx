@@ -74,6 +74,7 @@ const LimitOrderButton = ({
 
     const placeLimitOrderConfig = isReady
         ? {
+              address: ALGEBRA_LIMIT_ORDER_PLUGIN[chainId],
               args: [
                   {
                       token0: token0.address as Address,

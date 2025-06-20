@@ -57,7 +57,7 @@ const CustomBar = ({ x, y, width, height, percent, isCurrent, fill }: CustomBarP
                 y={y}
                 className={cn(
                     fill === "primary"
-                        ? "fill-primary"
+                        ? "fill-primary-200"
                         : fill === "accent"
                           ? "fill-accent"
                           : fill === "muted"

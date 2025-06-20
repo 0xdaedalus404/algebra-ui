@@ -10,7 +10,7 @@ import { getFarmingRewards } from "@/utils/farming/getFarmingRewards";
 import { FormattedPosition } from "@/types/formatted-position";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useFarmHarvestAll } from "@/hooks/farming/useFarmHarvest";
 import Loader from "@/components/common/Loader";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
@@ -25,6 +25,7 @@ interface ActiveFarmingProps {
 
 const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmingProps) => {
     const { address: account } = useAccount();
+    const chainId = useChainId();
 
     const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
     const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
@@ -97,6 +98,7 @@ const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmingProps)
                         pool: farming.farming.pool,
                         nonce: farming.farming.nonce,
                         tokenId: BigInt(deposit.id),
+                        chainId,
                     })
                 );
             }

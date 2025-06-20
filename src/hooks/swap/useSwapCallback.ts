@@ -1,6 +1,6 @@
 import { formatBalance } from "@/utils/common/formatBalance";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
@@ -10,6 +10,7 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { simulateAlgebraRouterMulticall, useWriteAlgebraRouterMulticall } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
+import { ALGEBRA_ROUTER } from "config/contract-addresses";
 
 interface SwapCallEstimate {
     calldata: string;
@@ -34,6 +35,7 @@ export function useSwapCallback(
     approvalState: ApprovalStateType
 ) {
     const { address: account } = useAccount();
+    const chainId = useChainId();
 
     const [bestCall, setBestCall] = useState<any>();
 
@@ -51,6 +53,7 @@ export function useSwapCallback(
 
                     try {
                         const result = await simulateAlgebraRouterMulticall(wagmiConfig, {
+                            address: ALGEBRA_ROUTER[chainId],
                             args: [calldata],
                             account,
                             value,
@@ -87,18 +90,19 @@ export function useSwapCallback(
         }
 
         swapCalldata && findBestCall();
-    }, [swapCalldata, approvalState, account]);
+    }, [swapCalldata, approvalState, account, chainId]);
 
     const swapConfig = useMemo(
         () =>
             bestCall
                 ? {
+                      address: ALGEBRA_ROUTER[chainId],
                       args: [bestCall.calldata] as const,
                       value: BigInt(bestCall.value),
                       gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n,
                   }
                 : undefined,
-        [bestCall]
+        [bestCall, chainId]
     );
 
     const { data: swapData, writeContractAsync: swapCallback } = useWriteAlgebraRouterMulticall();

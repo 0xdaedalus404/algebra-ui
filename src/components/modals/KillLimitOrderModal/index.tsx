@@ -4,7 +4,7 @@ import { LimitOrder } from "@/components/common/Table/limitOrdersColumns";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
+import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { useWriteAlgebraLimitOrderPluginKill } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
@@ -30,6 +30,7 @@ const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, positio
     }, [positionLO.amount0, positionLO.amount1, value, zeroToOne]);
 
     const killConfig = {
+        address: ALGEBRA_LIMIT_ORDER_PLUGIN[chainId],
         args: [
             {
                 token0: pool.token0.address as Address,

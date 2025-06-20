@@ -16,7 +16,13 @@ import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import Summary from "../Summary";
 import SelectPair from "../SelectPair";
-import { STABLECOINS, CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
+import {
+    STABLECOINS,
+    CUSTOM_POOL_BASE,
+    CUSTOM_POOL_DEPLOYER_ALM,
+    CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
+    ALGEBRA_POSITION_MANAGER,
+} from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { cn } from "@/utils/common/cn";
 
@@ -122,6 +128,7 @@ const CreatePoolForm = () => {
     const { data: createBasePoolData, writeContract: createBasePool } = useWriteAlgebraPositionManagerMulticall();
 
     const createBasePoolConfig = {
+        address: ALGEBRA_POSITION_MANAGER[chainid],
         args: Array.isArray(calldata) ? ([calldata as Address[]] as const) : ([[calldata] as Address[]] as const),
         value: BigInt(value || 0),
         enabled: Boolean(calldata),

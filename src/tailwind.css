@@ -6,6 +6,20 @@
     --screen-xl: 1280px;
     --screen-2xl: 1400px;
 
+    --color-primary-100: var(--primary-100);
+    --color-primary-200: var(--primary-200);
+    --color-primary-300: var(--primary-300);
+
+    --color-accent-100: var(--accent-100);
+    --color-accent-200: var(--accent-200);
+
+    --color-text-100: var(--text-100);
+    --color-text-200: var(--text-200);
+
+    --color-bg-100: var(--bg-100);
+    --color-bg-200: var(--bg-200);
+    --color-bg-300: var(--bg-300);
+
     --color-text: var(--text-100);
     --color-border: var(--bg-300);
     --color-input: var(--bg-100);

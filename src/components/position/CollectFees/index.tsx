@@ -7,9 +7,10 @@ import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { NonfungiblePositionManager } from "@cryptoalgebra/custom-pools-sdk";
+import { ALGEBRA_POSITION_MANAGER } from "config/contract-addresses";
 import { useMemo } from "react";
 import { Address } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 
 interface CollectFeesProps {
     mintInfo: IDerivedMintInfo;
@@ -19,6 +20,7 @@ interface CollectFeesProps {
 
 const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps) => {
     const { address: account } = useAccount();
+    const chainId = useChainId();
 
     const pool = mintInfo.pool;
 
@@ -39,6 +41,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
 
     const collectConfig = calldata
         ? {
+              address: ALGEBRA_POSITION_MANAGER[chainId],
               args: [calldata as `0x${string}`[]] as const,
               value: BigInt(value || 0),
           }

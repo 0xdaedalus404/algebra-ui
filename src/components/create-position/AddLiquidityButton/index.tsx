@@ -76,6 +76,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     const addLiquidityConfig =
         calldata && isReady
             ? {
+                  address: ALGEBRA_POSITION_MANAGER[selectedNetworkId],
                   args: calldata && ([calldata as `0x${string}`[]] as const),
                   value: BigInt(value),
               }

@@ -20,13 +20,13 @@ body {
     max-width: 1280px;
     height: 100%;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0 2rem;
     text-align: center;
 }
 
 @media (max-width: 480px) {
     #root {
-        padding: 1rem;
+        padding: 0 1rem;
     }
 }
 

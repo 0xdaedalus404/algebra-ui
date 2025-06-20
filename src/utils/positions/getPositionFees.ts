@@ -1,18 +1,21 @@
 import { readAlgebraPositionManagerOwnerOf, simulateAlgebraPositionManagerCollect } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
 import { CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/custom-pools-sdk";
+import { ALGEBRA_POSITION_MANAGER } from "config/contract-addresses";
 import { maxUint128 } from "viem";
 
 export async function getPositionFees(pool: Pool, positionId: number) {
     try {
         const owner = await readAlgebraPositionManagerOwnerOf(wagmiConfig, {
-            chainId: pool.chainId as 8453 | 84532,
+            address: ALGEBRA_POSITION_MANAGER[pool.chainId],
+            chainId: pool.chainId,
             args: [BigInt(positionId)],
         });
 
         const {
             result: [fees0, fees1],
         } = await simulateAlgebraPositionManagerCollect(wagmiConfig, {
+            address: ALGEBRA_POSITION_MANAGER[pool.chainId],
             args: [
                 {
                     tokenId: BigInt(positionId),

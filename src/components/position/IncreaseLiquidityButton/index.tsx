@@ -85,6 +85,7 @@ export const IncreaseLiquidityButton = ({
 
     const increaseLiquidityConfig = calldata
         ? {
+              address: ALGEBRA_POSITION_MANAGER[chainId],
               args: [calldata as `0x${string}`[]] as const,
               value: BigInt(value || 0),
           }

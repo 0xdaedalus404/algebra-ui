@@ -16,7 +16,7 @@ import { DEFAULT_CHAIN_NAME } from "config";
 import { useAppKit } from "@reown/appkit/react";
 
 const Header = () => (
-    <header className="sticky top-4 z-10 grid grid-cols-3 justify-between items-center py-1 px-2 bg-card border border-card-border rounded-3xl gap-4">
+    <header className="sticky top-0 py-4 z-10 grid grid-cols-3 bg-background h-full max-h-18 justify-between items-center gap-4">
         <Algebra />
         <Navigation />
         <Account />
@@ -26,7 +26,7 @@ const Header = () => (
 const Algebra = () => (
     <div className="flex items-center gap-2">
         <NavLink to={"/"}>
-            <div className="flex items-center gap-2 py-1 pl-2 pr-3 bg-card rounded-3xl hover:bg-card-hover duration-200">
+            <div className="flex items-center gap-2 rounded-3xl duration-200">
                 <div className="flex items-center justify-center w-[32px] h-[32px] rounded-full">
                     <img src={AlgebraLogo} width={25} height={25} />
                 </div>
@@ -104,7 +104,7 @@ const Account = () => {
                     ) : (
                         <Button
                             variant="ghost"
-                            className="flex font-normal items-center my-auto h-10 px-3 justify-center gap-2 bg-card-light/20 cursor-pointer border border-card-light hover:border-border/30 rounded-3xl transition-all duration-200"
+                            className="flex font-normal items-center my-auto h-10 px-3 justify-center gap-2 cursor-pointerrounded-3xl transition-all duration-200"
                             aria-label="Transaction history"
                         >
                             <AlignJustify size={20} />

@@ -34,19 +34,21 @@ export function useFarmStake({
 
     const address = tokenId && approved ? FARMING_CENTER[chainId] : undefined;
 
-    const config = {
-        address,
-        functionName: "enterFarming",
-        args: [
-            {
-                rewardToken,
-                bonusRewardToken,
-                pool,
-                nonce,
-            },
-            tokenId,
-        ] as const,
-    };
+    const config = address
+        ? {
+              address,
+              functionName: "enterFarming",
+              args: [
+                  {
+                      rewardToken,
+                      bonusRewardToken,
+                      pool,
+                      nonce,
+                  },
+                  tokenId,
+              ] as const,
+          }
+        : undefined;
 
     const { data: data, writeContractAsync: onStake } = useWriteFarmingCenterEnterFarming();
 
@@ -141,7 +143,7 @@ export function useFarmUnstake({
     const config =
         account && tokenId
             ? {
-                  address: account && tokenId ? FARMING_CENTER[chainId] : undefined,
+                  address: FARMING_CENTER[chainId],
                   args: [calldatas] as const,
               }
             : undefined;

@@ -12,9 +12,10 @@ import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { ALGEBRA_POSITION_MANAGER } from "config/contract-addresses";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
-import { useAccount } from "wagmi";
+import { useAccount, useChainId } from "wagmi";
 
 interface RemoveLiquidityModalProps {
     positionId: number;
@@ -25,6 +26,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const { txDeadline } = useUserState();
     const { address: account } = useAccount();
+    const chainId = useChainId();
 
     const { refetch: refetchAllPositions } = usePositions();
 
@@ -59,6 +61,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const removeLiquidityConfig = calldata
         ? {
+              address: ALGEBRA_POSITION_MANAGER[chainId],
               args: [calldata as `0x${string}`[]] as const,
               value: BigInt(value || 0),
           }
