@@ -1,4 +1,4 @@
-import { getVaultsByPool, SupportedDex, AlgebraVault, getExtendedAlgebraVault } from "@cryptoalgebra/alm-sdk";
+import { getVaultsByPool, AlgebraVault, getExtendedAlgebraVault, getAllVaults } from "@cryptoalgebra/alm-sdk";
 import useSWR from "swr";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { Address, formatUnits } from "viem";
@@ -7,6 +7,7 @@ import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated"
 import { useEthersProvider } from "@/hooks/common/useEthersProvider";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
+import { DEX } from "../dex";
 
 export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
     name: string;
@@ -17,6 +18,12 @@ export interface ExtendedVault extends Omit<AlgebraVault, "tokenA" | "tokenB"> {
     token0: Currency;
     token1: Currency;
     depositToken: Currency;
+}
+
+export function useAllALMVaults() {
+    const chainId = useChainId();
+
+    return useSWR(["allALMVaults", chainId], () => getAllVaults(chainId, DEX));
 }
 
 export function useALMVaultsByPool(poolAddress: Address | undefined) {
@@ -37,16 +44,22 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
     const { formatted: currencyAPriceUSD } = useUSDCPrice(currencyA);
     const { formatted: currencyBPriceUSD } = useUSDCPrice(currencyB);
 
+    const { data: vaultAddresses } = useSWR(["vaultAddresses", poolAddress], async () => {
+        if (!poolAddress) {
+            throw new Error("No pool address");
+        }
+        const vaultAddresses: string[] = await getVaultsByPool(poolAddress, chainId, DEX);
+        return vaultAddresses;
+    });
+
     const { data: vaults, isLoading } = useSWR(
-        ["vaults", poolAddress, provider, currencyA, currencyB, chainId, currencyAPriceUSD, currencyBPriceUSD],
+        ["almVaults", vaultAddresses, currencyA, currencyB, poolAddress, currencyAPriceUSD, currencyBPriceUSD],
         async () => {
-            if (!provider || !currencyA || !currencyB || !poolAddress) {
+            if (!provider || !currencyA || !currencyB || !poolAddress || !currencyAPriceUSD || !currencyBPriceUSD || !vaultAddresses) {
                 throw new Error("No provider");
             }
 
-            const dex = SupportedDex.CLAMM;
-
-            const vaultAddresses: string[] = await getVaultsByPool(poolAddress, chainId, SupportedDex.CLAMM);
+            const dex = DEX;
 
             const vaultsData = await Promise.all(
                 vaultAddresses.map(async (vault) => {

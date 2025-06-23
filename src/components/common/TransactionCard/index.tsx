@@ -7,8 +7,10 @@ import { Check, ExternalLinkIcon, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Transaction, TransactionType } from "@/state/pendingTransactionsStore";
 import Loader from "../Loader";
-import { FarmingPositionImg } from "@/modules/FarmingModule/components/FarmingPositionImg";
 import { useAppKitNetwork } from "@reown/appkit/react";
+
+import FarmingModule from "@/modules/FarmingModule";
+const { FarmingPositionImg } = FarmingModule.components;
 
 export const TransactionCard = ({ hash, transaction }: { hash: Address; transaction: Transaction }) => {
     const currencyA = useCurrency(transaction.data.tokenA, true);

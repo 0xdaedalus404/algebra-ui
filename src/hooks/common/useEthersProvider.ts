@@ -3,8 +3,7 @@ import { providers } from "ethers";
 import { useMemo } from "react";
 import useSWR from "swr";
 import type { Account, Chain, Client, Transport } from "viem";
-import { useChainId, usePublicClient } from "wagmi";
-import { getConnectorClient } from "wagmi/actions";
+import { useChainId, useConnectorClient, usePublicClient } from "wagmi";
 
 export function clientToJsonRpcProvider(client: Client<Transport, Chain>) {
     const { chain, transport } = client;
@@ -46,11 +45,12 @@ export function useEthersProvider() {
 export function useEthersSigner() {
     const chainId = useChainId();
 
-    const { data: provider } = useSWR(["ethersProvider", chainId], async () => {
-        const client = await getConnectorClient(wagmiConfig, { chainId });
-        if (!client) throw new Error("No wallet client");
-        return clientToWeb3Provider(client);
+    const { data: client } = useConnectorClient({
+        config: wagmiConfig,
+        chainId,
     });
+
+    const { data: provider } = useSWR(client ? ["ethersProvider", client] : null, () => clientToWeb3Provider(client!));
 
     return provider;
 }

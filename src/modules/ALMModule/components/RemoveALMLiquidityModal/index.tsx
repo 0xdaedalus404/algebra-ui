@@ -3,7 +3,6 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { UserALMVault, useUserALMVaultsByPool } from "@/modules/ALMModule/hooks/useUserALMVaults";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
@@ -15,7 +14,6 @@ import { ApprovalState } from "@/types/approve-state";
 import {
     algebraVaultDecimals,
     SupportedChainId,
-    SupportedDex,
     VAULT_DEPOSIT_GUARD,
     withdrawNativeToken,
     withdrawWithSlippage,
@@ -25,6 +23,8 @@ import { useCallback, useEffect, useState } from "react";
 import { Address, parseUnits } from "viem";
 import { useAccount, useChainId } from "wagmi";
 import { BigNumber } from "ethers";
+import { UserALMVault, useUserALMVaultsByPool } from "../../hooks";
+import { DEX } from "../../dex";
 
 interface RemoveALMLiquidityModalProps {
     userVault: UserALMVault | undefined;
@@ -58,7 +58,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         lpShareToWithdraw,
-        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][SupportedDex.CLAMM] as Address
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][DEX] as Address
     );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
@@ -77,23 +77,9 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
         try {
             let tx;
             if (!useNative) {
-                tx = await withdrawNativeToken(
-                    account,
-                    shareToWithdraw,
-                    vault.id,
-                    provider,
-                    SupportedDex.CLAMM,
-                    Number(slippage.toSignificant(4))
-                );
+                tx = await withdrawNativeToken(account, shareToWithdraw, vault.id, provider, DEX, Number(slippage.toSignificant(4)));
             } else {
-                tx = await withdrawWithSlippage(
-                    account,
-                    shareToWithdraw,
-                    vault.id,
-                    provider,
-                    SupportedDex.CLAMM,
-                    Number(slippage.toSignificant(4))
-                );
+                tx = await withdrawWithSlippage(account, shareToWithdraw, vault.id, provider, DEX, Number(slippage.toSignificant(4)));
             }
 
             setTxHash(tx.hash as Address);

@@ -7,8 +7,14 @@ import useSWR from "swr";
 import PoolsTable from "@/components/common/Table/poolsTable";
 import { usePositions } from "@/hooks/positions/usePositions";
 import { useClients } from "@/hooks/graphql/useClients";
+import { useAccount } from "wagmi";
+
+import ALMModule from "@/modules/ALMModule";
+const { useAllUserALMAmounts } = ALMModule.hooks;
 
 const PoolsList = () => {
+    const { address: account } = useAccount();
+
     const { infoClient, farmingClient } = useClients();
 
     const { data: pools, loading: isPoolsListLoading } = usePoolsListQuery({
@@ -19,6 +25,8 @@ const PoolsList = () => {
         client: farmingClient,
     });
     const { positions, loading: isPositionsLoading } = usePositions();
+
+    const { data: almPositions } = useAllUserALMAmounts(account);
 
     const { data: poolsMaxApr, isLoading: isPoolsMaxAprLoading } = useSWR(POOL_MAX_APR_API, fetcher);
     const { data: poolsAvgApr, isLoading: isPoolsAvgAprLoading } = useSWR(POOL_AVG_APR_API, fetcher);
@@ -47,6 +55,8 @@ const PoolsList = () => {
             const openPositions = positions?.filter((position) => position.pool.toLowerCase() === id.toLowerCase());
             const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
 
+            const openAlmPositions = almPositions?.filter((position) => position.poolAddress.toLowerCase() === id.toLowerCase());
+
             const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
             const poolAvgApr = poolsAvgApr && poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
             const farmApr = activeFarming && farmingsAPR && farmingsAPR[activeFarming.id] > 0 ? farmingsAPR[activeFarming.id] : 0;
@@ -67,12 +77,12 @@ const PoolsList = () => {
                 poolAvgApr,
                 farmApr,
                 avgApr,
-                isMyPool: Boolean(openPositions?.length),
+                isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
                 hasActiveFarming: Boolean(activeFarming),
                 deployer: deployer.toLowerCase(),
             };
         });
-    }, [isLoading, pools, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR]);
+    }, [isLoading, pools, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR, almPositions]);
 
     return (
         <div className="flex flex-col gap-4">

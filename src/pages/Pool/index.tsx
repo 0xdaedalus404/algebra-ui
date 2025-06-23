@@ -1,5 +1,4 @@
 import PageContainer from "@/components/common/PageContainer";
-import { ActiveFarming } from "@/modules/FarmingModule/components";
 import MyPositions from "@/components/pool/MyPositions";
 import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
 import PoolHeader from "@/components/pool/PoolHeader";
@@ -7,8 +6,6 @@ import PositionCard from "@/components/position/PositionCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNativePriceQuery, usePoolFeeDataQuery, useSinglePoolQuery } from "@/graphql/generated/graphql";
-import { useActiveFarming } from "@/modules/FarmingModule/hooks/useActiveFarming";
-import { useClosedFarmings } from "@/modules/FarmingModule/hooks/useClosedFarmings";
 import { usePool } from "@/hooks/pools/usePool";
 import { usePositions } from "@/hooks/positions/usePositions";
 import { FormattedPosition } from "@/types/formatted-position";
@@ -22,10 +19,17 @@ import { Link, useParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import JSBI from "jsbi";
 import { useClients } from "@/hooks/graphql/useClients";
-import { useUserALMVaultsByPool } from "@/modules/ALMModule/hooks/useUserALMVaults";
 import { Address } from "viem";
 import { useAppKit } from "@reown/appkit/react";
-import { ALMPositionCard } from "@/modules/ALMModule/components";
+
+import ALMModule from "@/modules/ALMModule";
+import FarmingModule from "@/modules/FarmingModule";
+
+const { ALMPositionCard } = ALMModule.components;
+const { useUserALMVaultsByPool } = ALMModule.hooks;
+
+const { ActiveFarming } = FarmingModule.components;
+const { useActiveFarming, useClosedFarmings } = FarmingModule.hooks;
 
 const PoolPage = () => {
     const { address: account } = useAccount();

@@ -7,15 +7,14 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
 import { ChainId, Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
-import { deposit, depositNativeToken, SupportedChainId, SupportedDex, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
+import { deposit, depositNativeToken, SupportedChainId, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { useUserSlippageToleranceWithDefault } from "@/state/userStore";
 import { Address } from "viem";
 import { useAppKit } from "@reown/appkit/react";
 import { ExtendedVault, useUserALMVaultsByPool } from "../../hooks";
-
-const dex = SupportedDex.CLAMM;
+import { DEX } from "../../dex";
 
 interface AddAutomatedLiquidityButtonProps {
     vault: ExtendedVault | undefined;
@@ -40,7 +39,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         amount,
-        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][dex] as Address
+        VAULT_DEPOSIT_GUARD[chainId as SupportedChainId][DEX] as Address
     );
 
     const isApprovePending = approvalStateA === ApprovalState.PENDING;
@@ -67,7 +66,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    dex,
+                    DEX,
                     Number(slippage.toSignificant(4))
                 );
             } else {
@@ -77,7 +76,7 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
                     vault.allowTokenB ? amount.toExact() : "0",
                     vault.id,
                     provider,
-                    dex,
+                    DEX,
                     Number(slippage.toSignificant(4))
                 );
             }

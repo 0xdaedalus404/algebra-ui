@@ -4,14 +4,16 @@ import { useParams } from "react-router-dom";
 import { useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { CreateAutomatedPosition } from "./CreateAutomatedPosition";
 import { CreateManualPosition } from "./CreateManualPosition";
 import { cn } from "@/utils/common/cn";
-import { useALMVaultsByPool } from "@/modules/ALMModule/hooks/useALMVaults";
 import { CUSTOM_POOL_DEPLOYER_ALM } from "config";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { Address } from "viem";
+
+import ALMModule from "@/modules/ALMModule";
+const { useALMVaultsByPool } = ALMModule.hooks;
+const { CreateAutomatedPosition } = ALMModule.components;
 
 type NewPositionPageParams = Record<"pool", Address>;
 

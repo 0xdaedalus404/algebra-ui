@@ -1,9 +1,10 @@
 import { Address, formatUnits } from "viem";
 import { ExtendedVault, useALMVaultsByPool } from "./useALMVaults";
 import useSWR from "swr";
-import { calculateUserDepositTokenPNL, getUserAmounts, SupportedDex } from "@cryptoalgebra/alm-sdk";
+import { calculateUserDepositTokenPNL, getUserAmounts } from "@cryptoalgebra/alm-sdk";
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { useUSDCPrice } from "@/hooks/common/useUSDCValue";
+import { DEX } from "../dex";
 
 export interface UserALMVault {
     amount0: string;
@@ -33,14 +34,13 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
             }
 
             const userALMVaults: UserALMVault[] = [];
-            const dex = SupportedDex.CLAMM;
 
             for (const vault of vaults) {
                 const [userAmount0, userAmount1, shares] = await getUserAmounts(
                     account,
                     vault.id,
                     provider,
-                    dex,
+                    DEX,
                     vault.token0.decimals,
                     vault.token1.decimals,
                     true
@@ -63,7 +63,7 @@ export function useUserALMVaultsByPool(poolAddress: Address | undefined, account
                     vault.token0.decimals,
                     vault.token1.decimals,
                     provider,
-                    dex
+                    DEX
                 );
 
                 userALMVaults.push({

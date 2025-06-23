@@ -1,11 +1,11 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import AddAutomatedLiquidityButton from "@/modules/ALMModule/components/AddAutomatedLiquidityButton";
 import EnterAmountCard from "@/components/create-position/EnterAmountsCard";
-import { ExtendedVault } from "@/modules/ALMModule/hooks/useALMVaults";
 import { useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useState, useEffect } from "react";
+import { ExtendedVault } from "../../hooks";
+import AddAutomatedLiquidityButton from "../AddAutomatedLiquidityButton";
 
 interface CreateAutomatedPositionProps {
     vaults?: ExtendedVault[];

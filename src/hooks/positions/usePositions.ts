@@ -107,8 +107,11 @@ export function usePositions() {
     const chainId = useChainId();
 
     const { data: balanceResult, isLoading: balanceLoading } = useReadAlgebraPositionManagerBalanceOf({
+        address: ALGEBRA_POSITION_MANAGER[chainId],
         args: account ? [account] : undefined,
     });
+
+    console.log(balanceResult, "b");
 
     const tokenIdsArgs: [Address, number][] = useMemo(() => {
         if (!balanceResult || !account) return [];
