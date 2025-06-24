@@ -143,7 +143,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                             <Button
                                 key={`liquidity-percent-${v}`}
                                 disabled={isRemoveLoading}
-                                variant={"icon"}
+                                variant={sliderValue[0] === v ? "iconActive" : "icon"}
                                 className="border border-card-border"
                                 size={"sm"}
                                 onClick={() => setSliderValue([v])}

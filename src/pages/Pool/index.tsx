@@ -24,6 +24,7 @@ import { useAppKit } from "@reown/appkit/react";
 
 import ALMModule from "@/modules/ALMModule";
 import FarmingModule from "@/modules/FarmingModule";
+import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 
 const { ALMPositionCard } = ALMModule.components;
 const { useUserALMVaultsByPool } = ALMModule.hooks;
@@ -82,12 +83,12 @@ const PoolPage = () => {
             .filter(({ pool }) => pool.toLowerCase() === poolId.toLowerCase())
             .map((position) => ({
                 positionId: position.tokenId,
-                position: new Position({
-                    pool: poolEntity,
-                    liquidity: position.liquidity.toString(),
-                    tickLower: Number(position.tickLower),
-                    tickUpper: Number(position.tickUpper),
-                }),
+                position: createUncheckedPosition(
+                    poolEntity,
+                    position.liquidity.toString(),
+                    Number(position.tickLower),
+                    Number(position.tickUpper)
+                ),
             }));
     }, [positions, poolEntity]);
 
@@ -143,7 +144,7 @@ const PoolPage = () => {
     };
 
     const positionsData = useMemo(() => {
-        if (!filteredPositions || !poolEntity || !deposits) return [];
+        if (!filteredPositions || !poolEntity) return [];
 
         const filteredALMPositions =
             userVaults?.map(
@@ -162,7 +163,7 @@ const PoolPage = () => {
             ) || [];
 
         const positionsData = filteredPositions.map(({ positionId, position }, idx) => {
-            const currentPosition = deposits.deposits.find((deposit) => Number(deposit.id) === Number(positionId));
+            const currentPosition = deposits?.deposits?.find((deposit) => Number(deposit.id) === Number(positionId));
             return {
                 id: positionId.toString(),
                 isClosed: JSBI.EQ(position.liquidity, ZERO),

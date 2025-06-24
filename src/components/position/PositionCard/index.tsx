@@ -1,6 +1,6 @@
 import { usePool } from "@/hooks/pools/usePool";
 import { usePosition, usePositionInFarming } from "@/hooks/positions/usePositions";
-import { INITIAL_POOL_FEE, Position } from "@cryptoalgebra/custom-pools-sdk";
+import { INITIAL_POOL_FEE } from "@cryptoalgebra/custom-pools-sdk";
 import PositionNFT from "../PositionNFT";
 import { FormattedPosition } from "@/types/formatted-position";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -16,6 +16,7 @@ import { formatAmount } from "@/utils/common/formatAmount";
 
 import FarmingModule from "@/modules/FarmingModule";
 import { Farming } from "@/modules/FarmingModule/types";
+import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 const { ActiveFarmingCard, ClosedFarmingCard } = FarmingModule.components;
 
 interface PositionCardProps {
@@ -41,12 +42,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
     const positionEntity =
         pool &&
         position &&
-        new Position({
-            pool,
-            liquidity: position.liquidity.toString(),
-            tickLower: Number(position.tickLower),
-            tickUpper: Number(position.tickUpper),
-        });
+        createUncheckedPosition(pool, position.liquidity.toString(), Number(position.tickLower), Number(position.tickUpper));
 
     const mintInfo = useDerivedMintInfo(currencyA, currencyB, position?.pool, INITIAL_POOL_FEE, currencyA, positionEntity || undefined);
 

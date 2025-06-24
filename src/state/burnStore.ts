@@ -2,6 +2,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { usePool } from "@/hooks/pools/usePool";
 import { usePositionFees } from "@/hooks/positions/usePositionFees";
 import { PositionFromTokenId } from "@/hooks/positions/usePositions";
+import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import { Currency, CurrencyAmount, Percent, Position, unwrappedToken } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useMemo } from "react";
 import { useAccount } from "wagmi";
@@ -48,12 +49,7 @@ export function useDerivedBurnInfo(
     const positionSDK = useMemo(
         () =>
             pool && position?.liquidity && typeof position?.tickLower === "number" && typeof position?.tickUpper === "number"
-                ? new Position({
-                      pool,
-                      liquidity: position.liquidity.toString(),
-                      tickLower: position.tickLower,
-                      tickUpper: position.tickUpper,
-                  })
+                ? createUncheckedPosition(pool, position.liquidity.toString(), Number(position.tickLower), Number(position.tickUpper))
                 : undefined,
         [pool, position]
     );
