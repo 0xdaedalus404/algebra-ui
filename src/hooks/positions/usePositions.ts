@@ -111,8 +111,6 @@ export function usePositions() {
         args: account ? [account] : undefined,
     });
 
-    console.log(balanceResult, "b");
-
     const tokenIdsArgs: [Address, number][] = useMemo(() => {
         if (!balanceResult || !account) return [];
 

@@ -5,7 +5,7 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useDerivedSwapInfo } from "@/state/swapStore";
 import { ChainId, Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount, useChainId } from "wagmi";
-import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER, DEFAULT_CHAIN_NAME } from "config";
+import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { SwapField } from "@/types/swap-field";
@@ -80,7 +80,7 @@ export const LimitOrderButton = ({
                   {
                       token0: token0.address as Address,
                       token1: token1.address as Address,
-                      deployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
+                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
                   },
                   limitOrder.tickLower,
                   zeroToOne,

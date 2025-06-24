@@ -4,8 +4,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useLimitOrdersListQuery, useMultiplePoolsQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { limitOrderColumns, LimitOrdersTable } from "../Table";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 
 export const LimitOrdersList = () => {
     const { address: account } = useAccount();
@@ -42,7 +42,7 @@ export const LimitOrdersList = () => {
                     new Token(chainId, token1.id, Number(token1.decimals), token1.symbol, token1.name),
                     INITIAL_POOL_FEE,
                     sqrtPrice,
-                    CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
+                    CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
                     liquidity,
                     Number(tick),
                     tickSpacing
@@ -88,7 +88,7 @@ export const LimitOrdersList = () => {
                             pool.token1,
                             pool.fee,
                             zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO,
-                            CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
+                            CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
                             pool.liquidity,
                             zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK,
                             pool.tickSpacing

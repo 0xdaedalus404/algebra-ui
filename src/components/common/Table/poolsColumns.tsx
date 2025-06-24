@@ -8,7 +8,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { ReactNode } from "react";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { customPoolDeployerTitles } from "@/state/poolsStore";
+import { customPoolDeployerTitleByAddress } from "config/custom-pool-deployer";
 
 interface Pair {
     token0: TokenFieldsFragment;
@@ -97,7 +97,7 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 Deployer
             </HeaderItem>
         ),
-        cell: ({ row }) => customPoolDeployerTitles[row.original.deployer],
+        cell: ({ row }) => customPoolDeployerTitleByAddress[row.original.deployer.toLowerCase() as Address],
     },
     {
         accessorKey: "tvlUSD",

@@ -7,3 +7,4 @@ export * from "./apr-urls";
 export * from "./default-chain";
 export * from "./wagmi";
 export * from "./modules";
+export * from "./custom-pool-deployer";

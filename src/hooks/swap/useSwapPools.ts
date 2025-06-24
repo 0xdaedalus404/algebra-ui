@@ -4,8 +4,8 @@ import { useAllCurrencyCombinations } from "./useAllCurrencyCombinations";
 import { useChainId } from "wagmi";
 import { TokenFieldsFragment, useMultiplePoolsLazyQuery } from "@/graphql/generated/graphql";
 import { useClients } from "../graphql/useClients";
-import { CUSTOM_POOL_BASE, CUSTOM_POOL_DEPLOYER_ALM, CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { Address } from "viem";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 
 /**
  * Returns all the existing pools that should be considered for swapping between an input currency and an output currency
@@ -47,14 +47,14 @@ export function useSwapPools(
     useEffect(() => {
         async function getPools() {
             const customPoolDeployerAddresses = [
-                CUSTOM_POOL_BASE[chainId],
-                CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
-                CUSTOM_POOL_DEPLOYER_ALM[chainId],
+                CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainId],
+                CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId],
+                CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
             ].filter((d) => d !== undefined);
 
             const poolsAddresses = allCurrencyCombinations.flatMap(([tokenA, tokenB]) =>
                 customPoolDeployerAddresses.map((customPoolDeployer) =>
-                    customPoolDeployer === CUSTOM_POOL_BASE[chainId]
+                    customPoolDeployer === CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainId]
                         ? computePoolAddress({ tokenA, tokenB })
                         : computeCustomPoolAddress({
                               tokenA,

@@ -16,13 +16,7 @@ import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import Summary from "../Summary";
 import SelectPair from "../SelectPair";
-import {
-    STABLECOINS,
-    CUSTOM_POOL_BASE,
-    CUSTOM_POOL_DEPLOYER_ALM,
-    CUSTOM_POOL_DEPLOYER_LIMIT_ORDER,
-    ALGEBRA_POSITION_MANAGER,
-} from "config";
+import { STABLECOINS, ALGEBRA_POSITION_MANAGER, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { cn } from "@/utils/common/cn";
 
@@ -30,13 +24,7 @@ import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
 import { useWriteAlgebraCustomPoolDeployerCreateCustomPool, useWriteAlgebraPositionManagerMulticall } from "@/generated";
 
-const POOL_DEPLOYER = {
-    BASE: "Base",
-    LIMIT_ORDER: "Limit Order",
-    ALM: "ALM",
-};
-
-type PoolDeployerType = (typeof POOL_DEPLOYER)[keyof typeof POOL_DEPLOYER];
+type PoolDeployerType = (typeof CUSTOM_POOL_DEPLOYER_TITLES)[keyof typeof CUSTOM_POOL_DEPLOYER_TITLES];
 
 const CreatePoolForm = () => {
     const { address: account } = useAccount();
@@ -54,7 +42,7 @@ const CreatePoolForm = () => {
 
     const chainid = useChainId();
 
-    const [poolDeployer, setPoolDeployer] = useState<PoolDeployerType>(POOL_DEPLOYER.BASE);
+    const [poolDeployer, setPoolDeployer] = useState<PoolDeployerType>(CUSTOM_POOL_DEPLOYER_TITLES.BASE);
 
     const currencyA = currencies[SwapField.INPUT];
     const currencyB = currencies[SwapField.OUTPUT];
@@ -65,9 +53,9 @@ const CreatePoolForm = () => {
 
     const customPoolDeployerAddresses = useMemo(
         () => ({
-            [POOL_DEPLOYER.BASE]: CUSTOM_POOL_BASE[chainid],
-            [POOL_DEPLOYER.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid],
-            [POOL_DEPLOYER.ALM]: CUSTOM_POOL_DEPLOYER_ALM[chainid],
+            [CUSTOM_POOL_DEPLOYER_TITLES.BASE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid],
+            [CUSTOM_POOL_DEPLOYER_TITLES.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainid],
+            [CUSTOM_POOL_DEPLOYER_TITLES.ALM]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainid],
         }),
         [chainid]
     );
@@ -82,7 +70,7 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         areCurrenciesSelected && !isSameToken
-            ? [CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainid], CUSTOM_POOL_DEPLOYER_ALM[chainid]]
+            ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid], CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainid]]
                   .filter((deployer): deployer is Address => deployer !== undefined)
                   .map(
                       (customPoolDeployer) =>
@@ -100,9 +88,9 @@ const CreatePoolForm = () => {
     const [poolState0] = usePool(customPoolsAddresses[0]);
     const [poolState1] = usePool(customPoolsAddresses[1]);
 
-    const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.BASE;
-    const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.LIMIT_ORDER;
-    const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === POOL_DEPLOYER.ALM;
+    const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE;
+    const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.LIMIT_ORDER;
+    const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.ALM;
 
     const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists;
 
@@ -145,7 +133,7 @@ const CreatePoolForm = () => {
         "/pools"
     );
 
-    const isCustomPoolDeployerReady = account && mintInfo.pool && poolDeployer !== POOL_DEPLOYER.BASE;
+    const isCustomPoolDeployerReady = account && mintInfo.pool && poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE;
 
     const createCustomPoolConfig = isCustomPoolDeployerReady
         ? {
@@ -188,7 +176,7 @@ const CreatePoolForm = () => {
     };
 
     const handleCreatePool = () => {
-        if (poolDeployer === POOL_DEPLOYER.BASE) {
+        if (poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE) {
             if (!createBasePool) return;
             createBasePool(createBasePoolConfig);
         }
@@ -210,7 +198,7 @@ const CreatePoolForm = () => {
             <div className="text-left font-bold">
                 <div>Plugin</div>
                 <div className="grid grid-cols-2 w-full gap-4 my-2">
-                    {Object.entries(POOL_DEPLOYER).map(([, v]) => (
+                    {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
                         <button
                             key={v}
                             onClick={() => handlePoolDeployerChange(v)}
@@ -238,7 +226,7 @@ const CreatePoolForm = () => {
                 )}
             </Button>
 
-            {poolDeployer !== POOL_DEPLOYER.BASE && (
+            {poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE && (
                 <Button disabled={isDisabled} onClick={() => createBasePool(createBasePoolConfig)} className="mt-2">
                     {isBasePoolLoading ? <Loader /> : "Initialize"}
                 </Button>

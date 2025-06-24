@@ -6,12 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CreateManualPosition } from "./CreateManualPosition";
 import { cn } from "@/utils/common/cn";
-import { CUSTOM_POOL_DEPLOYER_ALM } from "config";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { Address } from "viem";
 
 import ALMModule from "@/modules/ALMModule";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
+import { enabledModules } from "config/modules";
 const { useALMVaultsByPool } = ALMModule.hooks;
 const { CreateAutomatedPosition } = ALMModule.components;
 
@@ -32,11 +33,9 @@ const NewPositionPage = () => {
     });
 
     const isALMPool =
-        data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ALM[chainId]
-            ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ALM[chainId].toLowerCase()
+        data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId]
+            ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId].toLowerCase()
             : false;
-
-    console.log(data?.pool?.deployer, CUSTOM_POOL_DEPLOYER_ALM[chainId], isALMPool);
 
     const { vaults } = useALMVaultsByPool(isALMPool ? poolAddress : undefined);
 
@@ -49,7 +48,7 @@ const NewPositionPage = () => {
     return (
         <PageContainer>
             <PageTitle title={"Create Position"}>
-                {!isCustomPoolDeployerLoading && isALMPool && (
+                {!isCustomPoolDeployerLoading && isALMPool && enabledModules.alm && (
                     <div className="grid grid-cols-2 items-center border border-primary-button rounded-full">
                         <Button
                             onClick={() => setIsALM(false)}

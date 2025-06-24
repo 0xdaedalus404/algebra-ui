@@ -1,4 +1,4 @@
-import { ADDRESS_ZERO, ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 
 export const POOL_INIT_CODE_HASH: Record<number, Address> = {
@@ -49,19 +49,4 @@ export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
 export const FARMING_CENTER: Record<number, Address> = {
     [ChainId.Base]: "0x3aA96eDb755C44F3E50C5408a36abb52f28326Ba",
     [ChainId.BaseSepolia]: "0x211BD8917d433B7cC1F4497AbA906554Ab6ee479",
-};
-
-export const CUSTOM_POOL_DEPLOYER_LIMIT_ORDER: Record<number, Address> = {
-    [ChainId.Base]: "0xf3b57fe4d5d0927c3a5e549cb6af1866687e2d62",
-    [ChainId.BaseSepolia]: "0x9089f3440c8e7534afcfec2b731c4d6b78876308",
-};
-
-export const CUSTOM_POOL_BASE: Record<number, Address> = {
-    [ChainId.Base]: ADDRESS_ZERO,
-    [ChainId.BaseSepolia]: ADDRESS_ZERO,
-};
-
-export const CUSTOM_POOL_DEPLOYER_ALM: Record<number, Address> = {
-    [ChainId.Base]: "0x05f3bd357d47d159ac7d33f9dbaacfc65d31976d",
-    [ChainId.BaseSepolia]: ADDRESS_ZERO,
 };

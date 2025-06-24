@@ -3,11 +3,11 @@ import { useDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { computeCustomPoolAddress, getTickToPrice, TickMath, tickToPrice, tryParseTick, WNATIVE } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER } from "config";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
 import { LimitPriceCard } from "../LimitPriceCard";
 import { LimitOrderButton } from "../LimitOrderButton";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 
 export const LimitOrder = () => {
     const { currencies } = useDerivedSwapInfo();
@@ -45,7 +45,7 @@ export const LimitOrder = () => {
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
               }) as Address)
             : undefined;
 

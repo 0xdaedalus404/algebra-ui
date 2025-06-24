@@ -14,7 +14,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
 import { Route, Currency, Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import { customPoolDeployerTitles } from "@/state/poolsStore";
+import { customPoolDeployerTitleByAddress } from "config";
 
 interface ISwapRouteModal {
     isOpen: boolean;
@@ -30,7 +30,7 @@ const RoutePool = ({ pool }: { pool: { path: Currency[]; address: Address; deplo
     const currencyA = useCurrency(token0.wrapped.address as Address, true);
     const currencyB = useCurrency(token1.wrapped.address as Address, true);
 
-    const deployer = customPoolDeployerTitles[pool.deployer.toLowerCase()];
+    const deployer = customPoolDeployerTitleByAddress[pool.deployer.toLowerCase() as Address];
 
     return (
         <div className={"w-full flex items-center justify-between py-2"}>

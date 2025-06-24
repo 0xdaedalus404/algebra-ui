@@ -9,7 +9,6 @@ import { useSmartRouterBestRoute } from "@/hooks/routing/useSmartRouterBestRoute
 import { Currency as CurrencyBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useAccount } from "wagmi";
 import { SwapPageProps, SwapPageView } from "./types";
-import { isActiveModule } from "@/modules";
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
 
 const { LimitOrder, LimitOrdersList } = LimitOrdersModule.components;
@@ -17,7 +16,7 @@ const { LimitOrder, LimitOrdersList } = LimitOrdersModule.components;
 const SwapPage = ({ type }: SwapPageProps) => {
     const { address: account } = useAccount();
 
-    const isLimitOrder = isActiveModule(LimitOrdersModule) && type === SwapPageView.LIMIT_ORDER;
+    const isLimitOrder = type === SwapPageView.LIMIT_ORDER;
 
     const derivedSwap = useDerivedSwapInfo();
 

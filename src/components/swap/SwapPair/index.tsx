@@ -15,7 +15,7 @@ import TokenCard from "../TokenCard";
 import { ChevronsUpDownIcon } from "lucide-react";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { CUSTOM_POOL_DEPLOYER_LIMIT_ORDER, STABLECOINS } from "config";
+import { CUSTOM_POOL_DEPLOYER_ADDRESSES, STABLECOINS } from "config";
 import { usePool } from "@/hooks/pools/usePool";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
@@ -42,11 +42,11 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
     const limitOrderPoolAddress =
-        baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId] && !showWrap
+        baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId] && !showWrap
             ? (computeCustomPoolAddress({
                   tokenA: baseCurrency.wrapped,
                   tokenB: quoteCurrency.wrapped,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_LIMIT_ORDER[chainId],
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
               }) as Address)
             : undefined;
 

@@ -1,11 +1,8 @@
 import * as LimitOrdersHooks from "./hooks";
 import * as LimitOrdersComponents from "./components";
-import * as LimitOrdersTypes from "./types";
+import { enabledModules } from "config";
+import { createSafeModule } from "../utils";
 
-const LimitOrdersModule = {
-    hooks: LimitOrdersHooks,
-    components: LimitOrdersComponents,
-    types: LimitOrdersTypes,
-};
+const LimitOrdersModule = createSafeModule(enabledModules.limitOrders, LimitOrdersHooks, LimitOrdersComponents);
 
 export default LimitOrdersModule;
