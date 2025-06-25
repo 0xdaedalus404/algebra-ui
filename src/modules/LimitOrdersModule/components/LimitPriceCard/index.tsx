@@ -60,7 +60,7 @@ export const LimitPriceCard = ({
     }, [currency, otherCurrency]);
 
     return (
-        <div className={`flex flex-col gap-4 bg-card-dark p-3 rounded-2xl ${disabled ? "disabled" : ""} `}>
+        <div className={`flex flex-col gap-4 bg-card-dark p-3 rounded-lg ${disabled ? "disabled" : ""} `}>
             <div className="flex justify-between w-full">
                 <div className="text-sm font-semibold">
                     {currency

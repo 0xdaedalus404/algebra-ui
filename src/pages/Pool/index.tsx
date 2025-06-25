@@ -1,6 +1,5 @@
 import PageContainer from "@/components/common/PageContainer";
 import MyPositions from "@/components/pool/MyPositions";
-import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
 import PoolHeader from "@/components/pool/PoolHeader";
 import PositionCard from "@/components/position/PositionCard";
 import { Button } from "@/components/ui/button";
@@ -20,11 +19,12 @@ import { useAccount } from "wagmi";
 import JSBI from "jsbi";
 import { useClients } from "@/hooks/graphql/useClients";
 import { Address } from "viem";
-import { useAppKit } from "@reown/appkit/react";
 
 import ALMModule from "@/modules/ALMModule";
 import FarmingModule from "@/modules/FarmingModule";
 import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
+import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
+import { useAppKit } from "@reown/appkit/react";
 
 const { ALMPositionCard } = ALMModule.components;
 const { useUserALMVaultsByPool } = ALMModule.hooks;
@@ -196,10 +196,11 @@ const PoolPage = () => {
 
     return (
         <PageContainer>
-            <PoolHeader pool={poolEntity} />
+            <PoolHeader />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 w-full mt-3">
                 <div className="col-span-2">
+                    <MyPositionsToolbar currencyA={poolEntity?.token0} currencyB={poolEntity?.token1} positionsData={positionsData} />
                     {!account ? (
                         <NoAccount />
                     ) : positionsLoading || isFarmingLoading || areDepositsLoading || areUserVaultsLoading ? (
@@ -208,7 +209,6 @@ const PoolPage = () => {
                         <NoPositions poolId={poolId} />
                     ) : (
                         <>
-                            <MyPositionsToolbar positionsData={positionsData} poolId={poolId} />
                             <MyPositions
                                 positions={positionsData}
                                 poolId={poolId}
@@ -239,9 +239,9 @@ const PoolPage = () => {
 };
 
 const NoPositions = ({ poolId }: { poolId: Address }) => (
-    <div className="flex flex-col items-start p-8 bg-card border border-card-border rounded-3xl animate-fade-in">
+    <div className="flex flex-col items-start gap-4 p-6 bg-card border border-card-border rounded-xl animate-fade-in">
         <h2 className="text-2xl font-bold">You don't have positions for this pool</h2>
-        <p className="text-md font-semibold my-4">Let's create one!</p>
+        <p className="text-md font-semibold">Let's create one!</p>
         <Button className="gap-2" asChild>
             <Link to={`/pool/${poolId}/new-position`}>
                 Create Position
@@ -255,7 +255,7 @@ const NoAccount = () => {
     const { open } = useAppKit();
 
     return (
-        <div className="flex flex-col items-start p-8 bg-card border border-card-border rounded-3xl animate-fade-in">
+        <div className="flex flex-col items-start p-6 bg-card border border-card-border rounded-xl animate-fade-in">
             <h2 className="text-2xl font-bold">Connect Wallet</h2>
             <p className="text-md font-semibold my-4">Connect your account to view or create positions</p>
             <Button onClick={() => open()}>Connect Wallet</Button>
@@ -264,7 +264,7 @@ const NoAccount = () => {
 };
 
 const LoadingState = () => (
-    <div className="flex flex-col w-full gap-4 p-4">
+    <div className="flex flex-col w-full gap-4 p-4 bg-card rounded-xl">
         {[1, 2, 3, 4].map((v) => (
             <Skeleton key={`position-skeleton-${v}`} className="w-full h-[50px] bg-card-light rounded-xl" />
         ))}

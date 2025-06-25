@@ -212,7 +212,7 @@ export const LimitOrder = () => {
     }, [initialSingleHop]);
 
     return (
-        <>
+        <div className="flex flex-col gap-2">
             <LimitPriceCard
                 currency={currencies[SwapField.INPUT]}
                 otherCurrency={currencies[SwapField.OUTPUT]}
@@ -240,6 +240,6 @@ export const LimitOrder = () => {
                 wasInverted={wasInverted}
                 zeroToOne={zeroToOne}
             />
-        </>
+        </div>
     );
 };

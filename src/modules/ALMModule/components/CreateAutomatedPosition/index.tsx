@@ -36,13 +36,9 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
     if (!selectedVault) return null;
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3  w-full lg:gap-8 mt-8 lg:mt-16 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 w-full gap-3 text-left">
             <div className="col-span-2">
-                <div className="flex items-center justify-between w-full mb-6">
-                    <h2 className="font-semibold text-2xl text-left">1. Select Strategy</h2>
-                </div>
-
-                <div className="flex flex-col w-full p-4 gap-4 bg-card border border-card-border rounded-3xl">
+                <div className="flex flex-col w-full p-3 gap-3 bg-card border border-card-border rounded-xl">
                     <p className="p-2 ">
                         <span className="font-semibold">Simplify liquidity provisioning with ALM strategies.</span>
                         <br />
@@ -54,7 +50,7 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
                     <form>
                         <fieldset className="flex flex-col gap-2 bg-card">
                             {vaults?.map((vault) => (
-                                <label htmlFor={vault.id} className="grid grid-cols-3 cursor-pointer gap-4 rounded-2xl bg-card-dark p-4">
+                                <label htmlFor={vault.id} className="grid grid-cols-3 cursor-pointer gap-4 rounded-lg bg-card-dark p-4">
                                     <div className="flex items-center gap-2">
                                         <input
                                             id={vault.id}
@@ -80,9 +76,7 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
             </div>
 
             <div className="flex flex-col">
-                <h2 className="font-semibold text-2xl text-left mb-6">2. Enter Amount</h2>
-
-                <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-3xl p-2">
+                <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-xl p-2">
                     <EnterAmountCard
                         currency={selectedVault.depositToken}
                         value={typedValue}

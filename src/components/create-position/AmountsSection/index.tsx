@@ -41,13 +41,13 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidi
                 <HoverCardTrigger>
                     <TokenRatio mintInfo={mintInfo} />
                 </HoverCardTrigger>
-                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-3xl border border-card-border text-white w-fit">
+                <HoverCardContent className="flex flex-col gap-2 bg-card rounded-xl border border-card-border text-white w-fit">
                     <div className="flex items-center">
                         <span className="font-bold">Token Ratio</span>
                     </div>
                 </HoverCardContent>
             </HoverCard>
-            <div className="flex justify-between bg-card-dark p-2 px-3 rounded-xl">
+            <div className="flex justify-between bg-card-dark p-2 px-3 rounded-lg">
                 <div>
                     <div className="text-xs font-bold">ESTIMATED POSITION APR</div>
                     <div className="text-lg font-bold text-green-300">{apr ? `${apr.toFixed(2)}%` : 0}</div>

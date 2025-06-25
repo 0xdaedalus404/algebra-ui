@@ -57,7 +57,7 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
     if (!selectedPosition || loading) return;
 
     return (
-        <div className="flex flex-col gap-6 bg-card border border-card-border rounded-3xl p-4 animate-fade-in">
+        <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in">
             <div className="relative flex w-full justify-end text-right">
                 <div className="absolute left-0 top-0">
                     <PositionNFT positionId={Number(selectedPosition.id)} />

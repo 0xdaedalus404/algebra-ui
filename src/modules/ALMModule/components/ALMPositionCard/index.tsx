@@ -22,7 +22,7 @@ export const ALMPositionCard = ({ userVault, poolAddress }: ALMPositionCardProps
     const pnl = Number(userVault.pnl);
 
     return (
-        <div className="flex flex-col gap-6 bg-card border border-card-border rounded-3xl p-4 animate-fade-in">
+        <div className="flex flex-col gap-6 bg-card border border-card-border rounded-xl p-4 animate-fade-in">
             <div className="relative flex w-full justify-end text-right">
                 <CurrencyLogo
                     className="absolute left-0 top-0  w-[160px] h-[160px] overflow-hidden rounded-full"
@@ -52,7 +52,7 @@ export const ALMPositionCard = ({ userVault, poolAddress }: ALMPositionCardProps
                                 )}
                             </div>
                         </div>
-                        <div className="flex w-full justify-between bg-card-dark p-4 rounded-xl">
+                        <div className="flex w-full justify-between bg-card-dark p-4 rounded-lg">
                             <div className="text-left">
                                 <div className="font-bold text-xs">NET RETURN</div>
                                 <div className="font-semibold text-2xl">

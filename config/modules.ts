@@ -1,6 +1,6 @@
 export const enabledModules = {
-    limitOrders: false,
-    analytics: false,
-    alm: false,
-    farming: false,
+    limitOrders: true,
+    analytics: true,
+    alm: true,
+    farming: true,
 };

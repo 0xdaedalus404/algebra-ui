@@ -99,7 +99,7 @@ const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, children }
         <Credenza open={isOpen}>
             <CredenzaTrigger asChild>{children}</CredenzaTrigger>
             <CredenzaContent
-                className="bg-card !rounded-3xl"
+                className="bg-card !rounded-xl"
                 onInteractOutside={() => setIsOpen(false)}
                 onEscapeKeyDown={() => setIsOpen(false)}
             >

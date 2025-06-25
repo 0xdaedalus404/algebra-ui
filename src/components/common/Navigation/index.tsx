@@ -4,23 +4,19 @@ const PATHS = {
     SWAP: "/swap",
     LIMIT_ORDERS: "limit-order",
     POOLS: "/pools",
+    POOL: "/pool",
 };
 
 const menuItems = [
     {
         title: "Swap",
         link: "/swap",
-        active: [PATHS.SWAP],
-    },
-    {
-        title: "Limit Order",
-        link: "/limit-order",
-        active: [PATHS.LIMIT_ORDERS],
+        active: [PATHS.SWAP, PATHS.LIMIT_ORDERS],
     },
     {
         title: "Pools",
         link: "/pools",
-        active: [PATHS.POOLS],
+        active: [PATHS.POOLS, PATHS.POOL],
     },
 ];
 

@@ -36,7 +36,7 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
     }
 
     return (
-        <div className="flex w-full bg-card-dark p-3 rounded-2xl">
+        <div className="flex w-full bg-card-dark p-3 rounded-lg">
             <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-4">
                     <CurrencyLogo currency={currency} size={35} />

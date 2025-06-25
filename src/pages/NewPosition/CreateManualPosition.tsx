@@ -2,7 +2,7 @@ import AmountsSection from "@/components/create-position/AmountsSection";
 import LiquidityChart from "@/components/create-position/LiquidityChart";
 import PresetTabs from "@/components/create-position/PresetTabs";
 import RangeSelector from "@/components/create-position/RangeSelector";
-import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 import { useReadAlgebraPoolToken0, useReadAlgebraPoolToken1 } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useDerivedMintInfo, useRangeHopCallbacks, useMintActionHandlers, useMintState } from "@/state/mintStore";
@@ -36,8 +36,6 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
             return [currency0, currency1];
         }
     }, [currency0, currency1, wasManuallyToggled]);
-
-    const isSorted = currencyA && currencyB && currencyA.wrapped.sortsBefore(currencyB.wrapped);
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
@@ -104,20 +102,30 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
     }, []);
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16 text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 w-full text-left">
             <div className="col-span-2">
-                <div className="flex items-center justify-between w-full mb-6">
-                    <h2 className="font-semibold text-2xl text-left">1. Select Range</h2>
-                    {!hidePresets && <PresetTabs currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />}
-                    <div className="flex gap-2">
-                        {isSorted ? currencyA?.symbol : currencyB?.symbol}
-                        <Switch id="currency-toggle" checked={wasManuallyToggled} onCheckedChange={handleCurrencyToggle} />
-                        {isSorted ? currencyB?.symbol : currencyA?.symbol}
-                    </div>
-                </div>
-
                 <div className="flex flex-col w-full">
-                    <div className="w-full px-8 py-6 bg-card text-left rounded-3xl border border-card-border">
+                    <div className="w-full p-6 bg-card flex flex-col gap-3 text-left rounded-xl border border-card-border">
+                        <div className="flex items-center justify-between w-full">
+                            <h2 className="font-semibold text-2xl text-left">Select Range</h2>
+                            <div className="flex h-fit w-fit gap-0.5 rounded-xl border border-lighter p-0.5">
+                                <Button
+                                    className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
+                                    variant={wasManuallyToggled ? "iconActive" : "icon"}
+                                    onClick={handleCurrencyToggle}
+                                >
+                                    {currency0?.symbol}
+                                </Button>
+                                <Button
+                                    className="h-4 rounded-lg text-xs font-normal max-sm:p-3.5"
+                                    variant={!wasManuallyToggled ? "iconActive" : "icon"}
+                                    onClick={handleCurrencyToggle}
+                                >
+                                    {currency1?.symbol}
+                                </Button>
+                            </div>
+                        </div>
+                        {!hidePresets && <PresetTabs currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} />}
                         <div className="flex w-full flex-col md:flex-row gap-4">
                             <RangeSelector
                                 priceLower={priceLower}
@@ -152,8 +160,8 @@ export function CreateManualPosition({ poolAddress }: ManualProps) {
             </div>
 
             <div className="flex flex-col">
-                <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2>
-                <div className="flex flex-col w-full h-full gap-2 bg-card border border-card-border rounded-3xl p-2">
+                {/* <h2 className="font-semibold text-2xl text-left mb-6 leading-[44px]">2. Enter Amounts</h2> */}
+                <div className="flex flex-col w-full h-fit gap-2 bg-card border border-card-border rounded-xl p-2">
                     <AmountsSection currencyA={currencyA} currencyB={currencyB} mintInfo={mintInfo} manageLiquidity={ManageLiquidity.ADD} />
                 </div>
             </div>

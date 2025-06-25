@@ -18,6 +18,14 @@ const stablecoinsPreset = [
         max: 101,
         risk: PresetProfits.VERY_LOW,
         profit: PresetProfits.HIGH,
+        logo: (
+            <svg width="120" height="60" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="46" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
+                <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+            </svg>
+        ),
     },
 ];
 
@@ -29,6 +37,14 @@ const commonPresets = [
         max: 110,
         risk: PresetProfits.HIGH,
         profit: PresetProfits.HIGH,
+        logo: (
+            <svg width="120" height="60" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="46" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
+                <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+            </svg>
+        ),
     },
     {
         type: Presets.NORMAL,
@@ -37,6 +53,16 @@ const commonPresets = [
         max: 120,
         risk: PresetProfits.MEDIUM,
         profit: PresetProfits.MEDIUM,
+        logo: (
+            <svg width="120" height="60" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="36" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
+                <rect x="46" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
+                <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="76" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+            </svg>
+        ),
     },
     {
         type: Presets.SAFE,
@@ -45,6 +71,18 @@ const commonPresets = [
         max: 140,
         risk: PresetProfits.LOW,
         profit: PresetProfits.LOW,
+        logo: (
+            <svg width="120" height="60" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="26" y="20" width="8" height="20" rx="2" className="fill-primary-200" />
+                <rect x="36" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
+                <rect x="46" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
+                <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="76" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
+                <rect x="86" y="20" width="8" height="20" rx="2" className="fill-primary-200" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+            </svg>
+        ),
     },
     {
         type: Presets.FULL,
@@ -53,6 +91,20 @@ const commonPresets = [
         max: Infinity,
         risk: PresetProfits.VERY_LOW,
         profit: PresetProfits.VERY_LOW,
+        logo: (
+            <svg width="120" height="60" viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="16" y="25" width="8" height="15" rx="2" className="fill-primary-200" />
+                <rect x="26" y="20" width="8" height="20" rx="2" className="fill-primary-200" />
+                <rect x="36" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
+                <rect x="46" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
+                <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
+                <rect x="76" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
+                <rect x="86" y="20" width="8" height="20" rx="2" className="fill-primary-200" />
+                <rect x="96" y="25" width="8" height="15" rx="2" className="fill-primary-200" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+            </svg>
+        ),
     },
 ];
 
@@ -134,15 +186,17 @@ const PresetTabs = ({ currencyA, currencyB, mintInfo }: RangeSidebarProps) => {
     }
 
     return (
-        <div className="flex h-fit bg-card rounded-3xl p-1">
+        <div className="grid grid-cols-4 h-fit bg-card gap-3 rounded-xl p-1">
             {presets.map((range) => (
                 <Button
-                    variant={preset === range.type ? "iconActive" : "icon"}
+                    variant={preset === range.type ? "iconHover" : "icon"}
                     size={"sm"}
                     key={`preset-range-${range.title}`}
                     onClick={() => onPresetSelect(range)}
+                    className="flex-col h-24 gap-4 p-2 border"
                 >
                     {range.title}
+                    {range.logo}
                 </Button>
             ))}
         </div>

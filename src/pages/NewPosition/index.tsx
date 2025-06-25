@@ -5,7 +5,6 @@ import { useChainId } from "wagmi";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { CreateManualPosition } from "./CreateManualPosition";
-import { cn } from "@/utils/common/cn";
 import { useCustomPoolDeployerQuery } from "@/graphql/generated/graphql";
 import { useClients } from "@/hooks/graphql/useClients";
 import { Address } from "viem";
@@ -47,30 +46,32 @@ const NewPositionPage = () => {
 
     return (
         <PageContainer>
-            <PageTitle title={"Create Position"}>
+            <div className="w-full grid grid-cols-3 gap-3 mt-16 mb-3">
+                <div className="col-span-2">
+                    <PageTitle title={"Create Position"} />
+                </div>
                 {!isCustomPoolDeployerLoading && isALMPool && enabledModules.alm && (
-                    <div className="grid grid-cols-2 items-center border border-primary-button rounded-full">
+                    <div className="flex items-center h-full max-h-16 col-span-1 p-2 bg-card rounded-xl justify-between gap-2">
                         <Button
                             onClick={() => setIsALM(false)}
-                            size={"sm"}
-                            className={cn("w-full", isALM ? "bg-transparent text-primary-foreground" : "hover:bg-primary-button")}
+                            size={"md"}
+                            variant={isALM ? "ghost" : "ghostActive"}
+                            className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
                         >
                             Manually
                         </Button>
                         <Button
                             onClick={() => setIsALM(true)}
-                            size={"sm"}
+                            size={"md"}
                             disabled={isALM === null}
-                            className={cn(
-                                "w-full disabled:cursor-not-allowed disabled:pointer-events-auto disabled:hover:bg-transparent",
-                                !isALM ? "bg-transparent text-primary-foreground" : "hover:bg-primary-button"
-                            )}
+                            variant={!isALM ? "ghost" : "ghostActive"}
+                            className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
                         >
                             Automated
                         </Button>
                     </div>
                 )}
-            </PageTitle>
+            </div>
             {isALM ? <CreateAutomatedPosition poolId={poolAddress} vaults={vaults} /> : <CreateManualPosition poolAddress={poolAddress} />}
         </PageContainer>
     );

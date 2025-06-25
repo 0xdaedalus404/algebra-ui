@@ -1,37 +1,26 @@
-import CurrencyLogo from "@/components/common/CurrencyLogo";
 import PageTitle from "@/components/common/PageTitle";
-import { Skeleton } from "@/components/ui/skeleton";
-import { useCurrency } from "@/hooks/common/useCurrency";
-import { formatPercent } from "@/utils/common/formatPercent";
-import { Pool } from "@cryptoalgebra/custom-pools-sdk";
-import { Address } from "viem";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { Link } from "react-router-dom";
 
-interface PoolHeaderProps {
-    pool: Pool | null;
-}
-
-const PoolHeader = ({ pool }: PoolHeaderProps) => {
-    const [token0, token1] = pool ? [pool.token0, pool.token1] : [];
-
-    const currencyA = useCurrency(token0?.address as Address, true);
-    const currencyB = useCurrency(token1?.address as Address, true);
-
-    const poolFee = pool && formatPercent.format(pool.fee / 10_00000);
-
+const PoolHeader = () => {
     return (
-        <div className="flex w-full gap-8">
-            <div className="flex">
-                <CurrencyLogo currency={currencyA} size={40} />
-                <CurrencyLogo currency={currencyB} size={40} className="-ml-2" />
+        <div className="grid grid-cols-4 gap-3 md:flex-row items-center justify-between w-full mt-16">
+            <div className="col-span-3 w-full">
+                <PageTitle title="My positions" showSettings={false}></PageTitle>
             </div>
 
-            {currencyA && currencyB ? (
-                <PageTitle title={`${currencyA.symbol} / ${currencyB.symbol}`}>
-                    <span className="hidden sm:inline px-3 py-2 bg-muted-primary text-primary-text font-semibold rounded-2xl">{`${poolFee}`}</span>
-                </PageTitle>
-            ) : (
-                <Skeleton className="w-[200px] h-[40px] bg-card" />
-            )}
+            <Link className="col-span-1 w-full" to={"new-position"}>
+                <Button
+                    className="whitespace-nowrap h-16 w-full gap-3 rounded-xl text-lg! hover:bg-primary-300 bg-primary-300 text-black"
+                    size={"md"}
+                >
+                    Create Position
+                    <div className="rounded-full p-1 bg-black">
+                        <Plus size={20} className="text-text-100" />
+                    </div>
+                </Button>
+            </Link>
         </div>
     );
 };

@@ -57,7 +57,7 @@ const CollectFees = ({ mintInfo, positionFeesUSD, positionId }: CollectFeesProps
     });
 
     return (
-        <div className="flex w-full justify-between bg-card-dark p-4 rounded-xl">
+        <div className="flex w-full justify-between bg-card-dark p-4 rounded-lg">
             <div className="text-left">
                 <div className="font-bold text-xs">EARNED FEES</div>
                 <div className="font-semibold text-2xl">

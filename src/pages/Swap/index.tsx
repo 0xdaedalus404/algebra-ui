@@ -2,20 +2,21 @@ import SwapPair from "@/components/swap/SwapPair";
 import SwapButton from "@/components/swap/SwapButton";
 import SwapParams from "@/components/swap/SwapParams";
 import PageContainer from "@/components/common/PageContainer";
-import PageTitle from "@/components/common/PageTitle";
 import PoweredByAlgebra from "@/components/common/PoweredByAlgebra";
 import { useDerivedSwapInfo } from "@/state/swapStore.ts";
 import { useSmartRouterBestRoute } from "@/hooks/routing/useSmartRouterBestRoute.ts";
 import { Currency as CurrencyBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { useAccount } from "wagmi";
 import { SwapPageProps, SwapPageView } from "./types";
 import LimitOrdersModule from "@/modules/LimitOrdersModule";
 
-const { LimitOrder, LimitOrdersList } = LimitOrdersModule.components;
+import PageTitle from "@/components/common/PageTitle";
+import SwapChart from "@/components/swap/SwapChart";
+import { NavLink } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+
+const { LimitOrder } = LimitOrdersModule.components;
 
 const SwapPage = ({ type }: SwapPageProps) => {
-    const { address: account } = useAccount();
-
     const isLimitOrder = type === SwapPageView.LIMIT_ORDER;
 
     const derivedSwap = useDerivedSwapInfo();
@@ -29,13 +30,34 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            <PageTitle title={isLimitOrder ? "Limit Order" : "Swap"} />
-
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-x-0 gap-y-8 w-full lg:gap-8 mt-8 lg:mt-16">
-                <div className="flex flex-col gap-2">
-                    {/* <IntegralPools /> */}
-
-                    <div className="flex flex-col gap-1 w-full bg-card border border-card-border p-2 rounded-3xl">
+            <div className="grid grid-cols-3 w-full gap-3 mt-16 mb-3">
+                <div className="grid grid-cols-2 h-full col-span-1 max-h-16 p-2 bg-card rounded-xl gap-2">
+                    <NavLink className="w-full h-full" to="/swap">
+                        <Button
+                            size={"sm"}
+                            variant={isLimitOrder ? "ghost" : "ghostActive"}
+                            className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
+                        >
+                            Swap
+                        </Button>
+                    </NavLink>
+                    <NavLink className={"w-full h-full"} to="/limit-order">
+                        <Button
+                            size={"sm"}
+                            variant={isLimitOrder ? "ghostActive" : "ghost"}
+                            className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
+                        >
+                            Limit
+                        </Button>
+                    </NavLink>
+                </div>
+                <div className="col-span-2">
+                    <PageTitle title={"Trade"} showSettings={true} />
+                </div>
+            </div>
+            <div className="grid grid-cols-3 w-full gap-3">
+                <div className="flex flex-col gap-2 col-span-1">
+                    <div className="flex flex-col gap-1 col-span-1 w-full bg-card border border-card-border p-2 rounded-xl">
                         <SwapPair derivedSwap={derivedSwap} smartTrade={smartTrade.trade?.bestTrade} />
                         {isLimitOrder ? (
                             <LimitOrder />
@@ -60,15 +82,10 @@ const SwapPage = ({ type }: SwapPageProps) => {
                     </div>
                     <PoweredByAlgebra />
                 </div>
-
-                <div className="col-span-2">{/* <SwapChart /> */}</div>
-            </div>
-
-            {isLimitOrder && account && (
-                <div className="w-full mt-12">
-                    <LimitOrdersList />
+                <div className="flex flex-col gap-3 col-span-2">
+                    <SwapChart />
                 </div>
-            )}
+            </div>
         </PageContainer>
     );
 };

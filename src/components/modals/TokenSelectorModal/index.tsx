@@ -24,7 +24,7 @@ const TokenSelectorModal = ({ isOpen, setIsOpen, onSelect, otherCurrency, childr
         <Credenza open={isOpen}>
             <CredenzaTrigger asChild>{children}</CredenzaTrigger>
             <CredenzaContent
-                className="bg-card-dark !rounded-3xl"
+                className="bg-card-dark !rounded-xl"
                 onInteractOutside={() => setIsOpen(false)}
                 onEscapeKeyDown={() => setIsOpen(false)}
             >

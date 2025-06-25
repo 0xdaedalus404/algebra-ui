@@ -187,7 +187,7 @@ const CreatePoolForm = () => {
     const isDisabled = Boolean(isLoading || isSelectedCustomPoolExists || !startPriceTypedValue || !areCurrenciesSelected || isSameToken);
 
     return (
-        <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-3xl">
+        <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-xl">
             <h2 className="font-semibold text-xl text-left ml-2 mt-2">Select Pair</h2>
             <SelectPair mintInfo={mintInfo} currencyA={currencyA} currencyB={currencyB} />
 

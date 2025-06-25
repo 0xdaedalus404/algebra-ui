@@ -35,7 +35,7 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
                     handleChange={(value) => onFieldAInput(value)}
                 />
                 {mintInfo.depositADisabled && (
-                    <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-3xl">
+                    <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-lg">
                         For selected range this deposit is disabled
                     </div>
                 )}
@@ -47,7 +47,7 @@ const EnterAmounts = ({ currencyA, currencyB, mintInfo }: EnterAmountsProps) => 
                     handleChange={(value) => onFieldBInput(value)}
                 />
                 {mintInfo.depositBDisabled && (
-                    <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-3xl">
+                    <div className="absolute left-0 top-0 flex items-center justify-center w-full h-full bg-card-dark/70 rounded-lg">
                         For selected range this deposit is disabled
                     </div>
                 )}

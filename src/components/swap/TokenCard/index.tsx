@@ -63,7 +63,7 @@ const TokenCard = ({
     };
 
     return (
-        <div className="flex w-full px-4 py-6 bg-card-dark rounded-2xl">
+        <div className="flex w-full px-4 py-6 bg-card-dark rounded-lg">
             <div className="flex flex-col gap-2 min-w-fit">
                 <TokenSelectorModal
                     showNativeToken={showNativeToken}
@@ -73,7 +73,7 @@ const TokenCard = ({
                     otherCurrency={otherCurrency}
                 >
                     <button
-                        className="flex items-center gap-4 px-3 py-1 w-fit bg-card rounded-xl hover:bg-card-hover"
+                        className="flex items-center gap-4 px-3 py-1 w-fit bg-card rounded-lg hover:bg-card-hover"
                         onClick={() => setIsOpen(true)}
                     >
                         <CurrencyLogo currency={currency} size={32} />

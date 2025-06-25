@@ -48,3 +48,7 @@ body {
 ::-webkit-scrollbar-thumb:active {
     background: rgba(255, 255, 255, 0.8);
 }
+
+button {
+    cursor: pointer;
+}
