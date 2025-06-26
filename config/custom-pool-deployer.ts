@@ -13,8 +13,7 @@ export const CUSTOM_POOL_DEPLOYER_ADDRESSES: Record<PoolDeployerType, Record<num
         [ChainId.BaseSepolia]: "0x9089f3440c8e7534afcfec2b731c4d6b78876308",
     },
     ALM: {
-        [ChainId.Base]: ADDRESS_ZERO,
-        [ChainId.BaseSepolia]: ADDRESS_ZERO,
+        [ChainId.Base]: "0x05f3bd357d47d159ac7d33f9dbaacfc65d31976d",
     },
 };
 

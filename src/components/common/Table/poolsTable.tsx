@@ -15,8 +15,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoadingState } from "./loadingState";
 import { Input } from "@/components/ui/input";
-import { Search, Tractor } from "lucide-react";
-import { Switch } from "@/components/ui/switch";
+import { Search, User, X } from "lucide-react";
+import { cn } from "@/utils";
+import { enabledModules } from "config/modules";
 
 interface PoolsTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -72,52 +73,56 @@ const PoolsTable = <TData, TValue>({
     return (
         <>
             {searchID && (
-                <div className="flex gap-4 w-full justify-between items-center p-4 pb-0">
+                <div className="flex gap-3 w-full items-center p-4 pb-0">
                     <div className="flex items-center relative w-fit">
                         <Input
                             placeholder="Search pool"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
                             onChange={(event) => table.getColumn(searchID)?.setFilterValue(event.target.value)}
-                            className="border border-border border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-xl"
+                            className="border border-border border-opacity-60 pl-12 h-12 max-w-80 md:w-64 lg:w-80 focus:border-opacity-100 rounded-lg"
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
-                    <ul className="flex gap-1 p-1 border rounded-xl border-border/60 w-fit h-12 max-xs:hidden">
-                        <li>
+                    <div className="grid grid-flow-col gap-3 md:flex">
+                        {enabledModules.farming && (
                             <Button
-                                onClick={() => table.setGlobalFilter(undefined)}
-                                className="rounded-lg h-full p-4 w-fit flex-nowrap"
+                                onClick={() => {
+                                    const column = table.getColumn("avgApr");
+                                    if (column?.getFilterValue() === undefined) column?.setFilterValue(true);
+                                    else column?.setFilterValue(undefined);
+                                }}
                                 size="md"
-                                variant={!isMyPools ? "iconActive" : "ghost"}
+                                className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                                variant={table.getColumn("avgApr")?.getFilterValue() === true ? "iconHover" : "outline"}
                             >
-                                All
+                                <span>🟡</span>
+                                <span>Farm Pools</span>
                             </Button>
-                        </li>
-                        <li>
-                            <Button
-                                onClick={() => table.setGlobalFilter(true)}
-                                className="rounded-lg h-full p-4 w-fit whitespace-nowrap"
-                                size="md"
-                                variant={isMyPools ? "iconActive" : "ghost"}
-                            >
-                                My pools
-                            </Button>
-                        </li>
-                    </ul>
-                    <div className="flex gap-2 max-md:gap-4 items-center w-fit ml-auto max-sm:hidden">
-                        <label className="flex gap-2 items-center" htmlFor="farmingAvailable">
-                            <Tractor className="w-5 h-5 max-md:w-6 max-md:h-6" color="#d84eff" />
-                            <span className="max-md:hidden">Farming Available</span>
-                        </label>
-                        <Switch
-                            id="farmingAvailable"
-                            checked={table.getColumn("deployer")?.getFilterValue() === true}
-                            onCheckedChange={() => {
-                                const column = table.getColumn("deployer");
-                                if (column?.getFilterValue() === undefined) column?.setFilterValue(true);
-                                else column?.setFilterValue(undefined);
+                        )}
+                        <Button
+                            onClick={() => table.setGlobalFilter(isMyPools ? undefined : true)}
+                            className="flex h-12 min-w-[130px] items-center gap-2 whitespace-nowrap rounded-lg p-4"
+                            size="md"
+                            variant={isMyPools ? "iconHover" : "outline"}
+                        >
+                            <User className="text-primary-200" size={16} />
+                            <span>My Pools</span>
+                        </Button>
+                        <Button
+                            size="md"
+                            onClick={() => {
+                                table.setGlobalFilter(undefined);
+                                table.getColumn("avgApr")?.setFilterValue(undefined);
                             }}
-                        />
+                            className={cn(
+                                "flex h-12 w-fit items-center gap-2 whitespace-nowrap rounded-lg border border-light border-transparent p-4 max-lg:hidden max-md:col-span-2",
+                                isMyPools || table.getColumn("avgApr")?.getFilterValue() ? "" : "hidden"
+                            )}
+                            variant={"outline"}
+                        >
+                            <span>Reset</span>
+                            <X size={18} />
+                        </Button>
                     </div>
                 </div>
             )}

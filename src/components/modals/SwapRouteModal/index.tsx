@@ -79,6 +79,7 @@ const RouteSplit = ({
             {route.pools.map((pool, idx) =>
                 pool.type === 1 ? (
                     <RoutePool
+                        key={`route-pool-${idx}`}
                         pool={{
                             path: splits[idx],
                             fee: splitFees[idx],

@@ -46,7 +46,7 @@ const NewPositionPage = () => {
 
     return (
         <PageContainer>
-            <div className="w-full grid grid-cols-3 gap-3 mt-16 mb-3">
+            <div className="w-full grid grid-flow-col auto-cols-fr gap-3 mt-16 mb-3">
                 <div className="col-span-2">
                     <PageTitle title={"Create Position"} />
                 </div>

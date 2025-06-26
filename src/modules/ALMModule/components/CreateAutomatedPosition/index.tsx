@@ -50,7 +50,11 @@ export function CreateAutomatedPosition({ vaults, poolId }: CreateAutomatedPosit
                     <form>
                         <fieldset className="flex flex-col gap-2 bg-card">
                             {vaults?.map((vault) => (
-                                <label htmlFor={vault.id} className="grid grid-cols-3 cursor-pointer gap-4 rounded-lg bg-card-dark p-4">
+                                <label
+                                    key={vault.id}
+                                    htmlFor={vault.id}
+                                    className="grid grid-cols-3 cursor-pointer gap-4 rounded-lg bg-card-dark p-4"
+                                >
                                     <div className="flex items-center gap-2">
                                         <input
                                             id={vault.id}

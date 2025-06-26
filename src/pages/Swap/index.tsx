@@ -7,14 +7,11 @@ import { useDerivedSwapInfo } from "@/state/swapStore.ts";
 import { useSmartRouterBestRoute } from "@/hooks/routing/useSmartRouterBestRoute.ts";
 import { Currency as CurrencyBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { SwapPageProps, SwapPageView } from "./types";
-import LimitOrdersModule from "@/modules/LimitOrdersModule";
-
 import PageTitle from "@/components/common/PageTitle";
 import SwapChart from "@/components/swap/SwapChart";
-import { NavLink } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 
-const { LimitOrder } = LimitOrdersModule.components;
+import LimitOrdersModule from "@/modules/LimitOrdersModule";
+const { LimitOrder, SwapTypeSelector, LimitOrdersList } = LimitOrdersModule.components;
 
 const SwapPage = ({ type }: SwapPageProps) => {
     const isLimitOrder = type === SwapPageView.LIMIT_ORDER;
@@ -30,32 +27,13 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            <div className="grid grid-cols-3 w-full gap-3 mt-16 mb-3">
-                <div className="grid grid-cols-2 h-full col-span-1 max-h-16 p-2 bg-card rounded-xl gap-2">
-                    <NavLink className="w-full h-full" to="/swap">
-                        <Button
-                            size={"sm"}
-                            variant={isLimitOrder ? "ghost" : "ghostActive"}
-                            className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
-                        >
-                            Swap
-                        </Button>
-                    </NavLink>
-                    <NavLink className={"w-full h-full"} to="/limit-order">
-                        <Button
-                            size={"sm"}
-                            variant={isLimitOrder ? "ghostActive" : "ghost"}
-                            className="flex items-center justify-center gap-2 w-full rounded-lg h-12"
-                        >
-                            Limit
-                        </Button>
-                    </NavLink>
-                </div>
+            <div className="grid grid-flow-col auto-cols-fr w-full gap-3 mt-16 mb-3">
+                <SwapTypeSelector isLimitOrder={isLimitOrder} />
                 <div className="col-span-2">
                     <PageTitle title={"Trade"} showSettings={true} />
                 </div>
             </div>
-            <div className="grid grid-cols-3 w-full gap-3">
+            <div className="grid grid-cols-3 w-full gap-3 mb-3">
                 <div className="flex flex-col gap-2 col-span-1">
                     <div className="flex flex-col gap-1 col-span-1 w-full bg-card border border-card-border p-2 rounded-xl">
                         <SwapPair derivedSwap={derivedSwap} smartTrade={smartTrade.trade?.bestTrade} />
@@ -86,6 +64,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
                     <SwapChart />
                 </div>
             </div>
+            {isLimitOrder && <LimitOrdersList />}
         </PageContainer>
     );
 };

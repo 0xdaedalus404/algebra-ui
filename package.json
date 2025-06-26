@@ -9,7 +9,8 @@
         "build": "yarn wagmi-generate && vite build",
         "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
         "preview": "vite preview",
-        "codegen": "graphql-codegen --config codegen.ts "
+        "codegen": "graphql-codegen --config codegen.ts",
+        "generate-empty-module": "node --loader ts-node/esm ./src/modules/generate-empty-module.ts"
     },
     "dependencies": {
         "@apollo/client": "^3.8.4",
@@ -79,6 +80,7 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.4.3",
         "postcss": "^8.4.30",
+        "ts-node": "^10.9.2",
         "typescript": "^5.0.2",
         "vite": "^6.3.5",
         "vite-plugin-eslint": "^1.8.1"

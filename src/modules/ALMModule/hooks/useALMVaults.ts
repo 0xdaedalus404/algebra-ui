@@ -53,17 +53,15 @@ export function useALMVaultsByPool(poolAddress: Address | undefined) {
     });
 
     const { data: vaults, isLoading } = useSWR(
-        ["almVaults", vaultAddresses, currencyA, currencyB, poolAddress, currencyAPriceUSD, currencyBPriceUSD],
+        ["almVaults", vaultAddresses, currencyA, currencyB, poolAddress, currencyAPriceUSD, currencyBPriceUSD, provider],
         async () => {
-            if (!provider || !currencyA || !currencyB || !poolAddress || !currencyAPriceUSD || !currencyBPriceUSD || !vaultAddresses) {
+            if (!provider || !currencyA || !currencyB || !poolAddress || !vaultAddresses) {
                 throw new Error("No provider");
             }
 
-            const dex = DEX;
-
             const vaultsData = await Promise.all(
                 vaultAddresses.map(async (vault) => {
-                    const data = await getExtendedAlgebraVault(vault, dex, chainId, provider, currencyA.decimals, currencyB.decimals);
+                    const data = await getExtendedAlgebraVault(vault, DEX, chainId, provider, currencyA.decimals, currencyB.decimals);
 
                     const amount0 = formatUnits(data.amount0, currencyA.decimals);
                     const amount1 = formatUnits(data.amount1, currencyB.decimals);

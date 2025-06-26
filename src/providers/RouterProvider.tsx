@@ -6,7 +6,8 @@ import PoolPage from "@/pages/Pool";
 import PoolsPage from "@/pages/Pools";
 import SwapPage from "@/pages/Swap";
 import { SwapPageView } from "@/pages/Swap/types";
-import { createBrowserRouter, Navigate, RouterProvider as _RouterProvider } from "react-router-dom";
+import { enabledModules } from "config/modules";
+import { createBrowserRouter, Navigate, RouterProvider as _RouterProvider, RouteObject } from "react-router-dom";
 
 const router = createBrowserRouter([
     {
@@ -21,7 +22,7 @@ const router = createBrowserRouter([
                 path: "swap",
                 element: <SwapPage type={SwapPageView.SWAP} />,
             },
-            {
+            enabledModules.alm && {
                 path: "limit-order",
                 element: <SwapPage type={SwapPageView.LIMIT_ORDER} />,
             },
@@ -41,7 +42,7 @@ const router = createBrowserRouter([
                 path: "pool/:pool/new-position",
                 element: <NewPositionPage />,
             },
-        ],
+        ].filter(Boolean) as RouteObject[],
     },
 ]);
 

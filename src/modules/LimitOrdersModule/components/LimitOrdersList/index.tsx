@@ -6,6 +6,7 @@ import { useClients } from "@/hooks/graphql/useClients";
 import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { limitOrderColumns, LimitOrdersTable } from "../Table";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
+import { Button } from "@/components/ui/button";
 
 export const LimitOrdersList = () => {
     const { address: account } = useAccount();
@@ -180,25 +181,15 @@ export const LimitOrdersList = () => {
                 <LimitOrdersLoading />
             ) : (
                 <>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => setTab(0)}
-                            className={`py-2 px-4 bg-card relative rounded-3xl font-semibold duration-300 ${
-                                tab === 0 ? "text-primary-text bg-muted-primary" : "hover:bg-card-hover"
-                            }`}
-                        >
-                            Opened Orders
-                        </button>
-                        <button
-                            onClick={() => setTab(1)}
-                            className={`relative py-2 px-4 bg-card rounded-3xl font-semibold duration-300 ${
-                                tab === 1 ? "text-primary-text bg-muted-primary" : "hover:bg-card-hover"
-                            }`}
-                        >
-                            Closed Orders
-                        </button>
-                    </div>
-                    <div className="pb-4 bg-card border border-card-border rounded-3xl">
+                    <div className="p-3 bg-card border gap-4 border-card-border rounded-xl">
+                        <div className="flex gap-2">
+                            <Button size={"sm"} onClick={() => setTab(0)} variant={tab === 0 ? "iconActive" : "icon"}>
+                                Opened Orders
+                            </Button>
+                            <Button size={"sm"} onClick={() => setTab(1)} variant={tab === 1 ? "iconActive" : "icon"}>
+                                Closed Orders
+                            </Button>
+                        </div>
                         <LimitOrdersTable defaultSortingID="time" columns={limitOrderColumns} data={limitOrdersForTable} />
                     </div>
                 </>
