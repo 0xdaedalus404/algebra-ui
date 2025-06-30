@@ -55,16 +55,16 @@ export interface IChart {
     chartData: { value: number; time: UTCTimestamp }[];
     chartView: ChartViewType;
     chartTitle: string;
-    chartCurrentValue: number | undefined;
     chartSpan: ChartSpanType;
     setChartSpan: (chartSpan: ChartSpanType) => void;
     chartType: ChartTypeType | PoolChartTypeType;
     setChartType: (chartType: ChartTypeType) => void;
     showTypeSelector?: boolean;
     height: number;
-    showAPR: boolean;
+    // showAPR: boolean;
     tokenA?: string;
     tokenB?: string;
+    isChartDataLoading: boolean;
 }
 
 export type StatsCard = {

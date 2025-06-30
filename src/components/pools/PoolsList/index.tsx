@@ -40,15 +40,6 @@ const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenI
         isFarmingsLoading ||
         isFarmingsAPRLoading;
 
-    console.log({
-        isPoolsListLoading,
-        isPoolsMaxAprLoading,
-        isPoolsAvgAprLoading,
-        isPositionsLoading,
-        isFarmingsLoading,
-        isFarmingsAPRLoading,
-    });
-
     const formattedPools = useMemo(() => {
         if (isLoading || !pools) return [];
 

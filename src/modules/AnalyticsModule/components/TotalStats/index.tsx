@@ -4,7 +4,7 @@ import { CHART_TYPE, ChartTypeType, type ITotalStats } from "@/types/swap-chart"
 
 function Loader() {
     return (
-        <span className="border-title inline-block h-[24px] w-[24px] animate-[rotate-in_1s_linear_infinite] rounded-full border-2 border-solid border-b-transparent" />
+        <span className="border-title inline-block h-[24px] w-[24px] animate-spin rounded-full border-2 border-solid border-b-transparent" />
     );
 }
 

@@ -23,7 +23,7 @@ const SwapChart = () => {
     const now = useMemo(() => Math.floor(Date.now() / 1000), []);
     const { infoClient } = useClients();
 
-    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
+    const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.WEEK);
 
     const poolId = useMemo(() => {
         if (!tokenA || !tokenB) return undefined;
@@ -39,7 +39,7 @@ const SwapChart = () => {
 
     // const { token0, token1 } = pool || {};
 
-    const { data: poolIndexerDayDatas } = usePoolDayDatasQuery({
+    const { data: poolIndexerDayDatas, loading: poolIndexerDayDatasLoading } = usePoolDayDatasQuery({
         variables: {
             poolId: poolId?.toLowerCase() || "",
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * (span === CHART_SPAN.DAY ? 2 : 1),
@@ -49,7 +49,7 @@ const SwapChart = () => {
         skip: !poolId,
     });
 
-    const { data: poolIndexerHourDatas } = usePoolHourDatasQuery({
+    const { data: poolIndexerHourDatas, loading: poolIndexerHourDatasLoading } = usePoolHourDatasQuery({
         variables: {
             poolId: poolId?.toLowerCase() || "",
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY],
@@ -91,9 +91,9 @@ const SwapChart = () => {
         return formattedData.slice(1);
     }, [poolDayDatas, poolHourDatas, span, tokenA, tokenB]);
 
-    const currentValue = chartData.length ? chartData[chartData.length - 1].value : 0;
-
     const chartView = CHART_VIEW.LINE;
+
+    const isLoading = poolIndexerDayDatasLoading || poolIndexerHourDatasLoading;
 
     return (
         <div className="flex flex-col p-3 w-full h-full min-h-fit relative rounded-xl bg-card border-card-border">
@@ -110,12 +110,11 @@ const SwapChart = () => {
                     chartType={POOL_CHART_TYPE.PRICE}
                     setChartType={() => null}
                     setChartSpan={setSpan}
-                    chartCurrentValue={currentValue}
                     showTypeSelector={false}
-                    showAPR={false}
                     height={260}
                     tokenA={tokenA?.symbol}
                     tokenB={tokenB?.symbol}
+                    isChartDataLoading={isLoading}
                 />
             ) : (
                 <div className="w-full h-full flex flex-col gap-4 items-center justify-center">

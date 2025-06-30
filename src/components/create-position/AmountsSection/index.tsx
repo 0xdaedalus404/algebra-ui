@@ -11,6 +11,7 @@ import EnterAmounts from "../EnterAmounts";
 import IncreaseLiquidityButton from "@/components/position/IncreaseLiquidityButton";
 import { ManageLiquidity } from "@/types/manage-liquidity";
 import { useParams } from "react-router-dom";
+import { formatAmount } from "@/utils";
 
 interface AmountsSectionProps {
     tokenId?: number;
@@ -54,7 +55,7 @@ const AmountsSection = ({ tokenId, currencyA, currencyB, mintInfo, manageLiquidi
                 </div>
                 <div className="text-right">
                     <div className="text-xs font-bold">POOL APR</div>
-                    <div className="text-lg font-bold text-cyan-300">{poolAPR !== undefined ? `${poolAPR}%` : null}</div>
+                    <div className="text-lg font-bold text-cyan-300">{poolAPR !== undefined ? `${formatAmount(poolAPR, 2)}%` : null}</div>
                 </div>
             </div>
             {manageLiquidity === ManageLiquidity.INCREASE && (

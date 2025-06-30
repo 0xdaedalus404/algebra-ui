@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 interface IChartTypeSelector {
     chartType: ChartTypeType | PoolChartTypeType;
     handleChangeChartType: (span: ChartTypeType) => void;
-    showAPR: boolean;
 }
 
 const titles = {

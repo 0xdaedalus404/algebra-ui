@@ -1,6 +1,6 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { Input } from "@/components/ui/input";
-import { formatCurrency } from "@/utils/common/formatCurrency";
+import { formatAmount } from "@/utils";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
@@ -23,7 +23,7 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
     const balanceString = useMemo(() => {
         if (isLoading || !balance) return "Loading...";
 
-        return formatCurrency.format(Number(balance.formatted));
+        return formatAmount(balance.formatted);
     }, [balance, isLoading]);
 
     const handleInput = useCallback((value: string) => {
@@ -60,7 +60,7 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
                     value={value}
                     id={`amount-${currency?.symbol}`}
                     onUserInput={(v) => handleInput(v)}
-                    className={`text-right border-none text-xl font-bold w-9/12 p-0`}
+                    className={`text-right border-none text-xl font-bold w-9/12 p-0 ring-0!`}
                     placeholder={"0.0"}
                     maxDecimals={currency?.decimals}
                 />

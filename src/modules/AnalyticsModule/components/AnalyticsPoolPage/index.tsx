@@ -17,8 +17,9 @@ import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { Button } from "@/components/ui/button";
 import { ArrowDownUp, Plus } from "lucide-react";
 import { TransactionsList } from "../TransactionsList";
-import { UNIX_TIMESTAMPS } from "@/utils/common/timestamps";
+import { UNIX_TIMESTAMPS } from "@/utils/chart/timestamps";
 import { getPercentChange } from "@/utils/common/getPercentChange";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 const values = {
     [POOL_CHART_TYPE.TVL]: "tvlUSD",
@@ -143,9 +144,14 @@ export function AnalyticsPoolPage() {
 
     const [, pool] = usePool(poolId as Address);
 
-    const { token0, token1 } = pool || {};
+    const { token0, token1 } = pool
+        ? {
+              token0: unwrappedToken(pool.token0),
+              token1: unwrappedToken(pool.token1),
+          }
+        : {};
 
-    const { data: poolIndexerDayDatas } = usePoolDayDatasQuery({
+    const { data: poolIndexerDayDatas, loading: poolIndexerDayDatasLoading } = usePoolDayDatasQuery({
         variables: {
             poolId: poolId!,
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * (span === CHART_SPAN.DAY ? 2 : 1),
@@ -155,7 +161,7 @@ export function AnalyticsPoolPage() {
         skip: !poolId,
     });
 
-    const { data: poolIndexerHourDatas } = usePoolHourDatasQuery({
+    const { data: poolIndexerHourDatas, loading: poolIndexerHourDatasLoading } = usePoolHourDatasQuery({
         variables: {
             poolId: poolId!,
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY],
@@ -214,8 +220,6 @@ export function AnalyticsPoolPage() {
         return formattedData.slice(1);
     }, [poolDayDatas, poolHourDatas, span, type]);
 
-    const currentValue = chartData.length ? chartData[chartData.length - 1].value : 0;
-
     const chartView = useMemo(() => {
         switch (type) {
             case POOL_CHART_TYPE.TVL:
@@ -255,12 +259,11 @@ export function AnalyticsPoolPage() {
                         chartType={type}
                         setChartType={setType}
                         setChartSpan={setSpan}
-                        chartCurrentValue={currentValue}
                         showTypeSelector
-                        showAPR
                         height={260}
                         tokenA={token0?.symbol}
                         tokenB={token1?.symbol}
+                        isChartDataLoading={poolIndexerDayDatasLoading || poolIndexerHourDatasLoading}
                     />
                 </div>
                 <div className="flex flex-col gap-3">

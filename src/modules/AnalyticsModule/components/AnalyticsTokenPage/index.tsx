@@ -119,7 +119,7 @@ export function AnalyticsTokenPage() {
 
     const currency = useCurrency(tokenId as Address);
 
-    const { data: tokenIndexerDayDatas } = useTokenDayDatasQuery({
+    const { data: tokenIndexerDayDatas, loading: isTokenIndexerDayDatasLoading } = useTokenDayDatasQuery({
         variables: {
             token: tokenId!,
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * (span === CHART_SPAN.DAY ? 2 : 1),
@@ -129,7 +129,7 @@ export function AnalyticsTokenPage() {
         skip: !tokenId,
     });
 
-    const { data: tokenIndexerHourDatas } = useTokenHourDatasQuery({
+    const { data: tokenIndexerHourDatas, loading: isTokenIndexerHourDatasLoading } = useTokenHourDatasQuery({
         variables: {
             token: tokenId!,
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY],
@@ -188,8 +188,6 @@ export function AnalyticsTokenPage() {
         return formattedData.slice(1);
     }, [tokenDayDatas, tokenHourDatas, span, type]);
 
-    const currentValue = chartData.length ? chartData[chartData.length - 1].value : 0;
-
     const chartView = useMemo(() => {
         switch (type) {
             case CHART_TYPE.TVL:
@@ -234,10 +232,9 @@ export function AnalyticsTokenPage() {
                         chartType={type}
                         setChartType={setType}
                         setChartSpan={setSpan}
-                        chartCurrentValue={currentValue}
                         showTypeSelector
-                        showAPR
                         height={260}
+                        isChartDataLoading={isTokenIndexerDayDatasLoading || isTokenIndexerHourDatasLoading}
                     />
                 </div>
                 <div className="flex flex-col gap-3">

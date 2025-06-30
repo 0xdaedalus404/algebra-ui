@@ -25,6 +25,7 @@ import FarmingModule from "@/modules/FarmingModule";
 import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
 import MyPositionsToolbar from "@/components/pool/MyPositionsToolbar";
 import { useAppKit } from "@reown/appkit/react";
+import { unwrappedToken } from "@/utils/common/unwrappedToken";
 
 const { ALMPositionCard } = ALMModule.components;
 const { useUserALMVaultsByPool } = ALMModule.hooks;
@@ -200,7 +201,11 @@ const PoolPage = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 w-full mt-3">
                 <div className="col-span-2">
-                    <MyPositionsToolbar currencyA={poolEntity?.token0} currencyB={poolEntity?.token1} positionsData={positionsData} />
+                    <MyPositionsToolbar
+                        currencyA={poolEntity && unwrappedToken(poolEntity.token0)}
+                        currencyB={poolEntity && unwrappedToken(poolEntity.token1)}
+                        positionsData={positionsData}
+                    />
                     {!account ? (
                         <NoAccount />
                     ) : positionsLoading || isFarmingLoading || areDepositsLoading || areUserVaultsLoading ? (

@@ -11,7 +11,6 @@ import { useClients } from "@/hooks/graphql/useClients";
 
 function ChartComponent({
     now,
-    currentValue,
     title,
     selector,
     chartType,
@@ -20,7 +19,6 @@ function ChartComponent({
     showTypeSelector = false,
 }: {
     now: number;
-    currentValue: number;
     title: string;
     selector: "tvlUSD" | "volumeUSD" | "feesUSD";
     chartType: ChartTypeType;
@@ -33,7 +31,7 @@ function ChartComponent({
     const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
     const [type, setType] = useState<ChartTypeType>(chartType);
 
-    const { data: algebraIndexerDayDatas } = useAlgebraDayDatasQuery({
+    const { data: algebraIndexerDayDatas, loading: isAlgebraIndexerDayDatasLoading } = useAlgebraDayDatasQuery({
         variables: {
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * 2,
             to: now,
@@ -80,14 +78,13 @@ function ChartComponent({
             chartData={chartData}
             chartView={chartView}
             chartTitle={title}
-            chartCurrentValue={currentValue || 0}
             chartSpan={span}
             setChartSpan={setSpan}
             chartType={type}
             setChartType={setType}
             showTypeSelector={showTypeSelector}
             height={height}
-            showAPR={false}
+            isChartDataLoading={isAlgebraIndexerDayDatasLoading}
         />
     );
 }
@@ -156,7 +153,6 @@ export function DexCharts() {
                 <div className="rounded-xl border border-card-border bg-card">
                     <ChartComponent
                         now={now}
-                        currentValue={currentTVL?.value || 0}
                         selector={"tvlUSD"}
                         title={"TVL"}
                         chartView={CHART_VIEW.AREA}
@@ -167,7 +163,6 @@ export function DexCharts() {
                 <div className="rounded-xl border border-card-border bg-card">
                     <ChartComponent
                         now={now}
-                        currentValue={currentVolume24H?.value || 0}
                         selector={"volumeUSD"}
                         title={"Volume"}
                         chartView={CHART_VIEW.AREA}

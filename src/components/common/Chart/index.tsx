@@ -2,29 +2,34 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import * as LightWeightCharts from "lightweight-charts";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
+import { CHART_SPAN, CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
 import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
+import { bucketChartData } from "@/utils/chart/bucketChartData";
 
 export function Chart({
     chartData,
     chartView,
     chartTitle,
-    chartCurrentValue,
     chartSpan,
     setChartSpan,
     chartType,
     setChartType,
     showTypeSelector,
     height,
-    showAPR,
     tokenA,
     tokenB,
+    isChartDataLoading,
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
 
     const [series, setSeries] = useState<LightWeightCharts.ISeriesApi<"Line" | "Area" | "Histogram"> | undefined>();
     const [chartCreated, setChart] = useState<LightWeightCharts.IChartApi | undefined>();
+    const previousChartDataRef = useRef(chartData);
+
+    const chartCurrentValue = previousChartDataRef.current.length
+        ? previousChartDataRef.current[previousChartDataRef.current.length - 1].value
+        : 0;
 
     const [displayValue, setDisplayValued] = useState(chartCurrentValue);
     const [displayDate, setDisplayDate] = useState(new Date().toLocaleDateString());
@@ -74,7 +79,13 @@ export function Chart({
     }, [chartData, chartCreated, series, crosshairMoveHandler]);
 
     useLayoutEffect(() => {
-        if (!chartRef.current || !chartData) return;
+        if (!chartRef.current || !previousChartDataRef.current) return;
+
+        const effectiveData = isChartDataLoading ? previousChartDataRef.current : chartData;
+
+        if (!isChartDataLoading) {
+            previousChartDataRef.current = chartData;
+        }
 
         if (chartRef.current.hasChildNodes()) chartRef.current.innerHTML = "";
 
@@ -147,8 +158,8 @@ export function Chart({
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
-                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...chartData.map((v) => v.value)),
-                        maxValue: Math.max(...chartData.map((v) => v.value)),
+                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...effectiveData.map((v) => v.value)),
+                        maxValue: Math.max(...effectiveData.map((v) => v.value)),
                     },
                 }),
             });
@@ -165,19 +176,23 @@ export function Chart({
                 autoscaleInfoProvider: () => ({
                     priceRange: {
                         minValue: 0,
-                        maxValue: Math.max(...chartData.map((v) => v.value)),
+                        maxValue: Math.max(...effectiveData.map((v) => v.value)),
                     },
                 }),
             });
         }
 
-        series.setData(chartData);
+        const bucketSize = chartSpan === CHART_SPAN.WEEK ? 3600 : chartSpan === CHART_SPAN.DAY ? 600 : 3600 * 24;
+
+        const bucketedData = bucketChartData(effectiveData, bucketSize);
+
+        series.setData(chartView === CHART_VIEW.AREA || chartView === CHART_VIEW.LINE ? bucketedData : effectiveData);
 
         chart.timeScale().fitContent();
 
         setChart(chart);
         setSeries(series);
-    }, [chartRef, chartData, chartView]);
+    }, [chartRef, chartData, chartView, isChartDataLoading, height, chartSpan]);
 
     useEffect(() => {
         if (!chartCreated) return undefined;
@@ -212,7 +227,7 @@ export function Chart({
                             `$${formatAmount(chartCurrentValue)}`
                         ) : (
                             <div className="min-h-[56px]">
-                                <span className="inline-block h-[24px] w-[24px] animate-[rotate-in_1s_linear_infinite] rounded-full border-2 border-solid border-white border-b-transparent" />
+                                <span className="inline-block h-[24px] w-[24px] animate-spin rounded-full border-2 border-solid border-white border-b-transparent" />
                             </div>
                         )}
                     </div>
@@ -222,16 +237,20 @@ export function Chart({
 
                 <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
                     <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />
-                    {showTypeSelector && <ChartTypeSelector chartType={chartType} showAPR={showAPR} handleChangeChartType={setChartType} />}
+                    {showTypeSelector && <ChartTypeSelector chartType={chartType} handleChangeChartType={setChartType} />}
                 </div>
             </div>
             <div className="relative">
-                <div style={{ height: `${height}px` }} ref={chartRef} />
-                {!chartData?.length ? (
+                <div
+                    className={`transition-all duration-1000 ${isChartDataLoading ? "opacity-40 animate-pulse" : "opacity-100"}`}
+                    style={{ height: `${height}px` }}
+                    ref={chartRef}
+                />
+                {/* {!chartData?.length ? (
                     <div className="absolute top-0 flex h-full w-full items-center justify-center">
-                        <span className="h-[24px] w-[24px] animate-[rotate-in_1s_linear_infinite] rounded-full border-2 border-solid border-white border-b-transparent" />
+                        <span className="h-[24px] w-[24px] animate-spin rounded-full border-2 border-solid border-white border-b-transparent" />
                     </div>
-                ) : null}
+                ) : null} */}
             </div>
         </>
     );
