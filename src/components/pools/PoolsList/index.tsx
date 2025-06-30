@@ -12,7 +12,7 @@ import { useAccount } from "wagmi";
 import ALMModule from "@/modules/ALMModule";
 const { useAllUserALMAmounts } = ALMModule.hooks;
 
-const PoolsList = () => {
+const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenId?: Address }) => {
     const { address: account } = useAccount();
 
     const { infoClient, farmingClient } = useClients();
@@ -40,49 +40,65 @@ const PoolsList = () => {
         isFarmingsLoading ||
         isFarmingsAPRLoading;
 
+    console.log({
+        isPoolsListLoading,
+        isPoolsMaxAprLoading,
+        isPoolsAvgAprLoading,
+        isPositionsLoading,
+        isFarmingsLoading,
+        isFarmingsAPRLoading,
+    });
+
     const formattedPools = useMemo(() => {
         if (isLoading || !pools) return [];
 
-        return pools.pools.map(({ id, token0, token1, fee, totalValueLockedUSD, deployer, poolDayData }) => {
-            const currentPool = poolDayData[0];
-            const lastDate = currentPool ? currentPool.date * 1000 : 0;
-            const currentDate = new Date().getTime();
+        return pools.pools
+            .filter((pool) => {
+                if (tokenId) {
+                    return pool.token0.id.toLowerCase() === tokenId.toLowerCase() || pool.token1.id.toLowerCase() === tokenId.toLowerCase();
+                }
+                return true;
+            })
+            .map(({ id, token0, token1, fee, totalValueLockedUSD, deployer, poolDayData }) => {
+                const currentPool = poolDayData[0];
+                const lastDate = currentPool ? currentPool.date * 1000 : 0;
+                const currentDate = new Date().getTime();
 
-            /* time difference calculations here to ensure that the graph provides information for the last 24 hours */
-            const timeDifference = currentDate - lastDate;
-            const msIn24Hours = 24 * 60 * 60 * 1000;
+                /* time difference calculations here to ensure that the graph provides information for the last 24 hours */
+                const timeDifference = currentDate - lastDate;
+                const msIn24Hours = 24 * 60 * 60 * 1000;
 
-            const openPositions = positions?.filter((position) => position.pool.toLowerCase() === id.toLowerCase());
-            const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
+                const openPositions = positions?.filter((position) => position.pool.toLowerCase() === id.toLowerCase());
+                const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
 
-            const openAlmPositions = almPositions?.filter((position) => position.poolAddress.toLowerCase() === id.toLowerCase());
+                const openAlmPositions = almPositions?.filter((position) => position.poolAddress.toLowerCase() === id.toLowerCase());
 
-            const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
-            const poolAvgApr = poolsAvgApr && poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
-            const farmApr = activeFarming && farmingsAPR && farmingsAPR[activeFarming.id] > 0 ? farmingsAPR[activeFarming.id] : 0;
+                const poolMaxApr = poolsMaxApr && poolsMaxApr[id] ? Number(poolsMaxApr[id].toFixed(2)) : 0;
+                const poolAvgApr = poolsAvgApr && poolsAvgApr[id] ? Number(poolsAvgApr[id].toFixed(2)) : 0;
+                const farmApr = activeFarming && farmingsAPR && farmingsAPR[activeFarming.id] > 0 ? farmingsAPR[activeFarming.id] : 0;
 
-            const avgApr = farmApr + poolAvgApr;
+                const avgApr = farmApr + poolAvgApr;
 
-            return {
-                id: id as Address,
-                pair: {
-                    token0,
-                    token1,
-                },
-                fee: Number(fee) / 10_000,
-                tvlUSD: Number(totalValueLockedUSD),
-                volume24USD: timeDifference <= msIn24Hours ? currentPool.volumeUSD : 0,
-                fees24USD: timeDifference <= msIn24Hours ? currentPool.feesUSD : 0,
-                poolMaxApr,
-                poolAvgApr,
-                farmApr,
-                avgApr,
-                isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
-                hasActiveFarming: Boolean(activeFarming),
-                deployer: deployer.toLowerCase(),
-            };
-        });
-    }, [isLoading, pools, positions, activeFarmings, poolsMaxApr, poolsAvgApr, farmingsAPR, almPositions]);
+                return {
+                    id: id as Address,
+                    pair: {
+                        token0,
+                        token1,
+                    },
+                    fee: Number(fee) / 10_000,
+                    tvlUSD: Number(totalValueLockedUSD),
+                    volume24USD: timeDifference <= msIn24Hours ? Number(currentPool.volumeUSD) : 0,
+                    fees24USD: timeDifference <= msIn24Hours ? Number(currentPool.feesUSD) : 0,
+                    poolMaxApr,
+                    poolAvgApr,
+                    farmApr,
+                    avgApr,
+                    isMyPool: Boolean(openPositions?.length || openAlmPositions?.length),
+                    hasActiveFarming: Boolean(activeFarming),
+                    deployer: deployer.toLowerCase(),
+                };
+            });
+    }, [isLoading, pools, tokenId, positions, activeFarmings?.eternalFarmings, almPositions, poolsMaxApr, poolsAvgApr, farmingsAPR]);
 
     return (
         <div className="flex flex-col gap-4">
@@ -90,7 +106,7 @@ const PoolsList = () => {
                 columns={poolsColumns}
                 data={formattedPools}
                 defaultSortingID={"tvlUSD"}
-                link={"pool"}
+                link={isExplore ? "analytics/pools" : "pool"}
                 showPagination={true}
                 loading={isLoading}
             />

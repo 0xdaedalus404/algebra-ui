@@ -13,8 +13,8 @@ export const moduleNameToPath: Record<AppFeatureModule, string> = {
 };
 
 export const enabledModules: Record<AppFeatureModule, boolean> = {
-    [AppFeatureModule.LimitOrders]: false,
+    [AppFeatureModule.LimitOrders]: true,
     [AppFeatureModule.Analytics]: true,
-    [AppFeatureModule.ALM]: false,
-    [AppFeatureModule.Farming]: false,
+    [AppFeatureModule.ALM]: true,
+    [AppFeatureModule.Farming]: true,
 };

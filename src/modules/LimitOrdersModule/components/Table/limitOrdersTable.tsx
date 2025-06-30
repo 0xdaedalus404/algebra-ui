@@ -92,15 +92,9 @@ export const LimitOrdersTable = <TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className={`border-card-border/40 ${isSelected ? "bg-muted-primary/60" : "bg-card"} ${
+                                    className={`border-card-border/40 ${isSelected ? "bg-muted-primary/60" : "bg-card-dark"} ${
                                         (action || link) && "cursor-pointer"
-                                    } ${
-                                        action || link
-                                            ? isSelected
-                                                ? "hover:bg-muted-primary"
-                                                : "hover:bg-card-hover"
-                                            : "hover:bg-card-dark"
-                                    }`}
+                                    } ${action || link ? "hover:bg-card-hover" : "hover:bg-card-dark"}`}
                                     onClick={() => {
                                         if (action) {
                                             action(row.original.id);

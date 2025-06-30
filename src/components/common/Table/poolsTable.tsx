@@ -17,7 +17,7 @@ import { LoadingState } from "./loadingState";
 import { Input } from "@/components/ui/input";
 import { Search, User, X } from "lucide-react";
 import { cn } from "@/utils";
-import { enabledModules } from "config/modules";
+import { enabledModules } from "config/app-modules";
 
 interface PoolsTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -73,8 +73,8 @@ const PoolsTable = <TData, TValue>({
     return (
         <>
             {searchID && (
-                <div className="flex gap-3 w-full items-center p-4 pb-0">
-                    <div className="flex items-center relative w-fit">
+                <div className="flex max-sm:flex-col gap-3 w-full items-center p-4 pb-0">
+                    <div className="flex items-center relative w-full sm:w-fit">
                         <Input
                             placeholder="Search pool"
                             value={(table.getColumn(searchID)?.getFilterValue() as string) ?? ""}
@@ -83,7 +83,7 @@ const PoolsTable = <TData, TValue>({
                         />
                         <Search className="absolute left-4 text-border" size={20} />
                     </div>
-                    <div className="grid grid-flow-col gap-3 md:flex">
+                    <div className="grid grid-flow-col gap-3 md:flex w-full sm:w-fit">
                         {enabledModules.farming && (
                             <Button
                                 onClick={() => {

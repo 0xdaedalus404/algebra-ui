@@ -17,6 +17,14 @@ const config: CodegenConfig = {
             config: {
                 withHooks: true,
                 withResultType: true,
+                scalars: {
+                    BigInt: "string",
+                    BigDecimal: "string",
+                    Bytes: "string",
+                    Int8: "number",
+                    Int: "number",
+                    Timestamp: "number",
+                },
             },
         },
     },

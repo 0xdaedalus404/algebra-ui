@@ -89,7 +89,7 @@ const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellTo
     <div className="relative flex h-[25px] bg-card-dark rounded-xl">
         <div className="relative flex w-full h-full font-semibold text-sm">
             <div
-                className={`flex items-center justify-end pl-1 pr-2 h-full bg-purple-500 border border-card-border duration-300 ${
+                className={`flex items-center justify-end pl-1 pr-2 h-full bg-primary-100 border border-card-border duration-300 ${
                     Number(progress) === 100 ? "rounded-2xl" : "rounded-l-2xl"
                 }`}
                 style={{ width: `${progress}%` }}
@@ -97,7 +97,7 @@ const StatusBar = ({ progress, sellToken, buyToken }: { progress: number; sellTo
                 <CurrencyLogo currency={sellToken} size={22} className="absolute left-1" />
             </div>
             <div
-                className={`flex items-center pr-1 pl-2 h-full bg-blue-500 border border-card-border  duration-300 ${
+                className={`flex items-center pr-1 pl-2 h-full bg-accent-100 border border-card-border  duration-300 ${
                     Number(progress) === 100 ? "rounded-2xl" : "rounded-r-2xl"
                 }`}
                 style={{ width: `${100 - progress}%` }}

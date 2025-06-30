@@ -5,6 +5,7 @@ const PATHS = {
     LIMIT_ORDERS: "limit-order",
     POOLS: "/pools",
     POOL: "/pool",
+    ANALYTICS: "/analytics",
 };
 
 const menuItems = [
@@ -17,6 +18,11 @@ const menuItems = [
         title: "Pools",
         link: "/pools",
         active: [PATHS.POOLS, PATHS.POOL],
+    },
+    {
+        title: "Analytics",
+        link: "/analytics",
+        active: [PATHS.ANALYTICS],
     },
 ];
 

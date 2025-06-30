@@ -127,7 +127,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                     Remove Liquidity
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[500px] rounded-3xl bg-card" style={{ borderRadius: "32px" }}>
+            <DialogContent className="min-w-[500px] rounded-xl! bg-card" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">Remove Liquidity</DialogTitle>
                 </DialogHeader>
@@ -140,7 +140,7 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
                             <Button
                                 key={`liquidity-percent-${v}`}
                                 disabled={isRemoveLoading}
-                                variant={"icon"}
+                                variant={sliderValue[0] === v ? "iconHover" : "icon"}
                                 className="border border-card-border"
                                 size={"sm"}
                                 onClick={() => setSliderValue([v])}

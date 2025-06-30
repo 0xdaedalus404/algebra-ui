@@ -130,7 +130,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                     Remove Liquidity
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[500px] rounded-xl bg-card" style={{ borderRadius: "32px" }}>
+            <DialogContent className="min-w-[500px] rounded-xl! bg-card" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">Remove Liquidity</DialogTitle>
                 </DialogHeader>
@@ -143,7 +143,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                             <Button
                                 key={`liquidity-percent-${v}`}
                                 disabled={isRemoveLoading}
-                                variant={sliderValue[0] === v ? "iconActive" : "icon"}
+                                variant={sliderValue[0] === v ? "iconHover" : "icon"}
                                 className="border border-card-border"
                                 size={"sm"}
                                 onClick={() => setSliderValue([v])}

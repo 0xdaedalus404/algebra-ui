@@ -46,6 +46,18 @@ export const POOL_DAY_DATA_FRAGMENT = gql`
         volumeUSD
         id
         date
+        token1Price
+    }
+`;
+
+export const POOL_HOUR_DATA_FRAGMENT = gql`
+    fragment PoolHourDataFields on PoolHourData {
+        feesUSD
+        tvlUSD
+        volumeUSD
+        id
+        periodStartUnix
+        token1Price
     }
 `;
 
@@ -100,15 +112,36 @@ export const CUSTOM_POOL_DEPLOYER = gql`
     }
 `;
 
-// export const POOLS_DAY_DATAS = gql`
-//     query PoolsVolumeData {
-//         poolDayDatas(orderBy: date, orderDirection: desc) {
-//             date
-//             pool {
-//                 id
-//             }
-//             volumeUSD
-//             ...PoolDayDataFields
-//         }
-//     }
-// `;
+export const POOLS_DAY_DATAS = gql`
+    query PoolDayDatas($poolId: String!, $from: Int!, $to: Int!) {
+        poolDayDatas(orderBy: date, orderDirection: asc, where: { pool: $poolId, date_gt: $from, date_lt: $to }) {
+            date
+            pool {
+                id
+                totalValueLockedToken0
+                totalValueLockedToken1
+                txCount
+            }
+            ...PoolDayDataFields
+        }
+    }
+`;
+
+export const POOLS_HOUR_DATAS = gql`
+    query PoolHourDatas($poolId: String!, $from: Int!, $to: Int!) {
+        poolHourDatas(
+            orderBy: periodStartUnix
+            orderDirection: asc
+            where: { pool: $poolId, periodStartUnix_gt: $from, periodStartUnix_lt: $to }
+        ) {
+            periodStartUnix
+            pool {
+                id
+                totalValueLockedToken0
+                totalValueLockedToken1
+                txCount
+            }
+            ...PoolHourDataFields
+        }
+    }
+`;

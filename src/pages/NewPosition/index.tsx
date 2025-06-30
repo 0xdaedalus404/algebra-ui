@@ -11,7 +11,7 @@ import { Address } from "viem";
 
 import ALMModule from "@/modules/ALMModule";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
-import { enabledModules } from "config/modules";
+import { enabledModules } from "config/app-modules";
 const { useALMVaultsByPool } = ALMModule.hooks;
 const { CreateAutomatedPosition } = ALMModule.components;
 

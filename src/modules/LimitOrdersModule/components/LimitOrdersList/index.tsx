@@ -46,7 +46,7 @@ export const LimitOrdersList = () => {
                     CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
                     liquidity,
                     Number(tick),
-                    tickSpacing
+                    Number(tickSpacing)
                 ),
             }),
             {}
@@ -181,8 +181,8 @@ export const LimitOrdersList = () => {
                 <LimitOrdersLoading />
             ) : (
                 <>
-                    <div className="p-3 bg-card border gap-4 border-card-border rounded-xl">
-                        <div className="flex gap-2">
+                    <div className="bg-card border gap-4 border-card-border rounded-xl">
+                        <div className="flex gap-2 p-3">
                             <Button size={"sm"} onClick={() => setTab(0)} variant={tab === 0 ? "iconActive" : "icon"}>
                                 Opened Orders
                             </Button>

@@ -107,7 +107,7 @@ export function usePositions() {
     const chainId = useChainId();
 
     const { data: balanceResult, isLoading: balanceLoading } = useReadAlgebraPositionManagerBalanceOf({
-        address: ALGEBRA_POSITION_MANAGER[chainId],
+        address: account ? ALGEBRA_POSITION_MANAGER[chainId] : undefined,
         args: account ? [account] : undefined,
     });
 

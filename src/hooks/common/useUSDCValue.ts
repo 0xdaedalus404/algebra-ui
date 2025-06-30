@@ -36,7 +36,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
         const tokenUSDValue = Number(token.token.derivedMatic) * Number(bundles.bundles[0].maticPriceUSD);
 
-        const usdAmount = tryParseAmount(tokenUSDValue.toString(), currency);
+        const usdAmount = tryParseAmount(tokenUSDValue.toFixed(currency.decimals), currency);
 
         if (usdAmount) {
             return {
@@ -49,7 +49,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
             price: undefined,
             formatted: 0,
         };
-    }, [currency, bundles, token]);
+    }, [currency, bundles, token, chainId]);
 }
 
 export function useUSDCValue(currencyAmount: CurrencyAmount<Currency> | undefined | null) {
