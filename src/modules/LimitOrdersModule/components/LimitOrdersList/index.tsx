@@ -7,6 +7,7 @@ import { INITIAL_POOL_FEE, Pool, Position, TickMath, Token } from "@cryptoalgebr
 import { limitOrderColumns, LimitOrdersTable } from "../Table";
 import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 import { Button } from "@/components/ui/button";
+import { BookOpen, History } from "lucide-react";
 
 export const LimitOrdersList = () => {
     const { address: account } = useAccount();
@@ -183,11 +184,23 @@ export const LimitOrdersList = () => {
                 <>
                     <div className="bg-card border gap-4 border-card-border rounded-xl">
                         <div className="flex gap-2 p-3">
-                            <Button size={"sm"} onClick={() => setTab(0)} variant={tab === 0 ? "iconActive" : "icon"}>
-                                Opened Orders
+                            <Button
+                                size="md"
+                                className="flex h-12 min-w-[130px] items-center gap-2 border whitespace-nowrap rounded-lg p-4"
+                                onClick={() => setTab(0)}
+                                variant={tab === 0 ? "iconHover" : "icon"}
+                            >
+                                <BookOpen className="text-primary-200" size={16} />
+                                <span>Opened Orders</span>
                             </Button>
-                            <Button size={"sm"} onClick={() => setTab(1)} variant={tab === 1 ? "iconActive" : "icon"}>
-                                Closed Orders
+                            <Button
+                                size="md"
+                                className="flex h-12 min-w-[130px] items-center gap-2 border whitespace-nowrap rounded-lg p-4"
+                                onClick={() => setTab(1)}
+                                variant={tab === 1 ? "iconHover" : "icon"}
+                            >
+                                <History className="text-primary-300" size={16} />
+                                <span> Closed Orders</span>
                             </Button>
                         </div>
                         <LimitOrdersTable defaultSortingID="time" columns={limitOrderColumns} data={limitOrdersForTable} />

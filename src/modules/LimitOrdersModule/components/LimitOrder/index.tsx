@@ -69,8 +69,6 @@ export const LimitOrder = () => {
 
     const isPoolExists = limitOrderPoolExists === PoolState.EXISTS;
 
-    console.log(isPoolExists);
-
     const tick = limitOrderPool?.tickCurrent;
     const tickSpacing = limitOrderPool?.tickSpacing;
 

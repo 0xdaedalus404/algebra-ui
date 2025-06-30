@@ -16,7 +16,7 @@ const Settings = () => {
                     <SettingsIcon />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent align={"end"} className="flex flex-col gap-4 p-6 w-fit bg-card rounded-3xl border border-card-border">
+            <PopoverContent align={"end"} className="flex flex-col gap-4 p-6 w-fit bg-card rounded-xl border border-card-border">
                 <div className="text-md font-bold">Transaction Settings</div>
                 <Separator orientation={"horizontal"} className="bg-border" />
                 <SlippageTolerance />

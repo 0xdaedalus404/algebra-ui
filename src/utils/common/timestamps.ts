@@ -1,4 +1,4 @@
-import { CHART_SPAN } from "../types";
+import { CHART_SPAN } from "@/types/swap-chart";
 
 export const UNIX_TIMESTAMPS = {
     [CHART_SPAN.DAY]: 2419200 / 30,

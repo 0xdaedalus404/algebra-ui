@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { Deposit } from "@/graphql/generated/graphql";
 import { Farming } from "../../types/farming-info";
 import { Button } from "@/components/ui/button";
-import CardInfo from "@/components/common/CardInfo";
-import { formatUnits } from "viem";
+import { Address, formatUnits } from "viem";
 import { FormattedPosition } from "@/types/formatted-position";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import { useCurrency } from "@/hooks/common/useCurrency";
@@ -15,6 +14,7 @@ import { useRewardEarnedUSD } from "../../hooks/useRewardEarnedUSD";
 import { useFarmingAPR } from "../../hooks/useFarmingAPR";
 import { getFarmingRewards, isSameRewards } from "../../utils";
 import { SelectPositionFarmModal } from "..";
+import { CardInfo } from "../CardInfo";
 
 interface ActiveFarmingProps {
     farming: Farming;
@@ -31,11 +31,11 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
     const APR = useFarmingAPR({ farmingId: farming.farming.id });
 
-    const isSameReward = isSameRewards(farming.farming.rewardToken, farming.farming.bonusRewardToken);
+    const isSameReward = isSameRewards(farming.farming.rewardToken as Address, farming.farming.bonusRewardToken as Address);
 
-    const formattedRewardEarned = Number(formatUnits(rewardEarned, farming.rewardToken.decimals));
+    const formattedRewardEarned = Number(formatUnits(rewardEarned, Number(farming.rewardToken.decimals)));
 
-    const formattedBonusRewardEarned = Number(formatUnits(bonusRewardEarned, farming.bonusRewardToken?.decimals));
+    const formattedBonusRewardEarned = Number(formatUnits(bonusRewardEarned, Number(farming.bonusRewardToken?.decimals || 18)));
 
     const rewardEarnedUSD = useRewardEarnedUSD({
         token: farming.rewardToken,
@@ -49,8 +49,8 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
     const farmingRewards = (rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(4);
 
-    const rewardTokenCurrency = useCurrency(farming.farming.rewardToken);
-    const bonusRewardTokenCurrency = useCurrency(farming.farming.bonusRewardToken);
+    const rewardTokenCurrency = useCurrency(farming.farming.rewardToken as Address);
+    const bonusRewardTokenCurrency = useCurrency(farming.farming.bonusRewardToken as Address);
 
     const TVL = deposits.reduce((acc, deposit) => {
         const currentFormattedPosition = positionsData.find((position) => Number(position.id) === Number(deposit.id));
@@ -63,16 +63,17 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
     const formattedTVL = TVL.toFixed(2);
 
-    const rewardRatePerDay = Number(formatUnits(farming.farming.rewardRate, farming.rewardToken.decimals)) * 60 * 60 * 24;
+    const rewardRatePerDay = Number(formatUnits(BigInt(farming.farming.rewardRate), Number(farming.rewardToken.decimals))) * 60 * 60 * 24;
 
-    const bonusRewardRatePerDay = Number(formatUnits(farming.farming.bonusRewardRate, farming.bonusRewardToken?.decimals)) * 60 * 60 * 24;
+    const bonusRewardRatePerDay =
+        Number(formatUnits(BigInt(farming.farming.bonusRewardRate), Number(farming.bonusRewardToken?.decimals || 18))) * 60 * 60 * 24;
 
     const { isLoading, onHarvestAll, isSuccess } = useFarmHarvestAll(
         {
-            rewardToken: farming.farming.rewardToken,
-            bonusRewardToken: farming.farming.bonusRewardToken,
-            pool: farming.farming.pool,
-            nonce: farming.farming.nonce,
+            rewardToken: farming.farming.rewardToken as Address,
+            bonusRewardToken: farming.farming.bonusRewardToken as Address,
+            pool: farming.farming.pool as Address,
+            nonce: BigInt(farming.farming.nonce),
             account: account ?? ADDRESS_ZERO,
         },
         deposits
@@ -92,10 +93,10 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
             if (deposit.eternalFarming !== null) {
                 promises.push(
                     getFarmingRewards({
-                        rewardToken: farming.farming.rewardToken,
-                        bonusRewardToken: farming.farming.bonusRewardToken,
-                        pool: farming.farming.pool,
-                        nonce: farming.farming.nonce,
+                        rewardToken: farming.farming.rewardToken as Address,
+                        bonusRewardToken: farming.farming.bonusRewardToken as Address,
+                        pool: farming.farming.pool as Address,
+                        nonce: BigInt(farming.farming.nonce),
                         tokenId: BigInt(deposit.id),
                         chainId,
                     })
@@ -111,10 +112,10 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
                 setBonusRewardEarned((prev) => prev + reward.bonusReward);
             });
         });
-    }, [deposits, farming, isSuccess]);
+    }, [deposits, farming, isSuccess, chainId]);
 
     return (
-        <div className="flex items-center justify-center min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-3xl mt-8">
+        <div className="flex items-center justify-center min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-xl mt-8">
             <div className="flex flex-col w-full max-sm:p-6 p-8 gap-8">
                 <div className="flex max-sm:flex-col w-full gap-8">
                     <div className="flex max-xs:flex-col w-full gap-8">

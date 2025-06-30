@@ -61,7 +61,7 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
                     Withdraw
                 </Button>
             </DialogTrigger>
-            <DialogContent className="min-w-[500px] rounded-3xl bg-card" style={{ borderRadius: "32px" }}>
+            <DialogContent className="min-w-[500px] rounded-xl! bg-card" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none">Withdraw limit order liquidity</DialogTitle>
                 </DialogHeader>
@@ -70,16 +70,36 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
                     <h2 className="text-3xl font-bold select-none">{`${value}%`}</h2>
 
                     <div className="flex gap-2">
-                        <Button variant={"icon"} className="border border-card-border" size={"sm"} onClick={() => setValue([25])}>
+                        <Button
+                            variant={value[0] === 25 ? "iconHover" : "icon"}
+                            className="border border-card-border"
+                            size={"sm"}
+                            onClick={() => setValue([25])}
+                        >
                             25%
                         </Button>
-                        <Button variant={"icon"} className="border border-card-border" size={"sm"} onClick={() => setValue([50])}>
+                        <Button
+                            variant={value[0] === 50 ? "iconHover" : "icon"}
+                            className="border border-card-border"
+                            size={"sm"}
+                            onClick={() => setValue([50])}
+                        >
                             50%
                         </Button>
-                        <Button variant={"icon"} className="border border-card-border" size={"sm"} onClick={() => setValue([75])}>
+                        <Button
+                            variant={value[0] === 75 ? "iconHover" : "icon"}
+                            className="border border-card-border"
+                            size={"sm"}
+                            onClick={() => setValue([75])}
+                        >
                             75%
                         </Button>
-                        <Button variant={"icon"} className="border border-card-border" size={"sm"} onClick={() => setValue([100])}>
+                        <Button
+                            variant={value[0] === 100 ? "iconHover" : "icon"}
+                            className="border border-card-border"
+                            size={"sm"}
+                            onClick={() => setValue([100])}
+                        >
                             100%
                         </Button>
                     </div>

@@ -2,6 +2,8 @@
 @import "../config/colors.css";
 @import "./tailwind.css";
 
+@config "../tailwind.config.js";
+
 html,
 body {
     height: 100%;

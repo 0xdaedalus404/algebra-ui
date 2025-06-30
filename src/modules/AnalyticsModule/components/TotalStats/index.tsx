@@ -1,6 +1,6 @@
 import { formatPercent } from "@/utils/common/formatPercent";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { CHART_TYPE, ChartTypeType, type ITotalStats } from "../../types";
+import { CHART_TYPE, ChartTypeType, type ITotalStats } from "@/types/swap-chart";
 
 function Loader() {
     return (

@@ -102,7 +102,7 @@ export function TransactionsTable({ columns, data, defaultSortingID, showPaginat
                 <li>
                 </li>
               </ul> */}
-                <div className="grid grid-cols-2 gap-4 md:flex">
+                <div className="grid grid-cols-2 gap-4 md:flex max-md:w-full">
                     {/* <Button
                   className="flex h-12 min-w-[130px] items-center gap-2 rounded-lg"
                   variant={'outline'}

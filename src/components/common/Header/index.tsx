@@ -131,7 +131,7 @@ const TransactionHistoryPopover = ({ children }: { children: React.ReactNode }) 
                 >
                     Transaction History
                     <hr />
-                    <ul className="flex flex-col gap-4 w-64 overflow-auto ">
+                    <ul className="flex flex-col gap-3 w-64 overflow-auto ">
                         {Object.entries(pendingTransactions[account])
                             .reverse()
                             .map(([hash, transaction]) => (

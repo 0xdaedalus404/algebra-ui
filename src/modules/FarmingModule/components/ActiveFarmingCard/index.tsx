@@ -7,6 +7,7 @@ import { Deposit } from "@/graphql/generated/graphql";
 import { useFarmHarvest, useFarmUnstake, useRewardEarnedUSD } from "../../hooks";
 import { Farming } from "../../types/farming-info";
 import { getFarmingRewards } from "../../utils";
+import { Address } from "viem";
 
 interface ActiveFarmingCardProps {
     farming: Farming;
@@ -34,10 +35,10 @@ export const ActiveFarmingCard = ({ farming, selectedPosition }: ActiveFarmingCa
 
     const farmingArgs = {
         tokenId: BigInt(selectedPosition.id),
-        rewardToken: farming.farming.rewardToken,
-        bonusRewardToken: farming.farming.bonusRewardToken,
-        pool: farming.farming.pool,
-        nonce: farming.farming.nonce,
+        rewardToken: farming.farming.rewardToken as Address,
+        bonusRewardToken: farming.farming.bonusRewardToken as Address,
+        pool: farming.farming.pool as Address,
+        nonce: BigInt(farming.farming.nonce),
         account: account ?? ADDRESS_ZERO,
         chainId,
     };

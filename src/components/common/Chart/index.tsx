@@ -2,9 +2,9 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import * as LightWeightCharts from "lightweight-charts";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "../../types";
-import { ChartSpanSelector } from "../";
-import { ChartTypeSelector } from "../";
+import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
+import { ChartSpanSelector } from "../ChartSpanSelector";
+import { ChartTypeSelector } from "../ChartTypeSelector";
 
 export function Chart({
     chartData,
@@ -18,8 +18,8 @@ export function Chart({
     showTypeSelector,
     height,
     showAPR,
-    jetton0,
-    jetton1,
+    tokenA,
+    tokenB,
 }: IChart) {
     const chartRef = useRef<HTMLDivElement>(null);
 
@@ -132,7 +132,7 @@ export function Chart({
         let series;
         const primary200 = getComputedStyle(document.documentElement).getPropertyValue("--primary-200").trim();
 
-        if (chartView === CHART_VIEW.AREA) {
+        if (chartView === CHART_VIEW.AREA || chartView === CHART_VIEW.LINE) {
             series = chart?.addAreaSeries({
                 topColor: `${primary200}9A`,
                 bottomColor: `${primary200}00`,
@@ -147,25 +147,7 @@ export function Chart({
                 },
                 autoscaleInfoProvider: () => ({
                     priceRange: {
-                        minValue: 0,
-                        maxValue: Math.max(...chartData.map((v) => v.value)),
-                    },
-                }),
-            });
-        } else if (chartView === CHART_VIEW.LINE) {
-            series = chart?.addLineSeries({
-                color: primary200,
-                lineWidth: 2,
-                lastValueVisible: false,
-                priceLineVisible: false,
-                priceScaleId: "left",
-                priceFormat: {
-                    type: "custom",
-                    formatter: (price: LightWeightCharts.BarPrice) => formatCurrency.format(price),
-                },
-                autoscaleInfoProvider: () => ({
-                    priceRange: {
-                        minValue: 0,
+                        minValue: chartView === CHART_VIEW.AREA ? 0 : Math.min(...chartData.map((v) => v.value)),
                         maxValue: Math.max(...chartData.map((v) => v.value)),
                     },
                 }),
@@ -215,11 +197,11 @@ export function Chart({
                 <div>
                     <div className="mb-2 font-semibold">{chartTitle}</div>
 
-                    <div className="mb-2 text-3xl font-semibold">
+                    <div className="mb-2 text-2xl font-semibold">
                         {displayValue !== undefined ? (
                             chartType === POOL_CHART_TYPE.PRICE ? (
-                                jetton0 && jetton1 ? (
-                                    `1 ${jetton0} = ${formatCurrency.format(displayValue)} ${jetton1}`
+                                tokenA && tokenB ? (
+                                    `1 ${tokenA} = ${formatAmount(displayValue, 10)} ${tokenB}`
                                 ) : (
                                     `$${formatAmount(displayValue)}`
                                 )
@@ -238,7 +220,7 @@ export function Chart({
                     <div className="mb-5 text-sm text-[#b7b7b7]">{displayValue !== undefined ? displayDate : null}</div>
                 </div>
 
-                <div className="mb-8 flex w-full items-center gap-4 md:mb-0 md:w-fit">
+                <div className="mb-4 flex w-full items-center justify-center gap-2 md:mb-0 md:w-fit">
                     <ChartSpanSelector chartSpan={chartSpan} handleChangeChartSpan={setChartSpan} />
                     {showTypeSelector && <ChartTypeSelector chartType={chartType} showAPR={showAPR} handleChangeChartType={setChartType} />}
                 </div>

@@ -1,12 +1,12 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { CHART_SPAN, CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "../../types";
+import { CHART_SPAN, CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
 import { isDefined } from "@/utils/common/isDefined";
-import { getPercentChange, UNIX_TIMESTAMPS } from "../../utils";
+import { getPercentChange, UNIX_TIMESTAMPS } from "@/utils";
 import { UTCTimestamp } from "lightweight-charts";
 import { useTokenDayDatasQuery, useTokenHourDatasQuery } from "@/graphql/generated/graphql";
 import { Address } from "viem";
-import { Chart } from "../Chart";
+import { Chart } from "../../../../components/common/Chart";
 import { useClients } from "@/hooks/graphql/useClients";
 import PageTitle from "@/components/common/PageTitle";
 import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
@@ -53,7 +53,7 @@ const LiquidityStats = ({
                 <h2 className="font-semibold mb-2">Liquidity</h2>
                 <p className="text-2xl font-bold mb-3">${formatAmount(statistics?.tvlUSD || 0, 4)}</p>
                 <div className="flex flex-col gap-3 items-start w-full">
-                    <h3 className="text-text-100/50">Total Value Locked</h3>
+                    <h3 className="text-text-100/50">Total Tokens</h3>
                     <div className="flex items-center w-full justify-between">
                         <div className="flex items-center gap-2">
                             <CurrencyLogo currency={token0} size={24} />
@@ -199,7 +199,7 @@ export function AnalyticsTokenPage() {
             case CHART_TYPE.FEES:
                 return CHART_VIEW.BAR;
             case CHART_TYPE.PRICE:
-                return CHART_VIEW.LINE;
+                return CHART_VIEW.AREA;
             // case CHART_TYPE.APR:
             //     return CHART_VIEW.LINE;
             default:
@@ -217,7 +217,7 @@ export function AnalyticsTokenPage() {
     }, [pathname]);
 
     return (
-        <div className="flex w-full animate-fade-in flex-col gap-3 py-6 max-md:pb-24">
+        <div className="flex w-full animate-fade-in flex-col gap-3 py-8 max-md:pb-24">
             <PageTitle title="Explore token" showSettings={false} />
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
@@ -243,14 +243,14 @@ export function AnalyticsTokenPage() {
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
                         <Link className="col-span-1 w-full" to={"/swap"}>
-                            <Button className="gap-2 rounded-xl w-full" variant={"default"} size={"lg"}>
+                            <Button className="gap-2 rounded-xl w-full h-full max-md:text-sm" variant={"default"} size={"lg"}>
                                 <ArrowDownUp size={20} className="text-text-100" />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={"/pools"}>
                             <Button
-                                className="bg-primary-300 w-full text-bg-100 gap-2 rounded-xl hover:bg-primary-300"
+                                className="bg-primary-300 w-full h-full text-bg-100 gap-2 rounded-xl hover:bg-primary-300 max-md:text-sm"
                                 variant={"default"}
                                 size={"lg"}
                             >

@@ -5,6 +5,7 @@ import { FormattedPosition } from "@/types/formatted-position";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount } from "wagmi";
 import { useFarmUnstake } from "../../hooks";
+import { Address } from "viem";
 
 interface ClosedFarmingCardProps {
     positionInEndedFarming: EternalFarming;
@@ -16,10 +17,10 @@ export const ClosedFarmingCard = ({ positionInEndedFarming, selectedPosition }: 
 
     const farmingArgs = {
         tokenId: BigInt(selectedPosition.id ?? 0),
-        rewardToken: positionInEndedFarming.rewardToken,
-        bonusRewardToken: positionInEndedFarming.bonusRewardToken,
-        pool: positionInEndedFarming.pool,
-        nonce: positionInEndedFarming.nonce,
+        rewardToken: positionInEndedFarming.rewardToken as Address,
+        bonusRewardToken: positionInEndedFarming.bonusRewardToken as Address,
+        pool: positionInEndedFarming.pool as Address,
+        nonce: BigInt(positionInEndedFarming.nonce),
         account: account ?? ADDRESS_ZERO,
     };
 

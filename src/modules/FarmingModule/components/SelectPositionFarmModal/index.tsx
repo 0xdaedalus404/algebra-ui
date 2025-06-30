@@ -10,6 +10,7 @@ import { useFarmCheckApprove } from "../../hooks/useFarmCheckApprove";
 import { useFarmApprove } from "../../hooks/useFarmApprove";
 import { useFarmStake } from "../../hooks/useFarmStake";
 import { FarmingPositionCard } from "..";
+import { Address } from "viem";
 
 interface SelectPositionFarmModalProps {
     positions: Deposit[];
@@ -28,10 +29,10 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
 
     const { isLoading: isStakeLoading, onStake } = useFarmStake({
         tokenId,
-        rewardToken: farming.farming.rewardToken,
-        bonusRewardToken: farming.farming.bonusRewardToken,
-        pool: farming.farming.pool,
-        nonce: farming.farming.nonce,
+        rewardToken: farming.farming.rewardToken as Address,
+        bonusRewardToken: farming.farming.bonusRewardToken as Address,
+        pool: farming.farming.pool as Address,
+        nonce: BigInt(farming.farming.nonce),
     });
 
     const handleApprove = async () => {
@@ -50,7 +51,7 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
         setSelectedPosition(position);
     };
 
-    const availablePositions = positions.filter((position) => position.eternalFarming === null && position.liquidity > 0n);
+    const availablePositions = positions.filter((position) => position.eternalFarming === null && BigInt(position.liquidity) > 0n);
 
     return (
         <Dialog>
@@ -59,7 +60,7 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                     Deposit
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[500px] rounded-3xl bg-card" style={{ borderRadius: "32px" }}>
+            <DialogContent className="max-w-[500px] rounded-xl bg-card" style={{ borderRadius: "32px" }}>
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none my-2 max-md:mx-auto">Select Position</DialogTitle>
                 </DialogHeader>

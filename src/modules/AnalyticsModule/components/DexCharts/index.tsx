@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { UTCTimestamp } from "lightweight-charts";
-import { CHART_SPAN, CHART_TYPE, CHART_VIEW, ChartSpanType, ChartTypeType, ChartViewType } from "../../types";
+import { CHART_SPAN, CHART_TYPE, CHART_VIEW, ChartSpanType, ChartTypeType, ChartViewType } from "@/types/swap-chart";
 import { Chart } from "../";
-import { getPercentChange, UNIX_TIMESTAMPS } from "../../utils";
+import { getPercentChange, UNIX_TIMESTAMPS } from "@/utils";
 import { isDefined } from "@/utils/common/isDefined";
 import TotalStats from "../TotalStats";
 import { useAlgebraDayDatasQuery } from "@/graphql/generated/graphql";

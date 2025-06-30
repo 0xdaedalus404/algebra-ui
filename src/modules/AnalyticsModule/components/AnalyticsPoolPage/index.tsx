@@ -1,13 +1,12 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { CHART_SPAN, POOL_CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "../../types";
+import { CHART_SPAN, POOL_CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
 import { isDefined } from "@/utils/common/isDefined";
-import { getPercentChange, UNIX_TIMESTAMPS } from "../../utils";
 import { UTCTimestamp } from "lightweight-charts";
 import { usePool } from "@/hooks/pools/usePool";
 import { usePoolDayDatasQuery, usePoolHourDatasQuery } from "@/graphql/generated/graphql";
 import { Address, parseUnits } from "viem";
-import { Chart } from "../Chart";
+import { Chart } from "@/components/common/Chart";
 import { useClients } from "@/hooks/graphql/useClients";
 import PageTitle from "@/components/common/PageTitle";
 import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
@@ -18,6 +17,8 @@ import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { Button } from "@/components/ui/button";
 import { ArrowDownUp, Plus } from "lucide-react";
 import { TransactionsList } from "../TransactionsList";
+import { UNIX_TIMESTAMPS } from "@/utils/common/timestamps";
+import { getPercentChange } from "@/utils/common/getPercentChange";
 
 const values = {
     [POOL_CHART_TYPE.TVL]: "tvlUSD",
@@ -237,7 +238,7 @@ export function AnalyticsPoolPage() {
     }, [pathname]);
 
     return (
-        <div className="flex w-full animate-fade-in flex-col gap-3 py-6 max-md:pb-24">
+        <div className="flex w-full animate-fade-in flex-col gap-3 py-8 max-md:pb-24">
             <PageTitle title="Explore pool" showSettings={false} />
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">
@@ -258,6 +259,8 @@ export function AnalyticsPoolPage() {
                         showTypeSelector
                         showAPR
                         height={260}
+                        tokenA={token0?.symbol}
+                        tokenB={token1?.symbol}
                     />
                 </div>
                 <div className="flex flex-col gap-3">

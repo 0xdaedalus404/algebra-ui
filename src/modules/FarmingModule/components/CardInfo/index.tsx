@@ -8,9 +8,9 @@ interface CardInfoProps {
     children?: React.ReactNode;
 }
 
-const CardInfo: FC<CardInfoProps> = ({ title, children, additional, className }) => {
+export const CardInfo: FC<CardInfoProps> = ({ title, children, additional, className }) => {
     return (
-        <div className={cn("flex items-start flex-col gap-2 rounded-3xl border-border border bg-card-dark p-4", className)}>
+        <div className={cn("flex items-start flex-col gap-2 rounded-lg border-border border bg-card-dark p-4", className)}>
             <h3 className="font-bold text-sm">{title}</h3>
             <div className="flex justify-between w-full items-end">
                 <div className="flex items-center mr-auto text-2xl font-bold">{children}</div>
@@ -19,5 +19,3 @@ const CardInfo: FC<CardInfoProps> = ({ title, children, additional, className })
         </div>
     );
 };
-
-export default CardInfo;

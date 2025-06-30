@@ -1,6 +1,6 @@
-export * from "./ChartSpanSelector";
-export * from "./ChartTypeSelector";
-export * from "./Chart";
+export * from "../../../components/common/ChartSpanSelector";
+export * from "../../../components/common/ChartTypeSelector";
+export * from "../../../components/common/Chart";
 export * from "./DexCharts";
 export * from "./TotalStats";
 

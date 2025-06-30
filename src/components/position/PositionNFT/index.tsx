@@ -10,15 +10,16 @@ interface PositionNFTProps {
 }
 
 const PositionNFT = ({ positionId }: PositionNFTProps) => {
+    const chainId = useChainId();
+
     const { data: uri } = useReadAlgebraPositionManagerTokenUri({
+        address: ALGEBRA_POSITION_MANAGER[chainId],
         args: positionId ? [BigInt(positionId)] : undefined,
     });
 
     const imgRef = useRef<any>();
 
     const json = uri && JSON.parse(atob(uri.slice("data:application/json;base64,".length)));
-
-    const chainId = useChainId();
 
     const openSeaLink = `https://${chainId === ChainId.BaseSepolia ? "testnets." : ""}opensea.io/assets/base/${
         ALGEBRA_POSITION_MANAGER[chainId]

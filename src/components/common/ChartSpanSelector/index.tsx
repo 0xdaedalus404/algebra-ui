@@ -1,4 +1,4 @@
-import { CHART_SPAN, ChartSpanType } from "../../types";
+import { CHART_SPAN, ChartSpanType } from "@/types/swap-chart";
 import { Button } from "@/components/ui/button";
 
 interface IChartSpanSelector {

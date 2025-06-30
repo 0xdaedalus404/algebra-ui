@@ -14,7 +14,7 @@ export const FarmingPositionCard = ({ position, status, className, onClick }: Fa
         <div
             onClick={onClick}
             className={cn(
-                "w-fit p-4 cursor-pointer flex gap-4 bg-card-dark rounded-3xl border border-border/60 hover:border-border transition-all ease-in-out duration-200",
+                "w-fit p-4 cursor-pointer flex gap-4 bg-card-dark rounded-xl border border-border/60 hover:border-border transition-all ease-in-out duration-200",
                 className
             )}
         >

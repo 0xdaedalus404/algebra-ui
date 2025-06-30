@@ -1,6 +1,6 @@
 import { ChevronDown } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CHART_TYPE, ChartTypeType, PoolChartTypeType } from "../../types";
+import { CHART_TYPE, ChartTypeType, PoolChartTypeType } from "@/types/swap-chart";
 import { Button } from "@/components/ui/button";
 
 interface IChartTypeSelector {

@@ -46,6 +46,7 @@ export const POOL_DAY_DATA_FRAGMENT = gql`
         volumeUSD
         id
         date
+        token0Price
         token1Price
     }
 `;
@@ -57,6 +58,7 @@ export const POOL_HOUR_DATA_FRAGMENT = gql`
         volumeUSD
         id
         periodStartUnix
+        token0Price
         token1Price
     }
 `;
