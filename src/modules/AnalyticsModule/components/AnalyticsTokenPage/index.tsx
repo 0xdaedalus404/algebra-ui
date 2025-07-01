@@ -215,7 +215,7 @@ export function AnalyticsTokenPage() {
     }, [pathname]);
 
     return (
-        <div className="flex w-full animate-fade-in flex-col gap-3 py-8 max-md:pb-24">
+        <div className="flex w-full animate-fade-in flex-col gap-3 py-4 max-md:pb-24">
             <PageTitle title="Explore token" showSettings={false} />
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                 <div className="md:col-span-2 bg-card border border-card-border rounded-xl p-3">

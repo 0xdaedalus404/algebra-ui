@@ -6,7 +6,7 @@ import CreatePoolForm from "@/components/create-pool/CreatePoolForm";
 const CreatePoolPage = () => {
     return (
         <PageContainer>
-            <div className="w-full flex justify-between mt-16">
+            <div className="w-full flex justify-between">
                 <PageTitle title={"Create Pool"} showSettings={false} />
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-3 w-full lg:gap-8">

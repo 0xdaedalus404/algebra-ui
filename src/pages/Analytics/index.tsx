@@ -1,4 +1,3 @@
-import PageContainer from "@/components/common/PageContainer";
 import AnalyticsModule from "@/modules/AnalyticsModule";
 import { ReactNode } from "react";
 import { matchPath, NavLink, useLocation } from "react-router-dom";
@@ -54,11 +53,11 @@ export function Navigation() {
 
 function AnalyticsPage({ children }: { children: ReactNode }) {
     return (
-        <PageContainer>
+        <div className="flex flex-col items-start py-4 animate-fade-in duration-200">
             <DexCharts />
             <Navigation />
             <div className="pb-5 bg-card border border-card-border/60 rounded-xl w-full">{children}</div>
-        </PageContainer>
+        </div>
     );
 }
 

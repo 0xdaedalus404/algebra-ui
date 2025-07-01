@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const PoolsPage = () => {
     return (
         <PageContainer>
-            <div className="w-full flex-col flex sm:grid grid-cols-4 gap-3 mb-3 sm:mt-16 justify-between">
+            <div className="w-full flex-col flex sm:grid grid-cols-4 gap-3 mb-3 justify-between">
                 <div className="col-span-3">
                     <PageTitle title={"Pools"} showSettings={false} />
                 </div>
