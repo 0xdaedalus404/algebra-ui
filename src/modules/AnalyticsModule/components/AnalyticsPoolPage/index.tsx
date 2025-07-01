@@ -268,15 +268,15 @@ export function AnalyticsPoolPage() {
                 </div>
                 <div className="flex flex-col gap-3">
                     <div className="grid grid-cols-2 gap-3">
-                        <Link className="col-span-1 w-full" to={"/swap"}>
-                            <Button className="gap-2 rounded-xl w-full" variant={"default"} size={"lg"}>
+                        <Link className="col-span-1 w-full " to={"/swap"}>
+                            <Button className="gap-2 rounded-xl w-full h-full max-md:text-sm" variant={"default"} size={"lg"}>
                                 <ArrowDownUp size={20} className="text-text-100" />
                                 Trade
                             </Button>
                         </Link>
                         <Link className="col-span-1 w-full" to={`/pool/${poolId}/new-position`}>
                             <Button
-                                className="bg-primary-300 text-bg-100 w-full gap-2 rounded-xl hover:bg-primary-300"
+                                className="bg-primary-300 text-bg-100 w-full gap-2 rounded-xl hover:bg-primary-300 max-md:text-sm"
                                 variant={"default"}
                                 size={"lg"}
                             >

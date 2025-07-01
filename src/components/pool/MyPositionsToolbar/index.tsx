@@ -16,7 +16,7 @@ const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositions
         : [];
 
     return (
-        <div className="flex gap-3 md:flex-row bg-card rounded-xl px-3 items-center max-h-16 min-h-16 h-full justify-between mb-3 w-full">
+        <div className="flex gap-3 md:flex-row bg-card rounded-xl px-3 items-center min-h-16 justify-between mb-3 w-full">
             <div className="flex w-full col-span-3 items-center gap-6">
                 <div className="flex items-center gap-4">
                     <CurrencyLogo currency={currencyA} size={40} />

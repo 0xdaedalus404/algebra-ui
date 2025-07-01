@@ -27,13 +27,13 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            <div className="grid grid-flow-col auto-cols-fr w-full gap-3 mt-16 mb-3">
+            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-full gap-3 mt-16 mb-3">
                 <SwapTypeSelector isLimitOrder={isLimitOrder} />
                 <div className="col-span-2">
                     <PageTitle title={"Trade"} showSettings={true} />
                 </div>
             </div>
-            <div className="grid grid-cols-3 w-full gap-3 mb-3">
+            <div className="grid md:grid-cols-3 grid-cols-1 w-full gap-3 mb-3">
                 <div className="flex flex-col gap-2 col-span-1">
                     <div className="flex flex-col gap-1 col-span-1 w-full bg-card border border-card-border p-2 rounded-xl">
                         <SwapPair derivedSwap={derivedSwap} smartTrade={smartTrade.trade?.bestTrade} />
