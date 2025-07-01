@@ -93,7 +93,7 @@ export function DexCharts() {
     const { infoClient } = useClients();
     const now = useMemo(() => Math.floor(Date.now() / 1000), []);
 
-    const { data } = useAlgebraDayDatasQuery({
+    const { data, loading } = useAlgebraDayDatasQuery({
         variables: {
             from: now - UNIX_TIMESTAMPS[CHART_SPAN.MONTH],
             to: now,
@@ -102,12 +102,22 @@ export function DexCharts() {
     });
 
     const { currentTVL, currentVolume24H, currentFees24H } = useMemo(() => {
-        if (!data?.algebraDayDatas) return {};
+        if (!data?.algebraDayDatas)
+            return {
+                currentTVL: { value: 0, change: 0 },
+                currentVolume24H: { value: 0, change: 0 },
+                currentFees24H: { value: 0, change: 0 },
+            };
 
         const now = data.algebraDayDatas[data.algebraDayDatas.length - 1];
         const dayAgo = data.algebraDayDatas[data.algebraDayDatas.length - 2];
 
-        if (!now || !dayAgo) return {};
+        if (!now || !dayAgo)
+            return {
+                currentTVL: { value: 0, change: 0 },
+                currentVolume24H: { value: 0, change: 0 },
+                currentFees24H: { value: 0, change: 0 },
+            };
 
         const nowTvl = Number(now.tvlUSD);
         const dayAgoTvl = Number(dayAgo.tvlUSD);
@@ -148,7 +158,7 @@ export function DexCharts() {
             <div className="flex items-center justify-between">
                 <PageTitle title="Analytics" showSettings={false} />
             </div>
-            <TotalStats currentTVL={currentTVL} currentVolume={currentVolume24H} currentFees={currentFees24H} />
+            <TotalStats isLoading={loading} currentTVL={currentTVL} currentVolume={currentVolume24H} currentFees={currentFees24H} />
             <div className="grid grid-rows-2 gap-3 lg:grid-cols-2 lg:grid-rows-1">
                 <div className="rounded-xl border border-card-border bg-card">
                     <ChartComponent

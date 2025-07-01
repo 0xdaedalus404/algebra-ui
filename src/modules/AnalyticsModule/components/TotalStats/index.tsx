@@ -8,30 +8,30 @@ function Loader() {
     );
 }
 
-export default function TotalStats({ currentTVL, currentVolume, currentFees }: ITotalStats) {
+export default function TotalStats({ currentTVL, currentVolume, currentFees, isLoading }: ITotalStats) {
     const cards: {
         title: string;
         type: ChartTypeType;
-        value: number | undefined;
-        change: number | undefined;
+        value: number;
+        change: number;
     }[] = [
         {
             title: "Total Value Locked",
             type: CHART_TYPE.TVL,
-            value: currentTVL?.value,
-            change: currentTVL?.change,
+            value: currentTVL.value,
+            change: currentTVL.change,
         },
         {
             title: "Volume 24H",
             type: CHART_TYPE.VOLUME,
-            value: currentVolume?.value,
-            change: currentVolume?.change,
+            value: currentVolume.value,
+            change: currentVolume.change,
         },
         {
             title: "Fees 24H",
             type: CHART_TYPE.FEES,
-            value: currentFees?.value,
-            change: currentFees?.change,
+            value: currentFees.value,
+            change: currentFees.change,
         },
     ];
 
@@ -43,7 +43,7 @@ export default function TotalStats({ currentTVL, currentVolume, currentFees }: I
                     className={`flex flex-1 items-center justify-between rounded-xl border border-card-border bg-card px-4 py-3 md:flex-col md:items-start md:justify-start md:px-6 md:py-4`}
                 >
                     <div className="text-title whitespace-nowrap text-[16px] md:text-[14px]">{card.title}</div>
-                    {card.value !== undefined ? (
+                    {!isLoading ? (
                         <div className="flex w-full flex-col items-center md:flex-row">
                             <div className="text-title ml-auto text-[24px] font-semibold md:ml-0 md:text-[36px]">
                                 ${formatAmount(card.value)}

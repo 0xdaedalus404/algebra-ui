@@ -108,6 +108,9 @@ export function usePositions() {
 
     const { data: balanceResult, isLoading: balanceLoading } = useReadNonfungiblePositionManagerBalanceOf({
         args: account ? [account] : undefined,
+        query: {
+            enabled: !!account,
+        },
     });
 
     const tokenIdsArgs: [Address, number][] = useMemo(() => {

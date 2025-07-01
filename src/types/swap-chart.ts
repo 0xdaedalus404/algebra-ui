@@ -73,7 +73,8 @@ export type StatsCard = {
 };
 
 export interface ITotalStats {
-    currentTVL: StatsCard | undefined;
-    currentVolume: StatsCard | undefined;
-    currentFees: StatsCard | undefined;
+    currentTVL: StatsCard;
+    currentVolume: StatsCard;
+    currentFees: StatsCard;
+    isLoading: boolean;
 }
