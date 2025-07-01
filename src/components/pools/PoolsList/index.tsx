@@ -59,7 +59,9 @@ const PoolsList = ({ isExplore = false, tokenId }: { isExplore?: boolean; tokenI
                 const timeDifference = currentDate - lastDate;
                 const msIn24Hours = 24 * 60 * 60 * 1000;
 
-                const openPositions = positions?.filter((position) => position.pool.toLowerCase() === id.toLowerCase());
+                const openPositions = positions?.filter(
+                    (position) => position.pool.toLowerCase() === id.toLowerCase() && position.liquidity > 0n
+                );
                 const activeFarming = activeFarmings?.eternalFarmings.find((farming) => farming.pool === id);
 
                 const openAlmPositions = almPositions?.filter((position) => position.poolAddress.toLowerCase() === id.toLowerCase());

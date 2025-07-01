@@ -32,8 +32,8 @@ const NewPositionPage = () => {
     });
 
     const isALMPool =
-        data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId]
-            ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId].toLowerCase()
+        data?.pool?.deployer && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+            ? data.pool.deployer.toLowerCase() === CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId].toLowerCase()
             : false;
 
     const { vaults } = useALMVaultsByPool(isALMPool ? poolAddress : undefined);

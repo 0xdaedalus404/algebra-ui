@@ -1,11 +1,11 @@
-import { algebraPositionManagerABI, ALGEBRA_POSITION_MANAGER } from "config";
+import { nonfungiblePositionManagerABI, NONFUNGIBLE_POSITION_MANAGER } from "config";
 import { useDepositsQuery } from "@/graphql/generated/graphql";
 import { ADDRESS_ZERO, Token, computeCustomPoolAddress, computePoolAddress } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useAccount, useChainId, useReadContracts } from "wagmi";
 import { useClients } from "../graphql/useClients";
 import { Address } from "viem";
-import { useReadAlgebraPositionManagerBalanceOf } from "@/generated";
+import { useReadNonfungiblePositionManagerBalanceOf } from "@/generated";
 
 export interface PositionFromTokenId {
     tokenId: number;
@@ -41,8 +41,8 @@ function usePositionsFromTokenIds(tokenIds: any[] | undefined): {
         refetch,
     } = useReadContracts<readonly { result: any; error: any }[]>({
         contracts: inputs.map((x) => ({
-            address: ALGEBRA_POSITION_MANAGER[chainId],
-            abi: algebraPositionManagerABI,
+            address: NONFUNGIBLE_POSITION_MANAGER[chainId],
+            abi: nonfungiblePositionManagerABI,
             functionName: "positions",
             args: [[Number(x)]],
         })),
@@ -106,8 +106,7 @@ export function usePositions() {
     const { address: account } = useAccount();
     const chainId = useChainId();
 
-    const { data: balanceResult, isLoading: balanceLoading } = useReadAlgebraPositionManagerBalanceOf({
-        address: account ? ALGEBRA_POSITION_MANAGER[chainId] : undefined,
+    const { data: balanceResult, isLoading: balanceLoading } = useReadNonfungiblePositionManagerBalanceOf({
         args: account ? [account] : undefined,
     });
 
@@ -125,8 +124,8 @@ export function usePositions() {
 
     const { data: tokenIdResults, isLoading: someTokenIdsLoading } = useReadContracts<readonly { result: any; error: any }[]>({
         contracts: tokenIdsArgs.map((args) => ({
-            address: ALGEBRA_POSITION_MANAGER[chainId],
-            abi: algebraPositionManagerABI,
+            address: NONFUNGIBLE_POSITION_MANAGER[chainId],
+            abi: nonfungiblePositionManagerABI,
             functionName: "tokenOfOwnerByIndex",
             args,
         })),

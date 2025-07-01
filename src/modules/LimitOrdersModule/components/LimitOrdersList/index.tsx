@@ -44,7 +44,7 @@ export const LimitOrdersList = () => {
                     new Token(chainId, token1.id, Number(token1.decimals), token1.symbol, token1.name),
                     INITIAL_POOL_FEE,
                     sqrtPrice,
-                    CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
+                    CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
                     liquidity,
                     Number(tick),
                     Number(tickSpacing)
@@ -90,7 +90,7 @@ export const LimitOrdersList = () => {
                             pool.token1,
                             pool.fee,
                             zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO,
-                            CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
+                            CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
                             pool.liquidity,
                             zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK,
                             pool.tickSpacing

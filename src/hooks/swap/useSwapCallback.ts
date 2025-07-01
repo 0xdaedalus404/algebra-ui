@@ -8,9 +8,9 @@ import { useTransactionAwait } from "../common/useTransactionAwait";
 import { ApprovalStateType } from "@/types/approve-state";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
-import { simulateAlgebraRouterMulticall, useWriteAlgebraRouterMulticall } from "@/generated";
+import { simulateSwapRouterMulticall, useWriteSwapRouterMulticall } from "@/generated";
 import { wagmiConfig } from "@/providers/WagmiProvider";
-import { ALGEBRA_ROUTER } from "config/contract-addresses";
+import { SWAP_ROUTER } from "config/contract-addresses";
 
 interface SwapCallEstimate {
     calldata: string;
@@ -52,8 +52,7 @@ export function useSwapCallback(
                     const value = BigInt(_value);
 
                     try {
-                        const result = await simulateAlgebraRouterMulticall(wagmiConfig, {
-                            address: ALGEBRA_ROUTER[chainId],
+                        const result = await simulateSwapRouterMulticall(wagmiConfig, {
                             args: [calldata],
                             account,
                             value,
@@ -96,7 +95,7 @@ export function useSwapCallback(
         () =>
             bestCall
                 ? {
-                      address: ALGEBRA_ROUTER[chainId],
+                      address: SWAP_ROUTER[chainId],
                       args: [bestCall.calldata] as const,
                       value: BigInt(bestCall.value),
                       gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n,
@@ -105,7 +104,7 @@ export function useSwapCallback(
         [bestCall, chainId]
     );
 
-    const { data: swapData, writeContractAsync: swapCallback } = useWriteAlgebraRouterMulticall();
+    const { data: swapData, writeContractAsync: swapCallback } = useWriteSwapRouterMulticall();
 
     const { isLoading, isSuccess } = useTransactionAwait(swapData, {
         title: `Swap ${formatBalance(trade?.inputAmount.toSignificant() as string)} ${trade?.inputAmount.currency.symbol}`,

@@ -3,16 +3,16 @@ import { useNeedAllowance } from "@/hooks/common/useNeedAllowance";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useDerivedSwapInfo } from "@/state/swapStore";
-import { ChainId, Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
+import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount, useChainId } from "wagmi";
-import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
+import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { SwapField } from "@/types/swap-field";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
-import { useWriteAlgebraLimitOrderPluginPlace } from "@/generated";
+import { useWriteLimitOrderManagerPlace } from "@/generated";
 import { useAppKit } from "@reown/appkit/react";
 import { useLimitOrderInfo } from "../../hooks";
 
@@ -66,21 +66,21 @@ export const LimitOrderButton = ({
     const needAllowance = useNeedAllowance(
         inputCurrency?.isNative ? undefined : inputCurrency?.wrapped,
         amount,
-        ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]
+        LIMIT_ORDER_MANAGER[chainId]
     );
 
     const isReady = token0 && token1 && amount && limitOrder && !disabled && !inputError && !needAllowance;
 
-    const { approvalState, approvalCallback } = useApprove(amount, ALGEBRA_LIMIT_ORDER_PLUGIN[chainId]);
+    const { approvalState, approvalCallback } = useApprove(amount, LIMIT_ORDER_MANAGER[chainId]);
 
     const placeLimitOrderConfig = isReady
         ? {
-              address: ALGEBRA_LIMIT_ORDER_PLUGIN[chainId],
+              address: LIMIT_ORDER_MANAGER[chainId],
               args: [
                   {
                       token0: token0.address as Address,
                       token1: token1.address as Address,
-                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
+                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
                   },
                   limitOrder.tickLower,
                   zeroToOne,
@@ -90,14 +90,14 @@ export const LimitOrderButton = ({
           }
         : undefined;
 
-    const { data: placeData, writeContract: placeLimitOrder } = useWriteAlgebraLimitOrderPluginPlace();
+    const { data: placeData, writeContract: placeLimitOrder } = useWriteLimitOrderManagerPlace();
 
     const { isLoading: isPlaceLoading } = useTransactionAwait(placeData, {
         type: TransactionType.LIMIT_ORDER,
         title: `Buy ${formatCurrency.format(Number(amount?.toSignificant()))} ${amount?.currency.symbol}`,
     });
 
-    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
+    const isWrongChain = !selectedNetworkId || ![DEFAULT_CHAIN_ID].includes(selectedNetworkId);
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 
@@ -125,6 +125,15 @@ export const LimitOrderButton = ({
             onClick={() => {
                 console.log(
                     "[PLACE LIMIT ORDER]",
+                    {
+                        token0,
+                        token1,
+                        amount,
+                        limitOrder,
+                        disabled,
+                        inputError,
+                        needAllowance,
+                    },
                     isReady && [
                         {
                             token0: token0.address as Address,

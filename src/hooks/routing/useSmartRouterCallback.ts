@@ -3,11 +3,11 @@ import { Address, encodeFunctionData } from "viem";
 import { useChainId, useSendTransaction } from "wagmi";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { algebraRouterABI, ALGEBRA_ROUTER } from "config";
+import { swapRouterABI, SWAP_ROUTER } from "config";
 import { Currency } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { useUserState } from "@/state/userStore";
-import { useWriteAlgebraRouterMulticall } from "@/generated";
+import { useWriteSwapRouterMulticall } from "@/generated";
 
 export function useSmartRouterCallback(
     currencyA: Currency | undefined,
@@ -19,15 +19,18 @@ export function useSmartRouterCallback(
     const [txHash, setTxHash] = useState<Address>();
     const chainId = useChainId();
 
-    const config = calldata
-        ? {
-              address: ALGEBRA_ROUTER[chainId],
-              args: [[calldata]] as const,
-              value: BigInt(value || 0),
-          }
-        : undefined;
+    const config = useMemo(
+        () =>
+            calldata
+                ? {
+                      args: [[calldata]] as const,
+                      value: BigInt(value || 0),
+                  }
+                : undefined,
+        [calldata, chainId, value]
+    );
 
-    const { data: swapData, writeContractAsync: writeAsync } = useWriteAlgebraRouterMulticall();
+    const { data: swapData, writeContractAsync: writeAsync } = useWriteSwapRouterMulticall();
 
     useEffect(() => {
         if (swapData) {
@@ -46,15 +49,16 @@ export function useSmartRouterCallback(
         }
 
         const txData = {
-            to: ALGEBRA_ROUTER[chainId],
+            to: SWAP_ROUTER[chainId],
             data: encodeFunctionData({
-                abi: algebraRouterABI,
+                abi: swapRouterABI,
                 functionName: "multicall",
                 args: [[calldata]],
             }),
             value: BigInt(value || 0),
             gas: BigInt(1_000_000),
         };
+        console.log(txData);
         try {
             const txHash = await sendTransactionAsync(txData);
             setTxHash(txHash);
@@ -78,6 +82,6 @@ export function useSmartRouterCallback(
             callback: isExpertMode ? expertCallback : () => config && writeAsync(config),
             isLoading,
         }),
-        [expertCallback, isExpertMode, writeAsync, isLoading]
+        [expertCallback, isExpertMode, writeAsync, isLoading, config]
     );
 }

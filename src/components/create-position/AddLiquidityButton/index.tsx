@@ -1,14 +1,14 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { ALGEBRA_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
-import { useWriteAlgebraPositionManagerMulticall } from "@/generated";
+import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
+import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { IDerivedMintInfo } from "@/state/mintStore";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
-import { Percent, Currency, NonfungiblePositionManager, Field, ZERO, ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { Percent, Currency, NonfungiblePositionManager, Field, ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { useAppKit } from "@reown/appkit/react";
 import JSBI from "jsbi";
 import { useMemo } from "react";
@@ -53,11 +53,11 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     const { approvalState: approvalStateA, approvalCallback: approvalCallbackA } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_A],
-        ALGEBRA_POSITION_MANAGER[chainId]
+        NONFUNGIBLE_POSITION_MANAGER[chainId]
     );
     const { approvalState: approvalStateB, approvalCallback: approvalCallbackB } = useApprove(
         mintInfo.parsedAmounts[Field.CURRENCY_B],
-        ALGEBRA_POSITION_MANAGER[chainId]
+        NONFUNGIBLE_POSITION_MANAGER[chainId]
     );
 
     const showApproveA = approvalStateA === ApprovalState.NOT_APPROVED || approvalStateA === ApprovalState.PENDING;
@@ -76,13 +76,13 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     const addLiquidityConfig =
         calldata && isReady
             ? {
-                  address: ALGEBRA_POSITION_MANAGER[selectedNetworkId],
+                  address: NONFUNGIBLE_POSITION_MANAGER[selectedNetworkId],
                   args: calldata && ([calldata as `0x${string}`[]] as const),
                   value: BigInt(value),
               }
             : undefined;
 
-    const { data: addLiquidityData, writeContract: addLiquidity } = useWriteAlgebraPositionManagerMulticall();
+    const { data: addLiquidityData, writeContract: addLiquidity } = useWriteNonfungiblePositionManagerMulticall();
 
     const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
         addLiquidityData,
@@ -95,7 +95,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
         `/pool/${poolAddress}`
     );
 
-    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
+    const isWrongChain = !selectedNetworkId || ![DEFAULT_CHAIN_ID].includes(selectedNetworkId);
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 

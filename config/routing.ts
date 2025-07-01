@@ -13,6 +13,5 @@ const WNATIVE_ONLY: ChainTokenList = Object.fromEntries(Object.entries(WNATIVE_E
 
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     ...WNATIVE_ONLY,
-    [ChainId.Base]: [...WNATIVE_ONLY[ChainId.Base], STABLECOINS[ChainId.Base].USDC],
     [ChainId.BaseSepolia]: [...WNATIVE_ONLY[ChainId.BaseSepolia], STABLECOINS[ChainId.BaseSepolia].USDC],
 };

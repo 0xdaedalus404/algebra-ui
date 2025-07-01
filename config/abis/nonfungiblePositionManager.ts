@@ -1,4 +1,4 @@
-export const algebraPositionManagerABI = [
+export const nonfungiblePositionManagerABI = [
     {
         inputs: [
             {

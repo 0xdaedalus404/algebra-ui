@@ -48,8 +48,7 @@ export function useSwapPools(
         async function getPools() {
             const customPoolDeployerAddresses = [
                 CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainId],
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainId],
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
+                CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
             ].filter((d) => d !== undefined);
 
             const poolsAddresses = allCurrencyCombinations.flatMap(([tokenA, tokenB]) =>

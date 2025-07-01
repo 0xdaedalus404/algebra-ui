@@ -15,6 +15,9 @@ export function useNeedAllowance(
         abi: erc20Abi,
         functionName: "allowance",
         args: account && spender && [account, spender],
+        query: {
+            refetchInterval: 10_000,
+        },
     });
 
     return Boolean(!currency?.isNative && typeof allowance === "bigint" && amount && amount.greaterThan(allowance.toString()));

@@ -1,6 +1,6 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "config";
+import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "config";
 import { useApproveCallbackFromSmartTrade } from "@/hooks/common/useApprove";
 import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
@@ -11,7 +11,7 @@ import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { ChainId, TradeType, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { TradeType, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useSmartRouterCallback } from "@/hooks/routing/useSmartRouterCallback.ts";
 import { Address } from "viem";
 import { useAppKit } from "@reown/appkit/react";
@@ -119,7 +119,7 @@ const SwapButton = ({
 
     const priceImpactTooHigh = priceImpactSeverity > 3 && !isExpertMode;
 
-    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
+    const isWrongChain = !selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId;
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 

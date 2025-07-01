@@ -1,69 +1,56 @@
 import { ContractConfig } from "@wagmi/cli";
-import { AppKitNetwork, base, baseSepolia } from "@reown/appkit/networks";
+import { AppKitNetwork, baseSepolia } from "@reown/appkit/networks";
 import {
     algebraBasePluginABI,
     algebraCustomPoolDeployerABI,
     algebraEternalFarmingABI,
     algebraFactoryABI,
-    algebraLimitOrderPluginABI,
     algebraPoolABI,
-    algebraPositionManagerABI,
-    algebraQuoterABI,
-    algebraQuoterV2ABI,
-    algebraRouterABI,
     farmingCenterABI,
+    limitOrderManagerABI,
+    nonfungiblePositionManagerABI,
+    quoterV2ABI,
+    swapRouterABI,
     wNativeABI,
 } from "./abis";
+import {
+    ALGEBRA_ETERNAL_FARMING,
+    ALGEBRA_FACTORY,
+    FARMING_CENTER,
+    LIMIT_ORDER_MANAGER,
+    NONFUNGIBLE_POSITION_MANAGER,
+    QUOTER_V2,
+    SWAP_ROUTER,
+} from "./contract-addresses";
 
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia, base];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia];
 
-export const wagmiContracts: ContractConfig[] = [
-    {
-        abi: algebraFactoryABI,
-        name: "AlgebraFactory",
-    },
-    {
-        abi: algebraPoolABI,
-        name: "AlgebraPool",
-    },
-    {
-        abi: algebraBasePluginABI,
-        name: "AlgebraBasePlugin",
-    },
-    {
-        abi: algebraPositionManagerABI,
-        name: "AlgebraPositionManager",
-    },
-    {
-        abi: algebraQuoterABI,
-        name: "AlgebraQuoter",
-    },
-    {
-        abi: algebraQuoterV2ABI,
-        name: "AlgerbaQuoterV2",
-    },
-    {
-        abi: algebraRouterABI,
-        name: "AlgebraRouter",
-    },
-    {
-        abi: algebraEternalFarmingABI,
-        name: "AlgebraEternalFarming",
-    },
-    {
-        abi: farmingCenterABI,
-        name: "FarmingCenter",
-    },
-    {
-        abi: algebraLimitOrderPluginABI,
-        name: "AlgebraLimitOrderPlugin",
-    },
-    {
-        abi: algebraCustomPoolDeployerABI,
-        name: "AlgebraCustomPoolDeployer",
-    },
-    {
-        abi: wNativeABI,
-        name: "WrappedNative",
-    },
+const rawContracts = [
+    { name: "AlgebraFactory", abi: algebraFactoryABI },
+    { name: "AlgebraPool", abi: algebraPoolABI },
+    { name: "AlgebraBasePlugin", abi: algebraBasePluginABI },
+    { name: "NonfungiblePositionManager", abi: nonfungiblePositionManagerABI },
+    { name: "QuoterV2", abi: quoterV2ABI },
+    { name: "SwapRouter", abi: swapRouterABI },
+    { name: "AlgebraEternalFarming", abi: algebraEternalFarmingABI },
+    { name: "FarmingCenter", abi: farmingCenterABI },
+    { name: "LimitOrderManager", abi: limitOrderManagerABI },
+    { name: "AlgebraCustomPoolDeployer", abi: algebraCustomPoolDeployerABI },
+    { name: "WrappedNative", abi: wNativeABI },
 ];
+
+const contractAddreses = {
+    AlgebraFactory: ALGEBRA_FACTORY,
+    NonfungiblePositionManager: NONFUNGIBLE_POSITION_MANAGER,
+    QuoterV2: QUOTER_V2,
+    SwapRouter: SWAP_ROUTER,
+    AlgebraEternalFarming: ALGEBRA_ETERNAL_FARMING,
+    FarmingCenter: FARMING_CENTER,
+    LimitOrderManager: LIMIT_ORDER_MANAGER,
+};
+
+export const wagmiContracts: ContractConfig[] = rawContracts.map((contract) => ({
+    name: contract.name,
+    abi: contract.abi,
+    address: contractAddreses[contract.name as keyof typeof contractAddreses],
+}));

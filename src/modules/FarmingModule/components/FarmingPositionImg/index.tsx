@@ -1,9 +1,9 @@
-import { useReadAlgebraPositionManagerTokenUri } from "@/generated";
+import { useReadNonfungiblePositionManagerTokenUri } from "@/generated";
 import { cn } from "@/utils/common/cn";
 import { useEffect, useRef } from "react";
 
 export const FarmingPositionImg = ({ positionId, size, className }: { positionId: bigint; size: number; className?: string }) => {
-    const { data: uri } = useReadAlgebraPositionManagerTokenUri({
+    const { data: uri } = useReadNonfungiblePositionManagerTokenUri({
         args: [positionId],
     });
 

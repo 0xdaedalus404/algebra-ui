@@ -45,7 +45,7 @@ export const LimitOrder = () => {
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
               }) as Address)
             : undefined;
 

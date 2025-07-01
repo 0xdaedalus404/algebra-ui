@@ -23,7 +23,7 @@ const stablecoinsPreset = [
                 <rect x="46" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
                 <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
                 <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
-                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" strokeWidth="1" />
             </svg>
         ),
     },
@@ -42,7 +42,7 @@ const commonPresets = [
                 <rect x="46" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
                 <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
                 <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
-                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" strokeWidth="1" />
             </svg>
         ),
     },
@@ -60,7 +60,7 @@ const commonPresets = [
                 <rect x="56" y="0" width="8" height="40" rx="2" className="fill-accent-100" />
                 <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
                 <rect x="76" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
-                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" strokeWidth="1" />
             </svg>
         ),
     },
@@ -80,7 +80,7 @@ const commonPresets = [
                 <rect x="66" y="10" width="8" height="30" rx="2" className="fill-primary-200" />
                 <rect x="76" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
                 <rect x="86" y="20" width="8" height="20" rx="2" className="fill-primary-200" />
-                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" strokeWidth="1" />
             </svg>
         ),
     },
@@ -102,7 +102,7 @@ const commonPresets = [
                 <rect x="76" y="15" width="8" height="25" rx="2" className="fill-primary-200" />
                 <rect x="86" y="20" width="8" height="20" rx="2" className="fill-primary-200" />
                 <rect x="96" y="25" width="8" height="15" rx="2" className="fill-primary-200" />
-                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" stroke-width="1" />
+                <line x1="10" y1="42" x2="110" y2="42" className="stroke-text-200" strokeWidth="1" />
             </svg>
         ),
     },

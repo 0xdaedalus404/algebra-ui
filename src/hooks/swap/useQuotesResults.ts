@@ -1,4 +1,4 @@
-import { algebraQuoterV2ABI, ALGEBRA_QUOTER_V2 } from "config";
+import { quoterV2ABI, QUOTER_V2 } from "config";
 import { Currency, CurrencyAmount, encodeRouteToPath } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId, useReadContracts } from "wagmi";
@@ -44,8 +44,8 @@ export function useQuotesResults({
         refetch,
     } = useReadContracts({
         contracts: quoteInputs.map((quote: any) => ({
-            address: ALGEBRA_QUOTER_V2[chainId],
-            abi: algebraQuoterV2ABI,
+            address: QUOTER_V2[chainId],
+            abi: quoterV2ABI,
             functionName: functionName,
             args: quote,
         })),

@@ -43,8 +43,8 @@ export function useV3CandidatePools(currencyA?: Currency, currencyB?: Currency, 
                 const pools = await SmartRouter.getV3CandidatePools({
                     currencyA,
                     currencyB,
-                    onChainProvider: (() => SmartRouter.publicClient[chainId as 8453 | 84532]) as OnChainProvider,
-                    subgraphProvider: () => SmartRouter.v3SubgraphClient[chainId as 8453 | 84532],
+                    onChainProvider: (() => SmartRouter.publicClient[chainId as 84532]) as OnChainProvider,
+                    subgraphProvider: () => SmartRouter.v3SubgraphClient[chainId as 84532],
                     // blockNumber: options?.blockNumber,
                 });
                 console.log("pools", pools);

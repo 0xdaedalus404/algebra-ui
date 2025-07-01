@@ -3,7 +3,7 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { useWriteAlgebraPositionManagerMulticall } from "@/generated";
+import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { Deposit } from "@/graphql/generated/graphql";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useClients } from "@/hooks/graphql/useClients";
@@ -12,7 +12,7 @@ import { useBurnActionHandlers, useBurnState, useDerivedBurnInfo } from "@/state
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { NonfungiblePositionManager, Percent } from "@cryptoalgebra/custom-pools-sdk";
-import { ALGEBRA_POSITION_MANAGER } from "config/contract-addresses";
+import { NONFUNGIBLE_POSITION_MANAGER } from "config/contract-addresses";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { useAccount, useChainId } from "wagmi";
@@ -61,13 +61,13 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
 
     const removeLiquidityConfig = calldata
         ? {
-              address: ALGEBRA_POSITION_MANAGER[chainId],
+              address: NONFUNGIBLE_POSITION_MANAGER[chainId],
               args: [calldata as `0x${string}`[]] as const,
               value: BigInt(value || 0),
           }
         : calldata;
 
-    const { data: removeLiquidityData, writeContract: removeLiquidity } = useWriteAlgebraPositionManagerMulticall();
+    const { data: removeLiquidityData, writeContract: removeLiquidity } = useWriteNonfungiblePositionManagerMulticall();
 
     const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(removeLiquidityData, {
         title: "Remove liquidity",

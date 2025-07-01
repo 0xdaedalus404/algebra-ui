@@ -1,5 +1,5 @@
-import { ALGEBRA_POSITION_MANAGER } from "config";
-import { useReadAlgebraPositionManagerTokenUri } from "@/generated";
+import { NONFUNGIBLE_POSITION_MANAGER } from "config";
+import { useReadNonfungiblePositionManagerTokenUri } from "@/generated";
 import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { ExternalLinkIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
@@ -12,8 +12,7 @@ interface PositionNFTProps {
 const PositionNFT = ({ positionId }: PositionNFTProps) => {
     const chainId = useChainId();
 
-    const { data: uri } = useReadAlgebraPositionManagerTokenUri({
-        address: ALGEBRA_POSITION_MANAGER[chainId],
+    const { data: uri } = useReadNonfungiblePositionManagerTokenUri({
         args: positionId ? [BigInt(positionId)] : undefined,
     });
 
@@ -22,7 +21,7 @@ const PositionNFT = ({ positionId }: PositionNFTProps) => {
     const json = uri && JSON.parse(atob(uri.slice("data:application/json;base64,".length)));
 
     const openSeaLink = `https://${chainId === ChainId.BaseSepolia ? "testnets." : ""}opensea.io/assets/base/${
-        ALGEBRA_POSITION_MANAGER[chainId]
+        NONFUNGIBLE_POSITION_MANAGER[chainId]
     }/${positionId}`;
 
     useEffect(() => {

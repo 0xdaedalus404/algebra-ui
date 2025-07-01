@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { ChainId, CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
+import { CurrencyAmount, Pool, Position, Price, Token } from "@cryptoalgebra/custom-pools-sdk";
 import { ColumnDef } from "@tanstack/react-table";
 import { CheckCircle2Icon, XCircleIcon } from "lucide-react";
-import { useWriteAlgebraLimitOrderPluginWithdraw } from "@/generated";
+import { useWriteLimitOrderManagerWithdraw } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
-import { ALGEBRA_LIMIT_ORDER_PLUGIN } from "config";
+import { DEFAULT_CHAIN_ID, LIMIT_ORDER_MANAGER } from "config";
 import { KillLimitOrderModal } from "..";
 import Loader from "@/components/common/Loader";
 import { HeaderItem } from "@/components/common/Table/common";
@@ -147,7 +147,7 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
 const Action = (props: LimitOrderInfo) => {
     const selectedNetworkId = useChainId();
 
-    if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId)) return;
+    if (!selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId) return;
 
     if (props.killed) return;
 
@@ -162,11 +162,11 @@ const WithdrawLimitOrderButton = ({ epoch, owner }: LimitOrderInfo) => {
     const chainId = useChainId();
 
     const withdrawConfig = {
-        address: ALGEBRA_LIMIT_ORDER_PLUGIN[chainId],
+        address: LIMIT_ORDER_MANAGER[chainId],
         args: [BigInt(epoch.id), owner] as const,
     };
 
-    const { writeContract: withdraw, data: withdrawData } = useWriteAlgebraLimitOrderPluginWithdraw({});
+    const { writeContract: withdraw, data: withdrawData } = useWriteLimitOrderManagerWithdraw({});
 
     const { isLoading: isWithdrawLoading } = useTransactionAwait(withdrawData, {
         type: TransactionType.LIMIT_ORDER,

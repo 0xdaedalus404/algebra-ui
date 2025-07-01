@@ -16,13 +16,13 @@ import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import Summary from "../Summary";
 import SelectPair from "../SelectPair";
-import { STABLECOINS, ALGEBRA_POSITION_MANAGER, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
+import { STABLECOINS, NONFUNGIBLE_POSITION_MANAGER, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { cn } from "@/utils/common/cn";
 
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
-import { useWriteAlgebraCustomPoolDeployerCreateCustomPool, useWriteAlgebraPositionManagerMulticall } from "@/generated";
+import { useWriteAlgebraCustomPoolDeployerCreateCustomPool, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 
 type PoolDeployerType = (typeof CUSTOM_POOL_DEPLOYER_TITLES)[keyof typeof CUSTOM_POOL_DEPLOYER_TITLES];
 
@@ -54,8 +54,7 @@ const CreatePoolForm = () => {
     const customPoolDeployerAddresses = useMemo(
         () => ({
             [CUSTOM_POOL_DEPLOYER_TITLES.BASE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.LIMIT_ORDER]: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainid],
-            [CUSTOM_POOL_DEPLOYER_TITLES.ALM]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainid],
+            [CUSTOM_POOL_DEPLOYER_TITLES.ALL_INCLUSIVE]: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid],
         }),
         [chainid]
     );
@@ -70,7 +69,7 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         areCurrenciesSelected && !isSameToken
-            ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid], CUSTOM_POOL_DEPLOYER_ADDRESSES.ALM[chainid]]
+            ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid], CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid]]
                   .filter((deployer): deployer is Address => deployer !== undefined)
                   .map(
                       (customPoolDeployer) =>
@@ -86,13 +85,11 @@ const CreatePoolForm = () => {
 
     // TODO
     const [poolState0] = usePool(customPoolsAddresses[0]);
-    const [poolState1] = usePool(customPoolsAddresses[1]);
 
     const isPoolExists = poolState === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.BASE;
-    const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.LIMIT_ORDER;
-    const isPool1Exists = poolState1 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.ALM;
+    const isPool0Exists = poolState0 === PoolState.EXISTS && poolDeployer === CUSTOM_POOL_DEPLOYER_TITLES.ALL_INCLUSIVE;
 
-    const isSelectedCustomPoolExists = isPoolExists || isPool0Exists || isPool1Exists;
+    const isSelectedCustomPoolExists = isPoolExists || isPool0Exists;
 
     const mintInfo = useDerivedMintInfo(
         currencyA ?? undefined,
@@ -113,10 +110,10 @@ const CreatePoolForm = () => {
         return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
     }, [mintInfo?.pool, poolDeployer]);
 
-    const { data: createBasePoolData, writeContract: createBasePool } = useWriteAlgebraPositionManagerMulticall();
+    const { data: createBasePoolData, writeContract: createBasePool } = useWriteNonfungiblePositionManagerMulticall();
 
     const createBasePoolConfig = {
-        address: ALGEBRA_POSITION_MANAGER[chainid],
+        address: NONFUNGIBLE_POSITION_MANAGER[chainid],
         args: Array.isArray(calldata) ? ([calldata as Address[]] as const) : ([[calldata] as Address[]] as const),
         value: BigInt(value || 0),
         enabled: Boolean(calldata),

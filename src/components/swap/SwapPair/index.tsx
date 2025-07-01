@@ -42,11 +42,11 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
     const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
 
     const limitOrderPoolAddress =
-        baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId] && !showWrap
+        baseCurrency && quoteCurrency && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId] && !showWrap
             ? (computeCustomPoolAddress({
                   tokenA: baseCurrency.wrapped,
                   tokenB: quoteCurrency.wrapped,
-                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
+                  customPoolDeployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
               }) as Address)
             : undefined;
 

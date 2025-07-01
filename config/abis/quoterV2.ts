@@ -1,4 +1,4 @@
-export const algebraQuoterV2ABI = [
+export const quoterV2ABI = [
     {
         inputs: [
             {

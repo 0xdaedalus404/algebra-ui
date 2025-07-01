@@ -11,8 +11,7 @@ import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
 import { useAccount, useChainId } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
-import { DEFAULT_CHAIN_NAME } from "config";
+import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "config";
 import { useAppKit } from "@reown/appkit/react";
 
 const Header = () => (
@@ -52,7 +51,7 @@ const Account = () => {
             ? Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading).length
             : 0;
 
-    if (!selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId))
+    if (!selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId)
         return (
             <div className="flex justify-end">
                 <Button

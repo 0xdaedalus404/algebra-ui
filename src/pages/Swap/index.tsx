@@ -27,7 +27,7 @@ const SwapPage = ({ type }: SwapPageProps) => {
 
     return (
         <PageContainer>
-            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-full gap-3 mt-16 mb-3">
+            <div className="grid grid-flow-col max-md:flex max-md:flex-col-reverse auto-cols-fr w-full gap-3 md:mt-16 mb-3">
                 <SwapTypeSelector isLimitOrder={isLimitOrder} />
                 <div className="col-span-2">
                     <PageTitle title={"Trade"} showSettings={true} />

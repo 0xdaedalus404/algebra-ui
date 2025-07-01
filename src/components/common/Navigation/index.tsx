@@ -1,3 +1,4 @@
+import { enabledModules } from "config/app-modules";
 import { NavLink, matchPath, useLocation } from "react-router-dom";
 
 const PATHS = {
@@ -19,12 +20,12 @@ const menuItems = [
         link: "/pools",
         active: [PATHS.POOLS, PATHS.POOL],
     },
-    {
+    enabledModules.analytics && {
         title: "Analytics",
         link: "/analytics",
         active: [PATHS.ANALYTICS],
     },
-];
+].filter(Boolean) as { title: string; link: string; active: string[] }[];
 
 const Navigation = () => {
     const { pathname } = useLocation();

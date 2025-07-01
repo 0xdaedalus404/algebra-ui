@@ -88,18 +88,18 @@ const SlippageTolerance = () => {
                             setSlippageInput("");
                             setSlippageError(false);
                         }}
-                        className={`text-right border-none text-md font-semibold bg-card-dark rounded-l-xl rounded-r-none w-[70px]`}
+                        className={`text-right border-none text-md font-semibold bg-card-dark rounded-l-lg rounded-r-none w-[70px] ring-0!`}
                         placeholder={"0.0"}
                     />
-                    <div className="bg-card-dark text-sm p-2 pt-2.5 rounded-r-xl select-none">%</div>
+                    <div className="bg-card-dark text-sm p-2 pt-2.5 rounded-r-lg select-none">%</div>
                 </div>
             </div>
             {slippageError || tooLow || tooHigh ? (
                 <div>
                     {slippageError ? (
-                        <div className="bg-red-900 text-red-200 px-2 py-1 rounded-xl">Enter a valid slippage percentage</div>
+                        <div className="bg-red-900 text-red-200 px-2 py-1 rounded-lg">Enter a valid slippage percentage</div>
                     ) : (
-                        <div className="bg-yellow-900 text-yellow-200 px-2 py-1 rounded-xl">
+                        <div className="bg-yellow-900 text-yellow-200 px-2 py-1 rounded-lg">
                             {tooLow ? "Your transaction may fail" : "Your transaction may be frontrun"}
                         </div>
                     )}
@@ -151,9 +151,9 @@ const TransactionDeadline = () => {
                         setDeadlineError(false);
                     }}
                     color={deadlineError ? "red" : ""}
-                    className={`text-left border-none text-md font-semibold bg-card-dark rounded-l-xl rounded-r-none w-full`}
+                    className={`text-left border-none text-md font-semibold bg-card-dark rounded-l-lg rounded-r-none w-full ring-0!`}
                 />
-                <div className="bg-card-dark text-sm p-2 pt-2.5 rounded-r-xl select-none">minutes</div>
+                <div className="bg-card-dark text-sm p-2 pt-2.5 rounded-r-lg select-none">minutes</div>
             </div>
         </div>
     );

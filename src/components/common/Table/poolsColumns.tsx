@@ -70,7 +70,7 @@ const AvgAPR = ({
     return (
         <HoverCard>
             <HoverCardTrigger>{children}</HoverCardTrigger>
-            <HoverCardContent className="text-black">
+            <HoverCardContent>
                 <p>Avg. APR - {avgApr}</p>
                 {farmApr && <p>Farm APR - {farmApr}</p>}
                 <p>Max APR - {maxApr}</p>
@@ -144,5 +144,6 @@ export const poolsColumns: ColumnDef<Pool>[] = [
                 </AvgAPR>
             );
         },
+        filterFn: (v, _, value: boolean) => v.original.hasActiveFarming === value,
     },
 ];

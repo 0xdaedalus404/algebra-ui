@@ -59,7 +59,7 @@ const SwapParams = ({
                         </div>
                     ) : (
                         <div className="rounded select-none px-1.5 py-1 flex items-center relative">
-                            <Loader size={16} color="black" />
+                            <Loader size={16} />
                         </div>
                     )}
                     <div className={`ml-auto duration-300 ${isExpanded && "rotate-180"}`}>

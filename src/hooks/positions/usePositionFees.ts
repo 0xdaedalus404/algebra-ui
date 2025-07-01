@@ -1,9 +1,7 @@
-import { useReadAlgebraPositionManagerOwnerOf, useSimulateAlgebraPositionManagerCollect } from "@/generated";
+import { useReadNonfungiblePositionManagerOwnerOf, useSimulateNonfungiblePositionManagerCollect } from "@/generated";
 import { Currency, CurrencyAmount, Pool, unwrappedToken } from "@cryptoalgebra/custom-pools-sdk";
-import { ALGEBRA_POSITION_MANAGER } from "config/contract-addresses";
 import { useMemo } from "react";
 import { Address, maxUint128 } from "viem";
-import { useChainId } from "wagmi";
 
 interface PositionFeesResult {
     amount0: CurrencyAmount<Currency> | undefined;
@@ -11,16 +9,13 @@ interface PositionFeesResult {
 }
 
 export function usePositionFees(pool?: Pool, tokenId?: number, asWNative = false): PositionFeesResult {
-    const chainId = useChainId();
-    const { data: owner } = useReadAlgebraPositionManagerOwnerOf({
-        address: ALGEBRA_POSITION_MANAGER[chainId],
+    const { data: owner } = useReadNonfungiblePositionManagerOwnerOf({
         args: tokenId ? [BigInt(tokenId)] : undefined,
     });
 
     const isReady = tokenId && owner;
 
-    const { data: amountsConfig } = useSimulateAlgebraPositionManagerCollect({
-        address: ALGEBRA_POSITION_MANAGER[chainId],
+    const { data: amountsConfig } = useSimulateNonfungiblePositionManagerCollect({
         args: isReady
             ? [
                   {

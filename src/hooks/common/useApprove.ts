@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { ChainId, Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import {
     Currency as CurrencyBN,
     CurrencyAmount as CurrencyAmountBN,
@@ -8,7 +8,7 @@ import {
     SmartRouterTrade,
 } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 
-import { ALGEBRA_ROUTER } from "config";
+import { DEFAULT_CHAIN_ID, SWAP_ROUTER } from "config";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
 
 import { useNeedAllowance } from "./useNeedAllowance";
@@ -61,7 +61,7 @@ export function useApproveCallbackFromTrade(trade: Trade<Currency, Currency, Tra
         () => (trade && trade.inputAmount.currency.isToken ? trade.maximumAmountIn(allowedSlippage) : undefined),
         [trade, allowedSlippage]
     );
-    return useApprove(amountToApprove, ALGEBRA_ROUTER[amountToApprove?.currency.chainId || ChainId.Base]);
+    return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
 }
 
 export function useApproveCallbackFromSmartTrade(trade: SmartRouterTrade<TradeType> | undefined, allowedSlippage: Percent) {
@@ -75,5 +75,5 @@ export function useApproveCallbackFromSmartTrade(trade: SmartRouterTrade<TradeTy
         [trade, allowedSlippageBN]
     );
 
-    return useApprove(amountToApprove, ALGEBRA_ROUTER[amountToApprove?.currency.chainId || ChainId.Base]);
+    return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
 }

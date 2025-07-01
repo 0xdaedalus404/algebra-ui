@@ -1,2 +1,2 @@
 export * from "./algebraBasePlugin";
-export * from "./algebraLimitOrderPlugin";
+export * from "./limitOrderManagerAbi";

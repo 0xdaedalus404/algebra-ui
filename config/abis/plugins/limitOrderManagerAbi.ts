@@ -1,4 +1,4 @@
-export const algebraLimitOrderPluginABI = [
+export const limitOrderManagerABI = [
     {
         inputs: [
             {

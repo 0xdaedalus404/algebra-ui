@@ -3,8 +3,8 @@ import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { ALGEBRA_LIMIT_ORDER_PLUGIN, CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
-import { useWriteAlgebraLimitOrderPluginKill } from "@/generated";
+import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
+import { useWriteLimitOrderManagerKill } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useMemo, useState } from "react";
@@ -30,12 +30,12 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
     }, [positionLO.amount0, positionLO.amount1, value, zeroToOne]);
 
     const killConfig = {
-        address: ALGEBRA_LIMIT_ORDER_PLUGIN[chainId],
+        address: LIMIT_ORDER_MANAGER[chainId],
         args: [
             {
                 token0: pool.token0.address as Address,
                 token1: pool.token1.address as Address,
-                deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.LIMIT_ORDER[chainId],
+                deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
             },
             ticks.tickLower,
             ticks.tickUpper,
@@ -45,7 +45,7 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
         ] as const,
     };
 
-    const { data: killData, writeContract: kill } = useWriteAlgebraLimitOrderPluginKill();
+    const { data: killData, writeContract: kill } = useWriteLimitOrderManagerKill();
 
     const { isLoading: isKillLoading } = useTransactionAwait(killData, {
         type: TransactionType.LIMIT_ORDER,
