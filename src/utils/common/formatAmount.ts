@@ -12,7 +12,7 @@ export function formatAmount(amount: string | number, decimals = 3): string {
         return `${isNegative ? "-" : ""}${(Math.floor(absAmount * 100) / 100).toLocaleString("en-us", {
             maximumFractionDigits: 2,
         })}`;
-    if (absAmount < 100_000_000)
+    if (absAmount < 1_000_000_000)
         return `${isNegative ? "-" : ""}${Math.floor(absAmount).toLocaleString("en-us", {
             maximumFractionDigits: 0,
         })}`;

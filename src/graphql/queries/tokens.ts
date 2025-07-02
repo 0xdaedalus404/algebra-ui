@@ -50,6 +50,7 @@ export const TOKEN_HOUR_DATA_FRAGMENT = gql`
         id
         periodStartUnix
         priceUSD
+        totalValueLocked
     }
 `;
 

@@ -1,5 +1,6 @@
 import { enabledModules } from "config/app-modules";
-import { NavLink, matchPath, useLocation } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
+import { Link, NavLink, matchPath, useLocation } from "react-router-dom";
 
 const PATHS = {
     SWAP: "/swap",
@@ -47,6 +48,13 @@ const Navigation = () => {
                         {item.title}
                     </NavLink>
                 ))}
+                <Link
+                    to="https://docs.algebra.finance/"
+                    target="_blank"
+                    className="flex items-center py-2 px-4 gap-2 font-semibold max-sm:hidden select-none duration-200 border-b border-transparent hover:opacity-60"
+                >
+                    Docs <ArrowUpRight size={16} />
+                </Link>
             </ul>
         </nav>
     );

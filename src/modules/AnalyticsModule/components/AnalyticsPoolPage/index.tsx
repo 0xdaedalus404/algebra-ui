@@ -1,13 +1,9 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { CHART_SPAN, POOL_CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
-import { isDefined } from "@/utils/common/isDefined";
-import { UTCTimestamp } from "lightweight-charts";
 import { usePool } from "@/hooks/pools/usePool";
-import { usePoolDayDatasQuery, usePoolHourDatasQuery } from "@/graphql/generated/graphql";
 import { Address, parseUnits } from "viem";
 import { Chart } from "@/components/common/Chart";
-import { useClients } from "@/hooks/graphql/useClients";
 import PageTitle from "@/components/common/PageTitle";
 import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
 import { formatAmount, formatPercent } from "@/utils";
@@ -17,16 +13,9 @@ import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { Button } from "@/components/ui/button";
 import { ArrowDownUp, Plus } from "lucide-react";
 import { TransactionsList } from "../TransactionsList";
-import { UNIX_TIMESTAMPS } from "@/utils/chart/timestamps";
 import { getPercentChange } from "@/utils/common/getPercentChange";
 import { unwrappedToken } from "@/utils/common/unwrappedToken";
-
-const values = {
-    [POOL_CHART_TYPE.TVL]: "tvlUSD",
-    [POOL_CHART_TYPE.VOLUME]: "volumeUSD",
-    [POOL_CHART_TYPE.FEES]: "feesUSD",
-    [POOL_CHART_TYPE.PRICE]: "token1Price",
-} as const;
+import { usePoolChartData } from "@/hooks/analytics";
 
 const LiquidityStats = ({
     token0,
@@ -136,8 +125,6 @@ const LiquidityStats = ({
 export function AnalyticsPoolPage() {
     const { poolId } = useParams();
     const { pathname } = useLocation();
-    const now = useMemo(() => Math.floor(Date.now() / 1000), []);
-    const { infoClient } = useClients();
 
     const [type, setType] = useState<PoolChartTypeType>(POOL_CHART_TYPE.TVL);
     const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
@@ -151,38 +138,7 @@ export function AnalyticsPoolPage() {
           }
         : {};
 
-    const { data: poolIndexerDayDatas, loading: poolIndexerDayDatasLoading } = usePoolDayDatasQuery({
-        variables: {
-            poolId: poolId!,
-            from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * (span === CHART_SPAN.DAY ? 2 : 1),
-            to: now,
-        },
-        client: infoClient,
-        skip: !poolId,
-    });
-
-    const { data: poolIndexerHourDatas, loading: poolIndexerHourDatasLoading } = usePoolHourDatasQuery({
-        variables: {
-            poolId: poolId!,
-            from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY],
-            to: now,
-        },
-        client: infoClient,
-        skip: !poolId || span === CHART_SPAN.MONTH || span === CHART_SPAN.THREE_MONTH || span === CHART_SPAN.YEAR,
-    });
-
-    const poolHourDatas = useMemo(() => {
-        if (!poolIndexerHourDatas) return null;
-        return poolIndexerHourDatas.poolHourDatas.map((d) => ({
-            ...d,
-            date: d.periodStartUnix,
-        }));
-    }, [poolIndexerHourDatas]);
-
-    const poolDayDatas = useMemo(() => {
-        if (!poolIndexerDayDatas) return [];
-        return poolIndexerDayDatas.poolDayDatas;
-    }, [poolIndexerDayDatas]);
+    const { poolDayDatas, chartData, loading: isChartDataLoading } = usePoolChartData(poolId, span, type);
 
     const statistics = useMemo(() => {
         if (!poolDayDatas[0]) return undefined;
@@ -202,23 +158,6 @@ export function AnalyticsPoolPage() {
             txCount: currentPoolData.pool.txCount,
         };
     }, [poolDayDatas]);
-
-    const chartData = useMemo(() => {
-        const poolDatas = span === CHART_SPAN.DAY ? poolHourDatas : span === CHART_SPAN.WEEK ? poolHourDatas : poolDayDatas;
-
-        if (!poolDatas?.[0]) return [];
-
-        const value = values[type];
-
-        const formattedData = poolDatas.filter(isDefined).map((v) => {
-            return {
-                time: v?.date as UTCTimestamp,
-                value: Number(v[value]),
-            };
-        });
-
-        return formattedData.slice(1);
-    }, [poolDayDatas, poolHourDatas, span, type]);
 
     const chartView = useMemo(() => {
         switch (type) {
@@ -263,7 +202,7 @@ export function AnalyticsPoolPage() {
                         height={260}
                         tokenA={token0?.symbol}
                         tokenB={token1?.symbol}
-                        isChartDataLoading={poolIndexerDayDatasLoading || poolIndexerHourDatasLoading}
+                        isChartDataLoading={isChartDataLoading}
                     />
                 </div>
                 <div className="flex flex-col gap-3">

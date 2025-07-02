@@ -2,10 +2,10 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react
 import * as LightWeightCharts from "lightweight-charts";
 import { formatCurrency } from "@/utils/common/formatCurrency";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { CHART_SPAN, CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
+import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
 import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
-import { bucketChartData } from "@/utils/chart/bucketChartData";
+// import { bucketChartData } from "@/utils/chart/bucketChartData";
 
 export function Chart({
     chartData,
@@ -82,6 +82,8 @@ export function Chart({
         if (!chartRef.current || !previousChartDataRef.current) return;
 
         const effectiveData = isChartDataLoading ? previousChartDataRef.current : chartData;
+
+        effectiveData.sort((a, b) => a.time - b.time);
 
         if (!isChartDataLoading) {
             previousChartDataRef.current = chartData;
@@ -182,11 +184,11 @@ export function Chart({
             });
         }
 
-        const bucketSize = chartSpan === CHART_SPAN.WEEK ? 3600 : chartSpan === CHART_SPAN.DAY ? 600 : 3600 * 24;
+        // const bucketSize = chartSpan === CHART_SPAN.WEEK ? 3600 : chartSpan === CHART_SPAN.DAY ? 600 : 3600 * 24;
 
-        const bucketedData = bucketChartData(effectiveData, bucketSize);
+        // const bucketedData = bucketChartData(effectiveData, bucketSize);
 
-        series.setData(chartView === CHART_VIEW.AREA || chartView === CHART_VIEW.LINE ? bucketedData : effectiveData);
+        series.setData(effectiveData);
 
         chart.timeScale().fitContent();
 

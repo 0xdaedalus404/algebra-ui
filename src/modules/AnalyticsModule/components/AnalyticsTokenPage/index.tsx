@@ -1,13 +1,9 @@
 import { useLayoutEffect, useMemo, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { CHART_SPAN, CHART_TYPE, CHART_VIEW, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
-import { isDefined } from "@/utils/common/isDefined";
-import { getPercentChange, UNIX_TIMESTAMPS } from "@/utils";
-import { UTCTimestamp } from "lightweight-charts";
-import { useTokenDayDatasQuery, useTokenHourDatasQuery } from "@/graphql/generated/graphql";
+import { getPercentChange } from "@/utils";
 import { Address } from "viem";
-import { Chart } from "../../../../components/common/Chart";
-import { useClients } from "@/hooks/graphql/useClients";
+import { Chart } from "@/components/common/Chart";
 import PageTitle from "@/components/common/PageTitle";
 import { CurrenciesInfoHeader } from "@/components/common/CurrenciesInfoHeader";
 import { formatAmount, formatPercent } from "@/utils";
@@ -18,13 +14,7 @@ import { ArrowDownUp, Plus } from "lucide-react";
 import { TransactionsList } from "../TransactionsList";
 import PoolsList from "@/components/pools/PoolsList";
 import { useCurrency } from "@/hooks/common/useCurrency";
-
-const values = {
-    [CHART_TYPE.TVL]: "totalValueLockedUSD",
-    [CHART_TYPE.VOLUME]: "volumeUSD",
-    [CHART_TYPE.FEES]: "feesUSD",
-    [CHART_TYPE.PRICE]: "priceUSD",
-} as const;
+import { useTokenChartData } from "@/hooks/analytics";
 
 const LiquidityStats = ({
     token0,
@@ -110,8 +100,6 @@ const LiquidityStats = ({
 export function AnalyticsTokenPage() {
     const { tokenId } = useParams();
     const { pathname } = useLocation();
-    const now = useMemo(() => Math.floor(Date.now() / 1000), []);
-    const { infoClient } = useClients();
 
     const [type, setType] = useState<PoolChartTypeType>(CHART_TYPE.TVL);
     const [span, setSpan] = useState<ChartSpanType>(CHART_SPAN.MONTH);
@@ -119,38 +107,7 @@ export function AnalyticsTokenPage() {
 
     const currency = useCurrency(tokenId as Address);
 
-    const { data: tokenIndexerDayDatas, loading: isTokenIndexerDayDatasLoading } = useTokenDayDatasQuery({
-        variables: {
-            token: tokenId!,
-            from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * (span === CHART_SPAN.DAY ? 2 : 1),
-            to: now,
-        },
-        client: infoClient,
-        skip: !tokenId,
-    });
-
-    const { data: tokenIndexerHourDatas, loading: isTokenIndexerHourDatasLoading } = useTokenHourDatasQuery({
-        variables: {
-            token: tokenId!,
-            from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY],
-            to: now,
-        },
-        client: infoClient,
-        skip: !tokenId || span === CHART_SPAN.MONTH || span === CHART_SPAN.THREE_MONTH || span === CHART_SPAN.YEAR,
-    });
-
-    const tokenHourDatas = useMemo(() => {
-        if (!tokenIndexerHourDatas) return null;
-        return tokenIndexerHourDatas.tokenHourDatas.map((d) => ({
-            ...d,
-            date: d.periodStartUnix,
-        }));
-    }, [tokenIndexerHourDatas]);
-
-    const tokenDayDatas = useMemo(() => {
-        if (!tokenIndexerDayDatas) return [];
-        return tokenIndexerDayDatas.tokenDayDatas;
-    }, [tokenIndexerDayDatas]);
+    const { tokenDayDatas, chartData, loading: isChartDataLoading } = useTokenChartData(tokenId, span, type);
 
     const statistics = useMemo(() => {
         if (!tokenDayDatas[0]) return undefined;
@@ -170,23 +127,6 @@ export function AnalyticsTokenPage() {
             priceUSD: currentTokenData.priceUSD,
         };
     }, [tokenDayDatas]);
-
-    const chartData = useMemo(() => {
-        const poolDatas = span === CHART_SPAN.DAY ? tokenHourDatas : span === CHART_SPAN.WEEK ? tokenHourDatas : tokenDayDatas;
-
-        if (!poolDatas?.[0]) return [];
-
-        const value = values[type];
-
-        const formattedData = poolDatas.filter(isDefined).map((v) => {
-            return {
-                time: v?.date as UTCTimestamp,
-                value: Number(v[value]),
-            };
-        });
-
-        return formattedData.slice(1);
-    }, [tokenDayDatas, tokenHourDatas, span, type]);
 
     const chartView = useMemo(() => {
         switch (type) {
@@ -234,7 +174,7 @@ export function AnalyticsTokenPage() {
                         setChartSpan={setSpan}
                         showTypeSelector
                         height={260}
-                        isChartDataLoading={isTokenIndexerDayDatasLoading || isTokenIndexerHourDatasLoading}
+                        isChartDataLoading={isChartDataLoading}
                     />
                 </div>
                 <div className="flex flex-col gap-3">
