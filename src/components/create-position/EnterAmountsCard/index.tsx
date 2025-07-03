@@ -10,9 +10,10 @@ interface EnterAmountsCardProps {
     currency: Currency | undefined;
     value: string;
     handleChange: (value: string) => void;
+    valueUsd?: number | null;
 }
 
-const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProps) => {
+const EnterAmountCard = ({ currency, value, handleChange, valueUsd }: EnterAmountsCardProps) => {
     const { address: account } = useAccount();
 
     const { data: balance, isLoading } = useBalance({
@@ -21,9 +22,9 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
     });
 
     const balanceString = useMemo(() => {
-        if (isLoading || !balance) return "Loading...";
+        if (isLoading) return "Loading...";
 
-        return formatAmount(balance.formatted);
+        return formatAmount(balance?.formatted || "0");
     }, [balance, isLoading]);
 
     const handleInput = useCallback((value: string) => {
@@ -37,12 +38,12 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
 
     return (
         <div className="flex w-full bg-card-dark p-3 rounded-lg">
-            <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-2 ">
+                <div className="flex items-center gap-4 min-h-10">
                     <CurrencyLogo currency={currency} size={35} />
                     <span className="font-bold text-lg">{currency ? currency.symbol : "Select a token"}</span>
                 </div>
-                {currency && account && (
+                {currency && (
                     <div className={"flex text-sm whitespace-nowrap"}>
                         <div>
                             <span className="font-semibold">Balance: </span>
@@ -55,7 +56,7 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
                 )}
             </div>
 
-            <div className="flex flex-col items-end w-full">
+            <div className="flex flex-col items-end w-full gap-2">
                 <Input
                     value={value}
                     id={`amount-${currency?.symbol}`}
@@ -64,7 +65,7 @@ const EnterAmountCard = ({ currency, value, handleChange }: EnterAmountsCardProp
                     placeholder={"0.0"}
                     maxDecimals={currency?.decimals}
                 />
-                {/* <div className="text-sm">{fiatValue && formatUSD.format(fiatValue)}</div> */}
+                <div className="text-sm">{valueUsd && `$${formatAmount(valueUsd, 2)}`}</div>
             </div>
         </div>
     );

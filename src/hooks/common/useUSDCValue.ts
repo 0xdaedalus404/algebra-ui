@@ -1,17 +1,19 @@
-import { STABLECOINS } from "config";
+import { STABLECOINS, USE_UNISWAP_PLACEHOLDER_DATA } from "config";
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
 import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
 import { useClients } from "../graphql/useClients";
+import { useUniswapSingleTokenQuery } from "../analytics/uniswap/useUniswapSingleTokenQuery";
+import { useUniswapNativePriceQuery } from "../analytics/uniswap/useUniswapNativePriceQuery";
 
 export function useUSDCPrice(currency: Currency | undefined) {
     const { infoClient } = useClients();
-
     const chainId = useChainId();
 
     const { data: bundles } = useNativePriceQuery({
         client: infoClient,
+        skip: USE_UNISWAP_PLACEHOLDER_DATA,
     });
 
     const { data: token } = useSingleTokenQuery({
@@ -21,20 +23,59 @@ export function useUSDCPrice(currency: Currency | undefined) {
         client: infoClient,
     });
 
+    /* removable (placeholder data) */
+    const { data: uniswapBundles } = useUniswapNativePriceQuery({
+        skip: !USE_UNISWAP_PLACEHOLDER_DATA,
+    });
+
+    /* removable (placeholder data) */
+    const { data: uniswapToken } = useUniswapSingleTokenQuery({
+        variables: {
+            tokenId: currency ? currency.wrapped.address.toLowerCase() : "",
+        },
+        skip: !USE_UNISWAP_PLACEHOLDER_DATA,
+    });
+
     return useMemo(() => {
-        if (!currency || !bundles?.bundles?.[0] || !token?.token)
+        if (!currency) {
             return {
                 price: undefined,
                 formatted: 0,
             };
+        }
 
-        if (STABLECOINS[chainId].USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase())
+        // USDC itself — 1:1 price
+        if (STABLECOINS[chainId].USDC.address.toLowerCase() === currency.wrapped.address.toLowerCase()) {
             return {
                 price: new Price(STABLECOINS[chainId].USDC, STABLECOINS[chainId].USDC, "1", "1"),
                 formatted: 1,
             };
+        }
 
-        const tokenUSDValue = Number(token.token.derivedMatic) * Number(bundles.bundles[0].maticPriceUSD);
+        let derivedMatic: string | undefined;
+        let maticPriceUSD: number | undefined;
+
+        if (USE_UNISWAP_PLACEHOLDER_DATA && uniswapBundles?.data.bundles?.[0] && uniswapToken?.data.token?.derivedNative) {
+            derivedMatic = uniswapToken.data.token.derivedNative;
+            maticPriceUSD = uniswapBundles?.data.bundles[0].nativePriceUSD;
+        } else if (!USE_UNISWAP_PLACEHOLDER_DATA && bundles?.bundles?.[0] && token?.token?.derivedMatic) {
+            maticPriceUSD = Number(bundles.bundles[0].maticPriceUSD);
+            derivedMatic = token.token.derivedMatic;
+        } else {
+            return {
+                price: undefined,
+                formatted: 0,
+            };
+        }
+
+        if (!derivedMatic || !maticPriceUSD) {
+            return {
+                price: undefined,
+                formatted: 0,
+            };
+        }
+
+        const tokenUSDValue = Number(derivedMatic) * maticPriceUSD;
 
         const usdAmount = tryParseAmount(tokenUSDValue.toFixed(currency.decimals), currency);
 
@@ -49,7 +90,14 @@ export function useUSDCPrice(currency: Currency | undefined) {
             price: undefined,
             formatted: 0,
         };
-    }, [currency, bundles, token, chainId]);
+    }, [
+        currency,
+        bundles?.bundles,
+        chainId,
+        token?.token?.derivedMatic,
+        uniswapToken?.data.token.derivedNative,
+        uniswapBundles?.data.bundles,
+    ]);
 }
 
 export function useUSDCValue(currencyAmount: CurrencyAmount<Currency> | undefined | null) {

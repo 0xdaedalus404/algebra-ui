@@ -5,13 +5,7 @@ import { UNIX_TIMESTAMPS, isDefined } from "@/utils";
 import { USE_UNISWAP_PLACEHOLDER_DATA } from "config/graphql-urls";
 import { UTCTimestamp } from "lightweight-charts";
 import { useMemo } from "react";
-
-type UniswapPoolAddress = string;
-type IntegralPoolAddress = string;
-
-const mainnetPoolsMapping: Record<IntegralPoolAddress, UniswapPoolAddress> = {
-    "0x048822b49dffc1fedd4f1ddcd5525912bb2fac5f": "0xd0b53D9277642d899DF5C87A3966A349A798F224", // ETH - USDC
-};
+import { uniswapPlaceholderPools } from "./uniswap/uniswap-addresses";
 
 const now = Math.floor(Date.now() / 1000);
 
@@ -27,17 +21,17 @@ export function usePoolChartData(poolId: string | undefined, span: ChartSpanType
 
     const { data: poolIndexerDayDatas, loading: poolIndexerDayDatasLoading } = usePoolDayDatasQuery({
         variables: {
-            poolId: USE_UNISWAP_PLACEHOLDER_DATA ? mainnetPoolsMapping[poolId?.toLowerCase() || ""] : poolId?.toLowerCase() || "",
+            poolId: USE_UNISWAP_PLACEHOLDER_DATA ? uniswapPlaceholderPools[poolId?.toLowerCase() || ""] : poolId?.toLowerCase() || "",
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * (span === CHART_SPAN.DAY ? 2 : 1),
             to: now,
         },
         client: USE_UNISWAP_PLACEHOLDER_DATA ? uniswapInfoClient : infoClient,
-        skip: !poolId || span === CHART_SPAN.DAY || span === CHART_SPAN.WEEK,
+        skip: !poolId,
     });
 
     const { data: poolIndexerHourDatas, loading: poolIndexerHourDatasLoading } = usePoolHourDatasQuery({
         variables: {
-            poolId: USE_UNISWAP_PLACEHOLDER_DATA ? mainnetPoolsMapping[poolId?.toLowerCase() || ""] : poolId?.toLowerCase() || "",
+            poolId: USE_UNISWAP_PLACEHOLDER_DATA ? uniswapPlaceholderPools[poolId?.toLowerCase() || ""] : poolId?.toLowerCase() || "",
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY],
             to: now,
         },

@@ -47,9 +47,9 @@ const TokenCard = ({
     });
 
     const balanceString = useMemo(() => {
-        if (isLoading || !balance) return "Loading...";
+        if (isLoading) return "Loading...";
 
-        return formatBalance(balance.formatted);
+        return formatBalance(balance?.formatted || "0");
     }, [balance, isLoading]);
 
     const handleInput = useCallback((value: string) => {
@@ -81,7 +81,7 @@ const TokenCard = ({
                         <ChevronRight size={16} />
                     </button>
                 </TokenSelectorModal>
-                {currency && account && (
+                {currency && (
                     <div className={"flex text-sm whitespace-nowrap"}>
                         {showBalance && (
                             <div>
@@ -98,7 +98,7 @@ const TokenCard = ({
                 )}
             </div>
 
-            <div className="flex flex-col items-end w-full">
+            <div className="flex flex-col items-end w-full gap-2">
                 <Input
                     disabled={disabled}
                     type={"text"}

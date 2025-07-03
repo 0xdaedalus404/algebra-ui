@@ -2,36 +2,12 @@ import { useAlgebraDayDatasQuery, useAlgebraHourDatasQuery } from "@/graphql/gen
 import { useClients } from "@/hooks/graphql/useClients";
 import { CHART_SPAN, ChartSpanType } from "@/types/swap-chart";
 import { UNIX_TIMESTAMPS, isDefined } from "@/utils";
-import { gql } from "@apollo/client";
 import { USE_UNISWAP_PLACEHOLDER_DATA } from "config/graphql-urls";
 import { UTCTimestamp } from "lightweight-charts";
 import { useMemo } from "react";
-import useSWR from "swr";
+import { useUniswapDayDatasQuery } from "./uniswap/useUniswapDayDatasQuery";
 
 const now = Math.floor(Date.now() / 1000);
-
-function useUniswapDayDatasQuery({ variables, skip }: { variables: { from: number; to: number }; skip: boolean }) {
-    const { uniswapInfoClient } = useClients();
-
-    return useSWR(["uniswapDayDatas", variables, skip], () => {
-        if (skip) return null;
-        return uniswapInfoClient.query<any>({
-            query: gql`
-                query UniswapDayDatas($from: Int!, $to: Int!) {
-                    uniswapDayDatas(orderBy: date, orderDirection: desc, where: { date_gt: $from, date_lt: $to }) {
-                        tvlUSD
-                        txCount
-                        volumeUSD
-                        id
-                        feesUSD
-                        date
-                    }
-                }
-            `,
-            variables,
-        });
-    });
-}
 
 export function useDexChartData(span: ChartSpanType, selector: "tvlUSD" | "volumeUSD" = "tvlUSD") {
     const { infoClient } = useClients();
@@ -54,6 +30,7 @@ export function useDexChartData(span: ChartSpanType, selector: "tvlUSD" | "volum
         skip: USE_UNISWAP_PLACEHOLDER_DATA || span === CHART_SPAN.MONTH || span === CHART_SPAN.THREE_MONTH || span === CHART_SPAN.YEAR,
     });
 
+    /* removable (placeholder data) */
     const { data: uniswapIndexerDayDatas, isLoading: isUniswapIndexerDayDatasLoading } = useUniswapDayDatasQuery({
         variables: {
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * 2,

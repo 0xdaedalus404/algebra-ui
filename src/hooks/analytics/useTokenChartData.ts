@@ -2,19 +2,10 @@ import { useTokenDayDatasQuery, useTokenHourDatasQuery } from "@/graphql/generat
 import { useClients } from "@/hooks/graphql/useClients";
 import { CHART_SPAN, CHART_TYPE, ChartSpanType, PoolChartTypeType } from "@/types/swap-chart";
 import { UNIX_TIMESTAMPS, isDefined } from "@/utils";
-import { gql } from "@apollo/client";
 import { USE_UNISWAP_PLACEHOLDER_DATA } from "config/graphql-urls";
 import { UTCTimestamp } from "lightweight-charts";
 import { useMemo } from "react";
-import useSWR from "swr";
-
-type UniswapTokenAddress = string;
-type IntegralTokenAddress = string;
-
-const mainnetTokensMapping: Record<IntegralTokenAddress, UniswapTokenAddress> = {
-    "0x4200000000000000000000000000000000000006": "0x4200000000000000000000000000000000000006", // ETH
-    "0xabac6f23fdf1313fc2e9c9244f666157ccd32990": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // USDC
-};
+import { useUniswapTokenDatasQuery } from "./uniswap/useUniswapTokenDatasQuery";
 
 const now = Math.floor(Date.now() / 1000);
 
@@ -24,50 +15,6 @@ const values = {
     [CHART_TYPE.FEES]: "feesUSD",
     [CHART_TYPE.PRICE]: "priceUSD",
 } as const;
-
-function useUniswapTokenDatasQuery({
-    variables,
-    skip,
-    span,
-}: {
-    variables: { from: number; to: number; token: string };
-    skip: boolean;
-    span: "Hour" | "Day";
-}) {
-    const { uniswapInfoClient } = useClients();
-
-    return useSWR([`uniswapToken${span}Query`, variables, skip], () => {
-        if (skip) return null;
-        return uniswapInfoClient.query<any>({
-            query: gql`
-                query Token${span}Datas($token: String!, $from: Int!, $to: Int!) {
-                    token${span}Datas(orderBy: date, orderDirection: asc, where: { token: $token, date_gt: $from, date_lt: $to }) {
-                        date
-                        token {
-                            id
-                            symbol
-                            name
-                            decimals
-                            derivedNative
-                            volumeUSD
-                            totalValueLockedUSD
-                            feesUSD
-                            txCount
-                        }
-                        feesUSD
-                        totalValueLockedUSD
-                        volumeUSD
-                        id
-                        date
-                        priceUSD
-                        totalValueLocked
-                    }
-                }
-            `,
-            variables,
-        });
-    });
-}
 
 export function useTokenChartData(tokenId: string | undefined, span: ChartSpanType, chartType: PoolChartTypeType) {
     const { infoClient } = useClients();
@@ -97,9 +44,10 @@ export function useTokenChartData(tokenId: string | undefined, span: ChartSpanTy
             span === CHART_SPAN.YEAR,
     });
 
+    /* removable (placeholder data) */
     const { data: uniswapIndexerDayDatas, isLoading: isUniswapIndexerDayDatasLoading } = useUniswapTokenDatasQuery({
         variables: {
-            token: mainnetTokensMapping[tokenId?.toLowerCase() || ""].toLowerCase(),
+            token: tokenId?.toLowerCase() || "",
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * 2,
             to: now,
         },
@@ -107,9 +55,10 @@ export function useTokenChartData(tokenId: string | undefined, span: ChartSpanTy
         span: "Day",
     });
 
+    /* removable (placeholder data) */
     const { data: uniswapIndexerHourDatas, isLoading: isUniswapIndexerHourDatasLoading } = useUniswapTokenDatasQuery({
         variables: {
-            token: mainnetTokensMapping[tokenId?.toLowerCase() || ""].toLowerCase(),
+            token: tokenId?.toLowerCase() || "",
             from: now - UNIX_TIMESTAMPS[span] - UNIX_TIMESTAMPS[CHART_SPAN.DAY] * 2,
             to: now,
         },
