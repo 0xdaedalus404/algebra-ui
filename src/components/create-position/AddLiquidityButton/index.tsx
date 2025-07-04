@@ -82,7 +82,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
               }
             : undefined;
 
-    const { data: addLiquidityData, writeContract: addLiquidity } = useWriteNonfungiblePositionManagerMulticall();
+    const { data: addLiquidityData, writeContract: addLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
     const { isLoading: isAddingLiquidityLoading } = useTransactionAwait(
         addLiquidityData,
@@ -129,8 +129,11 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
         );
 
     return (
-        <Button disabled={!isReady} onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}>
-            {isAddingLiquidityLoading ? <Loader /> : "Create Position"}
+        <Button
+            disabled={!isReady || isAddingLiquidityLoading || isPending}
+            onClick={() => addLiquidityConfig && addLiquidity(addLiquidityConfig)}
+        >
+            {isAddingLiquidityLoading || isPending ? <Loader /> : "Create Position"}
         </Button>
     );
 };

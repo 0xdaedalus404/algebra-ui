@@ -67,7 +67,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
           }
         : calldata;
 
-    const { data: removeLiquidityData, writeContract: removeLiquidity } = useWriteNonfungiblePositionManagerMulticall();
+    const { data: removeLiquidityData, writeContract: removeLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
     const { isLoading: isRemoveLoading, isSuccess } = useTransactionAwait(removeLiquidityData, {
         title: "Remove liquidity",
@@ -76,7 +76,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
         type: TransactionType.POOL,
     });
 
-    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity;
+    const isDisabled = sliderValue[0] === 0 || isRemoveLoading || !removeLiquidity || isPending;
 
     useEffect(() => {
         onPercentSelect(sliderValue[0]);
@@ -173,7 +173,7 @@ const RemoveLiquidityModal = ({ positionId }: RemoveLiquidityModalProps) => {
                     />
 
                     <Button disabled={isDisabled} onClick={() => removeLiquidityConfig && removeLiquidity(removeLiquidityConfig)}>
-                        {isRemoveLoading ? <Loader /> : "Remove Liquidity"}
+                        {isRemoveLoading || isPending ? <Loader /> : "Remove Liquidity"}
                     </Button>
                 </div>
             </DialogContent>

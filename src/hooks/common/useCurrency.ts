@@ -5,7 +5,7 @@ import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "config";
 import { useAlgebraToken } from "./useAlgebraToken";
 import { Address } from "viem";
 
-export function useCurrency(address: Address | undefined, withNative?: boolean): Currency | ExtendedNative | undefined {
+export function useCurrency(address: Address | undefined, asNative: boolean = true): Currency | ExtendedNative | undefined {
     const chainId = useChainId();
     const isWNative = address?.toLowerCase() === WNATIVE[chainId].address.toLowerCase();
 
@@ -15,7 +15,7 @@ export function useCurrency(address: Address | undefined, withNative?: boolean):
 
     const extendedEther = ExtendedNative.onChain(chainId, DEFAULT_NATIVE_SYMBOL, DEFAULT_NATIVE_NAME);
 
-    if (withNative) return isNative || isWNative ? extendedEther : token;
+    if (asNative) return isNative || isWNative ? extendedEther : token;
 
     if (isWNative) return extendedEther.wrapped;
 

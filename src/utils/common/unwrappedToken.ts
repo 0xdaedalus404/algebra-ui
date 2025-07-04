@@ -3,7 +3,7 @@ import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
 import { DEFAULT_NATIVE_NAME, DEFAULT_NATIVE_SYMBOL } from "config";
 import { Address, isAddressEqual } from "viem";
 
-export function unwrappedToken(token: Token | Currency | ExtendedNative): Currency | ExtendedNative | undefined {
+export function unwrappedToken(token: Token | Currency | ExtendedNative): Currency | ExtendedNative {
     const chainId = token.chainId;
     const wrappedNative = WNATIVE[chainId];
 

@@ -91,7 +91,7 @@ export const IncreaseLiquidityButton = ({
           }
         : undefined;
 
-    const { data: increaseLiquidityData, writeContract: increaseLiquidity } = useWriteNonfungiblePositionManagerMulticall();
+    const { data: increaseLiquidityData, writeContract: increaseLiquidity, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
     const { isLoading: isIncreaseLiquidityLoading, isSuccess } = useTransactionAwait(increaseLiquidityData, {
         title: `Add Liquidity to #${tokenId}`,
@@ -140,10 +140,10 @@ export const IncreaseLiquidityButton = ({
 
     return (
         <Button
-            disabled={!isReady || isIncreaseLiquidityLoading}
+            disabled={!isReady || isIncreaseLiquidityLoading || isPending}
             onClick={() => increaseLiquidityConfig && increaseLiquidity(increaseLiquidityConfig)}
         >
-            {isIncreaseLiquidityLoading ? <Loader /> : "Add Liquidity"}
+            {isIncreaseLiquidityLoading || isPending ? <Loader /> : "Add Liquidity"}
         </Button>
     );
 };

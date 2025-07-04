@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import {
     Currency as CurrencyBN,
@@ -20,7 +20,9 @@ import { useWriteContract } from "wagmi";
 
 export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyAmountBN<CurrencyBN> | undefined, spender: Address) {
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined;
-    const needAllowance = useNeedAllowance(token, amountToApprove, spender);
+    const [shouldPolling, setShouldPolling] = useState(false);
+
+    const needAllowance = useNeedAllowance(token, amountToApprove, spender, shouldPolling);
 
     const approvalState: ApprovalStateType = useMemo(() => {
         if (!amountToApprove || !spender) return ApprovalState.UNKNOWN;
@@ -38,7 +40,7 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyA
           }
         : undefined;
 
-    const { data: approvalData, writeContract: approve } = useWriteContract();
+    const { data: approvalData, writeContract: approve, isPending } = useWriteContract();
 
     const { isLoading, isSuccess } = useTransactionAwait(approvalData, {
         title: `Approve ${formatBalance(amountToApprove?.toSignificant() as string)} ${amountToApprove?.currency.symbol}`,
@@ -46,13 +48,27 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyA
         type: TransactionType.SWAP,
     });
 
+    useEffect(() => {
+        if (!needAllowance && shouldPolling) {
+            setShouldPolling(false);
+        }
+    }, [needAllowance, shouldPolling]);
+
+    const approvalCallback = () => {
+        if (config) {
+            setShouldPolling(true);
+            approve(config);
+        }
+    };
+
     return {
-        approvalState: isLoading
-            ? ApprovalState.PENDING
-            : isSuccess && approvalState === ApprovalState.APPROVED
-              ? ApprovalState.APPROVED
-              : approvalState,
-        approvalCallback: () => config && approve(config),
+        approvalState:
+            isLoading || isPending
+                ? ApprovalState.PENDING
+                : isSuccess && approvalState === ApprovalState.APPROVED
+                  ? ApprovalState.APPROVED
+                  : approvalState,
+        approvalCallback,
     };
 }
 

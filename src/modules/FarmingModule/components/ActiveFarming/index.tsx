@@ -1,58 +1,42 @@
-import { useEffect, useState } from "react";
 import { Deposit } from "@/graphql/generated/graphql";
-import { Farming } from "../../types/farming-info";
+import { Farming } from "../../../../types/farming-info";
 import { Button } from "@/components/ui/button";
 import { Address, formatUnits } from "viem";
 import { FormattedPosition } from "@/types/formatted-position";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
-import { useCurrency } from "@/hooks/common/useCurrency";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount } from "wagmi";
 import { useFarmHarvestAll } from "../../hooks/useFarmHarvest";
 import Loader from "@/components/common/Loader";
 import { ADDRESS_ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useRewardEarnedUSD } from "../../hooks/useRewardEarnedUSD";
-import { useFarmingAPR } from "../../hooks/useFarmingAPR";
-import { getFarmingRewards, isSameRewards } from "../../utils";
+import { useFarmingAPR, useFarmingRewardsEarned } from "../../hooks";
+import { isSameRewards } from "../../utils";
 import { SelectPositionFarmModal } from "..";
 import { CardInfo } from "../CardInfo";
+import { formatAmount } from "@/utils";
+import { useCurrency } from "@/hooks/common/useCurrency";
 
 interface ActiveFarmingProps {
     farming: Farming;
-    deposits: Deposit[];
+    deposits: Deposit[] | [];
     positionsData: FormattedPosition[];
 }
 
 export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmingProps) => {
     const { address: account } = useAccount();
-    const chainId = useChainId();
 
-    const [rewardEarned, setRewardEarned] = useState<bigint>(0n);
-    const [bonusRewardEarned, setBonusRewardEarned] = useState<bigint>(0n);
+    const rewardTokenCurrency = useCurrency(farming.farming.rewardToken as Address);
+    const bonusRewardTokenCurrency = useCurrency(farming.farming.bonusRewardToken as Address);
+
+    const depositsForActiveFarming = deposits.filter((d) => farming.farming.id.toLowerCase() === d.eternalFarming?.toLowerCase());
+
+    const { formattedRewardEarned, formattedBonusRewardEarned, rewardEarnedUSD, bonusRewardEarnedUSD, totalRewardsEarnedUSD } =
+        useFarmingRewardsEarned(farming.farming, depositsForActiveFarming);
 
     const APR = useFarmingAPR({ farmingId: farming.farming.id });
 
     const isSameReward = isSameRewards(farming.farming.rewardToken as Address, farming.farming.bonusRewardToken as Address);
 
-    const formattedRewardEarned = Number(formatUnits(rewardEarned, Number(farming.rewardToken.decimals)));
-
-    const formattedBonusRewardEarned = Number(formatUnits(bonusRewardEarned, Number(farming.bonusRewardToken?.decimals || 18)));
-
-    const rewardEarnedUSD = useRewardEarnedUSD({
-        token: farming.rewardToken,
-        reward: rewardEarned,
-    });
-
-    const bonusRewardEarnedUSD = useRewardEarnedUSD({
-        token: farming.bonusRewardToken,
-        reward: bonusRewardEarned,
-    });
-
-    const farmingRewards = (rewardEarnedUSD + bonusRewardEarnedUSD).toFixed(4);
-
-    const rewardTokenCurrency = useCurrency(farming.farming.rewardToken as Address);
-    const bonusRewardTokenCurrency = useCurrency(farming.farming.bonusRewardToken as Address);
-
-    const TVL = deposits.reduce((acc, deposit) => {
+    const TVL = depositsForActiveFarming.reduce((acc, deposit) => {
         const currentFormattedPosition = positionsData.find((position) => Number(position.id) === Number(deposit.id));
         if (deposit.eternalFarming !== null && currentFormattedPosition) {
             return acc + currentFormattedPosition.liquidityUSD;
@@ -61,14 +45,14 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
         }
     }, 0);
 
-    const formattedTVL = TVL.toFixed(2);
+    const formattedTVL = formatAmount(TVL, 2);
 
     const rewardRatePerDay = Number(formatUnits(BigInt(farming.farming.rewardRate), Number(farming.rewardToken.decimals))) * 60 * 60 * 24;
 
     const bonusRewardRatePerDay =
         Number(formatUnits(BigInt(farming.farming.bonusRewardRate), Number(farming.bonusRewardToken?.decimals || 18))) * 60 * 60 * 24;
 
-    const { isLoading, onHarvestAll, isSuccess } = useFarmHarvestAll(
+    const { isLoading, onHarvestAll } = useFarmHarvestAll(
         {
             rewardToken: farming.farming.rewardToken as Address,
             bonusRewardToken: farming.farming.bonusRewardToken as Address,
@@ -76,7 +60,7 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
             nonce: BigInt(farming.farming.nonce),
             account: account ?? ADDRESS_ZERO,
         },
-        deposits
+        depositsForActiveFarming
     );
 
     const handleHarvestAll = async () => {
@@ -84,43 +68,16 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
         onHarvestAll();
     };
 
-    useEffect(() => {
-        const promises: Promise<{
-            reward: bigint;
-            bonusReward: bigint;
-        }>[] = [];
-        deposits.forEach((deposit) => {
-            if (deposit.eternalFarming !== null) {
-                promises.push(
-                    getFarmingRewards({
-                        rewardToken: farming.farming.rewardToken as Address,
-                        bonusRewardToken: farming.farming.bonusRewardToken as Address,
-                        pool: farming.farming.pool as Address,
-                        nonce: BigInt(farming.farming.nonce),
-                        tokenId: BigInt(deposit.id),
-                        chainId,
-                    })
-                );
-            }
-        });
-        if (promises.length === 0) return;
-        Promise.all(promises).then((rewards) => {
-            setRewardEarned(0n);
-            setBonusRewardEarned(0n);
-            rewards.forEach((reward) => {
-                setRewardEarned((prev) => prev + reward.reward);
-                setBonusRewardEarned((prev) => prev + reward.bonusReward);
-            });
-        });
-    }, [deposits, farming, isSuccess, chainId]);
-
     return (
-        <div className="flex items-center justify-center min-h-[377px] pb-2 bg-card border border-card-border/60 rounded-xl mt-8">
-            <div className="flex flex-col w-full max-sm:p-6 p-8 gap-8">
-                <div className="flex max-sm:flex-col w-full gap-8">
-                    <div className="flex max-xs:flex-col w-full gap-8">
+        <div className="flex items-center flex-col justify-center bg-card border border-card-border/60 rounded-xl mt-3 p-6 gap-6">
+            <div className="flex flex-col gap-3 w-full">
+                <h3 className="text-2xl font-bold text-left">Active Farming</h3>
+            </div>
+            <div className="flex flex-col w-full gap-3">
+                <div className="flex max-sm:flex-col w-full gap-3">
+                    <div className="flex max-xs:flex-col w-full gap-3">
                         <CardInfo className="w-1/2 max-xs:w-full" title="APR">
-                            <p className="text-green-300">{APR}%</p>
+                            <p className="text-green-300">{APR || 0}%</p>
                         </CardInfo>
                         <CardInfo className="w-1/2 max-xs:w-full" title="TVL">
                             <p className="text-purple-300">${formattedTVL}</p>
@@ -129,18 +86,17 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
 
                     <CardInfo
                         additional={
-                            !isSameReward && farmingRewards !== "0.0000"
-                                ? `${formattedRewardEarned.toFixed(2) === "0.00" ? "<0.01" : formattedRewardEarned.toFixed(2)} ${
-                                      farming.rewardToken.symbol
-                                  } + ${
-                                      formattedBonusRewardEarned.toFixed(2) === "0.00" ? "<0.01" : formattedBonusRewardEarned.toFixed(2)
-                                  } ${farming.bonusRewardToken?.symbol}`
-                                : ""
+                            isSameReward
+                                ? `${formatAmount(formattedRewardEarned + formattedBonusRewardEarned, 2)} ${farming.rewardToken.symbol}`
+                                : `${formatAmount(formattedRewardEarned, 2)} ${farming.rewardToken.symbol} + ${formatAmount(
+                                      formattedBonusRewardEarned,
+                                      2
+                                  )} ${farming.bonusRewardToken?.symbol}`
                         }
                         className="w-full"
                         title="EARNED"
                     >
-                        <p className="text-cyan-300">${farmingRewards}</p>
+                        <p className="text-cyan-300">${totalRewardsEarnedUSD}</p>
                     </CardInfo>
                 </div>
 
@@ -150,26 +106,18 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
                             {isSameReward ? (
                                 <>
                                     <CurrencyLogo size={32} currency={rewardTokenCurrency} />
-                                    <p>{`${(rewardRatePerDay + bonusRewardRatePerDay).toFixed(2)} ${farming.rewardToken.symbol} / day`}</p>
+                                    <p>{`${formatAmount(rewardRatePerDay + bonusRewardRatePerDay, 2)} ${farming.rewardToken.symbol} / day`}</p>
                                 </>
                             ) : (
                                 <div className="flex w-full gap-4 max-md:flex-col">
                                     <div className="flex w-fit h-fit gap-4 items-center">
                                         <CurrencyLogo className="h-fit" size={32} currency={rewardTokenCurrency} />
-                                        <p>
-                                            {`${rewardRatePerDay.toFixed(2) === "0.00" ? "<0.01" : rewardRatePerDay.toFixed(2)} ${
-                                                farming.rewardToken.symbol
-                                            } / day`}
-                                        </p>
+                                        <p>{`${formatAmount(rewardRatePerDay, 2)} ${farming.rewardToken.symbol} / day`}</p>
                                     </div>
                                     {bonusRewardRatePerDay > 0 && (
                                         <div className="flex w-fit h-fit gap-4 items-center">
                                             <CurrencyLogo className="h-fit" size={32} currency={bonusRewardTokenCurrency} />
-                                            <p>
-                                                {`${
-                                                    bonusRewardRatePerDay.toFixed(2) === "0.00" ? "<0.01" : bonusRewardRatePerDay.toFixed(2)
-                                                } ${farming.bonusRewardToken?.symbol} / day`}
-                                            </p>
+                                            <p>{`${formatAmount(bonusRewardRatePerDay, 2)} ${farming.bonusRewardToken?.symbol} / day`}</p>
                                         </div>
                                     )}
                                 </div>
@@ -178,9 +126,9 @@ export const ActiveFarming = ({ farming, deposits, positionsData }: ActiveFarmin
                     </div>
                 </CardInfo>
 
-                <div className="w-full flex gap-8">
+                <div className="w-full flex gap-3">
                     <Button
-                        disabled={(rewardEarnedUSD === 0 && bonusRewardEarnedUSD === 0) || isLoading}
+                        disabled={(!rewardEarnedUSD && !bonusRewardEarnedUSD) || isLoading}
                         onClick={handleHarvestAll}
                         className="w-1/2"
                     >

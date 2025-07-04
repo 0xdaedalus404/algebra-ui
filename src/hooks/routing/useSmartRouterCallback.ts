@@ -1,12 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Address, encodeFunctionData } from "viem";
-import { useChainId, useSendTransaction } from "wagmi";
+import { useEffect, useMemo, useState } from "react";
+import { Address } from "viem";
 import { useTransactionAwait } from "../common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { swapRouterABI, SWAP_ROUTER } from "config";
 import { Currency } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { formatAmount } from "@/utils/common/formatAmount";
-import { useUserState } from "@/state/userStore";
 import { useWriteSwapRouterMulticall } from "@/generated";
 
 export function useSmartRouterCallback(
@@ -17,7 +14,6 @@ export function useSmartRouterCallback(
     value: string | undefined
 ) {
     const [txHash, setTxHash] = useState<Address>();
-    const chainId = useChainId();
 
     const config = useMemo(
         () =>
@@ -27,10 +23,10 @@ export function useSmartRouterCallback(
                       value: BigInt(value || 0),
                   }
                 : undefined,
-        [calldata, chainId, value]
+        [calldata, value]
     );
 
-    const { data: swapData, writeContractAsync: writeAsync } = useWriteSwapRouterMulticall();
+    const { data: swapData, writeContractAsync: writeAsync, isPending } = useWriteSwapRouterMulticall();
 
     useEffect(() => {
         if (swapData) {
@@ -38,37 +34,37 @@ export function useSmartRouterCallback(
         }
     }, [swapData]);
 
-    const { isExpertMode } = useUserState();
+    // const { isExpertMode } = useUserState();
 
-    const { sendTransactionAsync } = useSendTransaction();
+    // const { sendTransactionAsync } = useSendTransaction();
 
-    const expertCallback = useCallback(async () => {
-        if (!chainId || !calldata || !value) {
-            console.error("Invalid params", { calldata, value });
-            return;
-        }
+    // const expertCallback = useCallback(async () => {
+    //     if (!chainId || !calldata || !value) {
+    //         console.error("Invalid params", { calldata, value });
+    //         return;
+    //     }
 
-        const txData = {
-            to: SWAP_ROUTER[chainId],
-            data: encodeFunctionData({
-                abi: swapRouterABI,
-                functionName: "multicall",
-                args: [[calldata]],
-            }),
-            value: BigInt(value || 0),
-            gas: BigInt(1_000_000),
-        };
-        console.log(txData);
-        try {
-            const txHash = await sendTransactionAsync(txData);
-            setTxHash(txHash);
-            console.log("Transaction Hash:", txHash);
-            return txHash;
-        } catch (error) {
-            console.error("Send transaction Error:", error);
-            throw error;
-        }
-    }, [chainId, calldata, value, sendTransactionAsync]);
+    //     const txData = {
+    //         to: SWAP_ROUTER[chainId],
+    //         data: encodeFunctionData({
+    //             abi: swapRouterABI,
+    //             functionName: "multicall",
+    //             args: [[calldata]],
+    //         }),
+    //         value: BigInt(value || 0),
+    //         gas: BigInt(1_000_000),
+    //     };
+    //     console.log(txData);
+    //     try {
+    //         const txHash = await sendTransactionAsync(txData);
+    //         setTxHash(txHash);
+    //         console.log("Transaction Hash:", txHash);
+    //         return txHash;
+    //     } catch (error) {
+    //         console.error("Send transaction Error:", error);
+    //         throw error;
+    //     }
+    // }, [chainId, calldata, value, sendTransactionAsync]);
 
     const { isLoading } = useTransactionAwait(txHash, {
         title: `Swap ${formatAmount(amount || "0", 6)} ${currencyA?.symbol}`,
@@ -79,9 +75,9 @@ export function useSmartRouterCallback(
 
     return useMemo(
         () => ({
-            callback: isExpertMode ? expertCallback : () => config && writeAsync(config),
-            isLoading,
+            callback: () => config && writeAsync(config),
+            isLoading: isLoading || isPending,
         }),
-        [expertCallback, isExpertMode, writeAsync, isLoading, config]
+        [writeAsync, isLoading, config, isPending]
     );
 }

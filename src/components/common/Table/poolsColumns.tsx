@@ -10,6 +10,9 @@ import { ReactNode } from "react";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { customPoolDeployerTitleByAddress } from "config/custom-pool-deployer";
 
+import FarmingModule from "@/modules/FarmingModule";
+const { FarmTag } = FarmingModule.components;
+
 interface Pair {
     token0: TokenFieldsFragment;
     token1: TokenFieldsFragment;
@@ -30,7 +33,7 @@ interface Pool {
     deployer: string;
 }
 
-const PoolPair = ({ pair }: Pool) => {
+const PoolPair = ({ pair, hasActiveFarming, id }: Pool) => {
     const token0 = pair.token0.id as Address;
     const token1 = pair.token1.id as Address;
 
@@ -50,6 +53,7 @@ const PoolPair = ({ pair }: Pool) => {
                 <Skeleton className="h-[20px] w-[90px] bg-card" />
             )}
 
+            {hasActiveFarming ? <FarmTag poolAddress={id} /> : null}
             {/* <div className="bg-muted-primary text-primary-text rounded-xl px-2 py-1">{`${fee}%`}</div> */}
             {/* {hasALM ? <img className="w-6 h-6 overflow-hidden rounded-full" src={almLogo} alt="ALM" /> : null} */}
         </div>

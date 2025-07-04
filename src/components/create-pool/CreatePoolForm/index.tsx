@@ -16,7 +16,7 @@ import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import Summary from "../Summary";
 import SelectPair from "../SelectPair";
-import { STABLECOINS, NONFUNGIBLE_POSITION_MANAGER, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config";
+import { STABLECOINS, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES, NONFUNGIBLE_POSITION_MANAGER } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { cn } from "@/utils/common/cn";
 
@@ -69,7 +69,7 @@ const CreatePoolForm = () => {
 
     const customPoolsAddresses =
         areCurrenciesSelected && !isSameToken
-            ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainid], CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid]]
+            ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid]]
                   .filter((deployer): deployer is Address => deployer !== undefined)
                   .map(
                       (customPoolDeployer) =>
@@ -108,9 +108,9 @@ const CreatePoolForm = () => {
             };
 
         return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
-    }, [mintInfo?.pool, poolDeployer]);
+    }, [customPoolDeployerAddresses, mintInfo.pool, poolDeployer]);
 
-    const { data: createBasePoolData, writeContract: createBasePool } = useWriteNonfungiblePositionManagerMulticall();
+    const { data: createBasePoolData, writeContract: createBasePool, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
     const createBasePoolConfig = {
         address: NONFUNGIBLE_POSITION_MANAGER[chainid],
@@ -154,7 +154,7 @@ const CreatePoolForm = () => {
         type: TransactionType.POOL,
     });
 
-    const isLoading = isCustomPoolLoading || isBasePoolLoading;
+    const isLoading = isCustomPoolLoading || isBasePoolLoading || isPending || mintInfo.poolState === PoolState.LOADING;
 
     useEffect(() => {
         selectCurrency(SwapField.INPUT, undefined);
@@ -181,7 +181,15 @@ const CreatePoolForm = () => {
         createCustomPool(createCustomPoolConfig);
     };
 
-    const isDisabled = Boolean(isLoading || isSelectedCustomPoolExists || !startPriceTypedValue || !areCurrenciesSelected || isSameToken);
+    const isDisabled = Boolean(
+        isLoading ||
+            isSelectedCustomPoolExists ||
+            !startPriceTypedValue ||
+            !areCurrenciesSelected ||
+            isSameToken ||
+            isPending ||
+            !mintInfo?.pool
+    );
 
     return (
         <div className="flex flex-col gap-1 p-2 bg-card border border-card-border rounded-xl">

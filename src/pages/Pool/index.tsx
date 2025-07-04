@@ -220,17 +220,10 @@ const PoolPage = () => {
                                 selectedPosition={selectedPosition?.id}
                                 selectPosition={(positionId) => selectPosition((prev) => (prev === positionId ? null : positionId))}
                             />
-                            {farmingInfo && deposits && !isFarmingLoading && !areDepositsLoading && (
-                                <div>
-                                    <h2 className="font-semibold text-xl text-left mt-12">Farming</h2>
-                                    <ActiveFarming
-                                        deposits={deposits && deposits.deposits}
-                                        farming={farmingInfo}
-                                        positionsData={positionsData}
-                                    />
-                                </div>
-                            )}
                         </>
+                    )}
+                    {farmingInfo && !isFarmingLoading && !areDepositsLoading && (
+                        <ActiveFarming deposits={deposits?.deposits || []} farming={farmingInfo} positionsData={positionsData} />
                     )}
                 </div>
 

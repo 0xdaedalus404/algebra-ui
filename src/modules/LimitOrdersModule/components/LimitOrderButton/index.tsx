@@ -90,7 +90,7 @@ export const LimitOrderButton = ({
           }
         : undefined;
 
-    const { data: placeData, writeContract: placeLimitOrder } = useWriteLimitOrderManagerPlace();
+    const { data: placeData, writeContract: placeLimitOrder, isPending } = useWriteLimitOrderManagerPlace();
 
     const { isLoading: isPlaceLoading } = useTransactionAwait(placeData, {
         type: TransactionType.LIMIT_ORDER,
@@ -121,7 +121,7 @@ export const LimitOrderButton = ({
 
     return (
         <Button
-            disabled={disabled || isPlaceLoading || approvalState === ApprovalState.PENDING}
+            disabled={disabled || isPlaceLoading || approvalState === ApprovalState.PENDING || isPending}
             onClick={() => {
                 console.log(
                     "[PLACE LIMIT ORDER]",
@@ -147,7 +147,7 @@ export const LimitOrderButton = ({
                 placeLimitOrderConfig && placeLimitOrder(placeLimitOrderConfig);
             }}
         >
-            {isPlaceLoading ? <Loader /> : "Place an order"}
+            {isPlaceLoading || isPending ? <Loader /> : "Place an order"}
         </Button>
     );
 };

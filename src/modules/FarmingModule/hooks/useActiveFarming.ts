@@ -1,14 +1,11 @@
 import { useAccount } from "wagmi";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useDepositsQuery, useEternalFarmingsQuery, useSingleTokenQuery, SinglePoolQuery } from "@/graphql/generated/graphql";
 import { Address } from "viem";
-import { Farming } from "../types/farming-info";
 
 export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolInfo: SinglePoolQuery | undefined }) {
     const { address: account } = useAccount();
-
-    const [farmingInfo, setFarmingInfo] = useState<Farming | null>();
 
     const { infoClient, farmingClient } = useClients();
 
@@ -25,7 +22,7 @@ export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolIn
     const { data: rewardToken } = useSingleTokenQuery({
         skip: !activeFarming,
         variables: {
-            tokenId: activeFarming?.rewardToken,
+            tokenId: activeFarming?.rewardToken || "",
         },
         client: infoClient,
     });
@@ -33,7 +30,7 @@ export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolIn
     const { data: bonusRewardToken } = useSingleTokenQuery({
         skip: !activeFarming || !activeFarming?.bonusRewardToken,
         variables: {
-            tokenId: activeFarming?.bonusRewardToken,
+            tokenId: activeFarming?.bonusRewardToken || "",
         },
         client: infoClient,
     });
@@ -47,24 +44,22 @@ export function useActiveFarming({ poolId, poolInfo }: { poolId: Address; poolIn
         skip: !poolInfo,
     });
 
-    useEffect(() => {
+    const farmingInfo = useMemo(() => {
         if (!farmings?.eternalFarmings) return;
         if (!poolInfo) return;
         if (!rewardToken) return;
         if (!bonusRewardToken) return;
         if (!activeFarming || !rewardToken.token) {
             console.debug("Active farming not found");
-            setFarmingInfo(null);
-            return;
+            return null;
         }
-
-        setFarmingInfo({
+        return {
             farming: activeFarming,
             rewardToken: rewardToken.token,
             bonusRewardToken: bonusRewardToken.token ?? null,
             pool: poolInfo.pool,
-        });
-    }, [farmings, rewardToken, bonusRewardToken, poolInfo, activeFarming]);
+        };
+    }, [activeFarming, bonusRewardToken, farmings?.eternalFarmings, poolInfo, rewardToken]);
 
     return {
         farmingInfo,

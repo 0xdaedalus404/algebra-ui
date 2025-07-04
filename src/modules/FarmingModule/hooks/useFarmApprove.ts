@@ -17,7 +17,7 @@ export function useFarmApprove(tokenId: bigint) {
           }
         : undefined;
 
-    const { data: data, writeContractAsync: onApprove } = useWriteNonfungiblePositionManagerApproveForFarming();
+    const { data: data, writeContractAsync: onApprove, isPending } = useWriteNonfungiblePositionManagerApproveForFarming();
 
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Approve Position #${tokenId}`,
@@ -34,7 +34,7 @@ export function useFarmApprove(tokenId: bigint) {
     }, [isSuccess]);
 
     return {
-        isLoading,
+        isLoading: isLoading || isPending,
         isSuccess,
         onApprove: () => config && onApprove(config),
     };

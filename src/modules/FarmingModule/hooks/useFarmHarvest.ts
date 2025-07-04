@@ -43,7 +43,7 @@ export function useFarmHarvest({
               }
             : undefined;
 
-    const { data, writeContractAsync: onHarvest } = useWriteFarmingCenterMulticall();
+    const { data, writeContractAsync: onHarvest, isPending } = useWriteFarmingCenterMulticall();
 
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Harvest Position #${tokenId}`,
@@ -52,7 +52,7 @@ export function useFarmHarvest({
     });
 
     return {
-        isLoading,
+        isLoading: isLoading || isPending,
         isSuccess,
         onHarvest: () => config && onHarvest(config),
     };
@@ -102,7 +102,7 @@ export function useFarmHarvestAll(
         args: [calldatas] as const,
     };
 
-    const { data, writeContractAsync: onHarvestAll } = useWriteFarmingCenterMulticall();
+    const { data, writeContractAsync: onHarvestAll, isPending } = useWriteFarmingCenterMulticall();
 
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Harvest All Positions`,
@@ -111,7 +111,7 @@ export function useFarmHarvestAll(
     });
 
     return {
-        isLoading,
+        isLoading: isLoading || isPending,
         isSuccess,
         onHarvestAll: () => config && onHarvestAll(config),
     };

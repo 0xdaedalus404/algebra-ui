@@ -3,6 +3,8 @@ import { formatPlural } from "@/utils/common/formatPlural";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
+import FilterPopover from "../FilterPopover";
+import { Settings2 } from "lucide-react";
 
 interface MyPositionsToolbar {
     positionsData: FormattedPosition[];
@@ -37,6 +39,11 @@ const MyPositionsToolbar = ({ positionsData, currencyA, currencyB }: MyPositions
                         <div className="text-cyan-300 font-semibold">{`$${formatAmount(myLiquidityUSD || 0, 2)} TVL`}</div>
                         <div className="self-center w-[1px] h-[20px] border border-text-100"></div>
                         <div className="text-green-300 font-semibold">{`$${formatAmount(myFeesUSD || 0, 2)} Fees`}</div>
+                        <div className="ml-auto">
+                            <FilterPopover>
+                                <Settings2 className="w-fit h-fit" />
+                            </FilterPopover>
+                        </div>
                     </>
                 ) : null}
             </div>

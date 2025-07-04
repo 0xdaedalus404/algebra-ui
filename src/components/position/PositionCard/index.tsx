@@ -15,9 +15,9 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { formatAmount } from "@/utils/common/formatAmount";
 
 import FarmingModule from "@/modules/FarmingModule";
-import { Farming } from "@/modules/FarmingModule/types";
+import { Farming } from "@/types/farming-info";
 import { createUncheckedPosition } from "@/utils/positions/createUncheckedPosition";
-const { ActiveFarmingCard, ClosedFarmingCard } = FarmingModule.components;
+const { HarvestAndExitFarmingCard } = FarmingModule.components;
 
 interface PositionCardProps {
     selectedPosition: FormattedPosition | undefined;
@@ -30,7 +30,8 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
 
     const positionInFarming = usePositionInFarming(selectedPosition?.id);
 
-    const positionInEndedFarming = closedFarmings?.filter((closedFarming) => closedFarming.id === positionInFarming?.eternalFarming)[0];
+    const activeFarming = farming?.farming;
+    const endedFarming = closedFarmings?.find((closedFarming) => closedFarming.id === positionInFarming?.eternalFarming);
 
     const token0 = position?.token0;
     const token1 = position?.token1;
@@ -115,11 +116,11 @@ const PositionCard = ({ selectedPosition, farming, closedFarmings }: PositionCar
                     <RemoveLiquidityModal positionId={Number(selectedPosition.id)} />
                 </div>
             )}
-            {positionInFarming && farming && !positionInEndedFarming && (
-                <ActiveFarmingCard farming={farming} selectedPosition={positionInFarming} />
+            {positionInFarming && activeFarming && !endedFarming && (
+                <HarvestAndExitFarmingCard eternalFarming={activeFarming} selectedPosition={positionInFarming} isEnded={false} />
             )}
-            {positionInEndedFarming && (
-                <ClosedFarmingCard positionInEndedFarming={positionInEndedFarming} selectedPosition={selectedPosition} />
+            {positionInFarming && endedFarming && (
+                <HarvestAndExitFarmingCard eternalFarming={endedFarming} selectedPosition={positionInFarming} isEnded />
             )}
         </div>
     );

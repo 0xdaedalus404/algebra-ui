@@ -17,5 +17,5 @@ export const BLOCKS_GRAPH_URL = {
 };
 
 export const FARMING_GRAPH_URL = {
-    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/integral-v12-farming/v1.0.0",
+    [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/integral-v12-farming/v1.0.2",
 };

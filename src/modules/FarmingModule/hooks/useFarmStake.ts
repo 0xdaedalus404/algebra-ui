@@ -50,7 +50,7 @@ export function useFarmStake({
           }
         : undefined;
 
-    const { data: data, writeContractAsync: onStake } = useWriteFarmingCenterEnterFarming();
+    const { data: data, writeContractAsync: onStake, isPending } = useWriteFarmingCenterEnterFarming();
 
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Stake Position #${tokenId}`,
@@ -85,7 +85,7 @@ export function useFarmStake({
     }, [isSuccess]);
 
     return {
-        isLoading: isQueryLoading || isLoading,
+        isLoading: isQueryLoading || isLoading || isPending,
         isSuccess,
         onStake: () => config && onStake(config),
     };
@@ -148,7 +148,7 @@ export function useFarmUnstake({
               }
             : undefined;
 
-    const { data, writeContractAsync: onUnstake } = useWriteFarmingCenterMulticall();
+    const { data, writeContractAsync: onUnstake, isPending } = useWriteFarmingCenterMulticall();
 
     const { isLoading, isSuccess } = useTransactionAwait(data, {
         title: `Unstake Position #${tokenId}`,
@@ -183,7 +183,7 @@ export function useFarmUnstake({
     }, [isSuccess]);
 
     return {
-        isLoading: isLoading || isQueryLoading,
+        isLoading: isLoading || isQueryLoading || isPending,
         isSuccess,
         onUnstake: () => config && onUnstake(config),
     };

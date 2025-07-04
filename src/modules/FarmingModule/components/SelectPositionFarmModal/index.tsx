@@ -5,7 +5,7 @@ import { Deposit } from "@/graphql/generated/graphql";
 import { cn } from "@/utils/common/cn";
 import { FormattedPosition } from "@/types/formatted-position";
 import { useState } from "react";
-import { Farming } from "../../types/farming-info";
+import { Farming } from "../../../../types/farming-info";
 import { useFarmCheckApprove } from "../../hooks/useFarmCheckApprove";
 import { useFarmApprove } from "../../hooks/useFarmApprove";
 import { useFarmStake } from "../../hooks/useFarmStake";
@@ -60,12 +60,12 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                     Deposit
                 </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-[500px] rounded-xl bg-card" style={{ borderRadius: "32px" }}>
+            <DialogContent className="max-w-[500px] rounded-xl! bg-card">
                 <DialogHeader>
                     <DialogTitle className="font-bold select-none my-2 max-md:mx-auto">Select Position</DialogTitle>
                 </DialogHeader>
                 <div className="py-1">
-                    <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-4 overflow-auto">
+                    <ul className="grid grid-cols-2 max-md:grid-cols-1 max-h-[300px] gap-3 overflow-auto">
                         {availablePositions.length > 0 ? (
                             availablePositions.map((position) => {
                                 const currentFormattedPosition = positionsData.find(
@@ -90,7 +90,7 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                         )}
                     </ul>
                 </div>
-                <div className="w-full flex gap-4 mt-2">
+                <div className="w-full flex gap-3 mt-2">
                     {isApproving ? (
                         <Button disabled className="w-full">
                             Checking Approval...

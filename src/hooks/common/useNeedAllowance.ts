@@ -6,7 +6,8 @@ import { useAccount, useReadContract } from "wagmi";
 export function useNeedAllowance(
     currency: Currency | CurrencyBN | null | undefined,
     amount: CurrencyAmount<Currency> | CurrencyAmountBN<CurrencyBN> | undefined,
-    spender: Address | undefined
+    spender: Address | undefined,
+    fastPolling: boolean = false
 ) {
     const { address: account } = useAccount();
 
@@ -14,9 +15,9 @@ export function useNeedAllowance(
         address: currency?.wrapped.address as Address,
         abi: erc20Abi,
         functionName: "allowance",
-        args: account && spender && [account, spender],
+        args: account && spender ? [account, spender] : undefined,
         query: {
-            refetchInterval: 10_000,
+            refetchInterval: fastPolling ? 1000 : false,
         },
     });
 

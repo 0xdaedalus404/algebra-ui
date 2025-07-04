@@ -5,4 +5,4 @@ export * from "./useFarmStake";
 export * from "./useFarmHarvest";
 export * from "./useFarmCheckApprove";
 export * from "./useFarmingAPR";
-export * from "./useRewardEarnedUSD";
+export * from "./useFarmingRewardsEarned";
