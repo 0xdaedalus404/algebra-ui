@@ -81,7 +81,7 @@ export function useTokenChartData(tokenId: string | undefined, span: ChartSpanTy
     }, [tokenIndexerHourDatas, uniswapIndexerHourDatas?.data]);
 
     const tokenDayDatas = useMemo(() => {
-        if (!tokenIndexerDayDatas) return [];
+        if (!tokenIndexerDayDatas && !uniswapIndexerDayDatas?.data) return [];
         const _tokenDayDatas = USE_UNISWAP_PLACEHOLDER_DATA ? uniswapIndexerDayDatas?.data : tokenIndexerDayDatas;
         return _tokenDayDatas.tokenDayDatas;
     }, [tokenIndexerDayDatas, uniswapIndexerDayDatas?.data]);

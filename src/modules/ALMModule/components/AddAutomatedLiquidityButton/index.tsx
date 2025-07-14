@@ -1,12 +1,12 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_CHAIN_NAME } from "config";
+import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "config";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useEthersSigner } from "@/hooks/common/useEthersProvider";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { ApprovalState } from "@/types/approve-state";
-import { ChainId, Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, CurrencyAmount, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { deposit, depositNativeToken, SupportedChainId, VAULT_DEPOSIT_GUARD } from "@cryptoalgebra/alm-sdk";
 import { useCallback, useEffect, useState } from "react";
 import { useAccount, useChainId } from "wagmi";
@@ -102,11 +102,10 @@ export const AddAutomatedLiquidityButton = ({ vault, amount, poolId }: AddAutoma
     useEffect(() => {
         if (!isSuccess) return;
 
-        console.log("refetchUserVaults");
         refetchUserVaults();
     }, [isSuccess]);
 
-    const isWrongChain = !selectedNetworkId || ![ChainId.Base, ChainId.BaseSepolia].includes(selectedNetworkId);
+    const isWrongChain = !selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId;
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 

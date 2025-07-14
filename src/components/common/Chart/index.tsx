@@ -5,6 +5,7 @@ import { formatAmount } from "@/utils/common/formatAmount";
 import { CHART_VIEW, POOL_CHART_TYPE, type IChart } from "@/types/swap-chart";
 import { ChartSpanSelector } from "../ChartSpanSelector";
 import { ChartTypeSelector } from "../ChartTypeSelector";
+import Loader from "../Loader";
 // import { bucketChartData } from "@/utils/chart/bucketChartData";
 
 export function Chart({
@@ -243,11 +244,15 @@ export function Chart({
                 </div>
             </div>
             <div className="relative">
-                <div
-                    className={`transition-all duration-1000 ${isChartDataLoading ? "opacity-40 animate-pulse" : "opacity-100"}`}
-                    style={{ height: `${height}px` }}
-                    ref={chartRef}
-                />
+                {!previousChartDataRef.current.length && !chartData.length && isChartDataLoading ? (
+                    <Loader className="w-10 h-10 mx-auto mt-20" />
+                ) : (
+                    <div
+                        className={`transition-all duration-1000 ${isChartDataLoading ? "opacity-40 animate-pulse" : "opacity-100"}`}
+                        style={{ height: `${height}px` }}
+                        ref={chartRef}
+                    />
+                )}
                 {/* {!chartData?.length ? (
                     <div className="absolute top-0 flex h-full w-full items-center justify-center">
                         <span className="h-[24px] w-[24px] animate-spin rounded-full border-2 border-solid border-white border-b-transparent" />

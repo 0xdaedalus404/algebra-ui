@@ -41,13 +41,13 @@ export function useDexChartData(span: ChartSpanType, selector: "tvlUSD" | "volum
 
     const dexHourDatas = useMemo(() => {
         return USE_UNISWAP_PLACEHOLDER_DATA
-            ? uniswapIndexerDayDatas?.data.uniswapDayDatas || []
+            ? uniswapIndexerDayDatas?.data.fusionDayDatas || []
             : algebraIndexerHourDatas?.algebraHourDatas || [];
     }, [algebraIndexerHourDatas, uniswapIndexerDayDatas]);
 
     const dexDayDatas = useMemo(() => {
         return USE_UNISWAP_PLACEHOLDER_DATA
-            ? uniswapIndexerDayDatas?.data.uniswapDayDatas || []
+            ? uniswapIndexerDayDatas?.data.fusionDayDatas || []
             : algebraIndexerDayDatas?.algebraDayDatas || [];
     }, [algebraIndexerDayDatas, uniswapIndexerDayDatas]);
 

@@ -26,7 +26,6 @@ export function useUniswapTokenDatasQuery({
                             symbol
                             name
                             decimals
-                            derivedNative
                             volumeUSD
                             totalValueLockedUSD
                             feesUSD

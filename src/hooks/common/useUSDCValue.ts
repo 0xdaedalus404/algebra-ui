@@ -1,11 +1,9 @@
-import { STABLECOINS, USE_UNISWAP_PLACEHOLDER_DATA } from "config";
+import { STABLECOINS } from "config";
 import { useNativePriceQuery, useSingleTokenQuery } from "@/graphql/generated/graphql";
 import { Currency, CurrencyAmount, Price, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useMemo } from "react";
 import { useChainId } from "wagmi";
 import { useClients } from "../graphql/useClients";
-import { useUniswapSingleTokenQuery } from "../analytics/uniswap/useUniswapSingleTokenQuery";
-import { useUniswapNativePriceQuery } from "../analytics/uniswap/useUniswapNativePriceQuery";
 
 export function useUSDCPrice(currency: Currency | undefined) {
     const { infoClient } = useClients();
@@ -13,7 +11,6 @@ export function useUSDCPrice(currency: Currency | undefined) {
 
     const { data: bundles } = useNativePriceQuery({
         client: infoClient,
-        skip: USE_UNISWAP_PLACEHOLDER_DATA,
     });
 
     const { data: token } = useSingleTokenQuery({
@@ -21,19 +18,6 @@ export function useUSDCPrice(currency: Currency | undefined) {
             tokenId: currency ? currency.wrapped.address.toLowerCase() : "",
         },
         client: infoClient,
-    });
-
-    /* removable (placeholder data) */
-    const { data: uniswapBundles } = useUniswapNativePriceQuery({
-        skip: !USE_UNISWAP_PLACEHOLDER_DATA,
-    });
-
-    /* removable (placeholder data) */
-    const { data: uniswapToken } = useUniswapSingleTokenQuery({
-        variables: {
-            tokenId: currency ? currency.wrapped.address.toLowerCase() : "",
-        },
-        skip: !USE_UNISWAP_PLACEHOLDER_DATA,
     });
 
     return useMemo(() => {
@@ -55,10 +39,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
         let derivedMatic: string | undefined;
         let maticPriceUSD: number | undefined;
 
-        if (USE_UNISWAP_PLACEHOLDER_DATA && uniswapBundles?.data.bundles?.[0] && uniswapToken?.data.token?.derivedNative) {
-            derivedMatic = uniswapToken.data.token.derivedNative;
-            maticPriceUSD = uniswapBundles?.data.bundles[0].nativePriceUSD;
-        } else if (!USE_UNISWAP_PLACEHOLDER_DATA && bundles?.bundles?.[0] && token?.token?.derivedMatic) {
+        if (bundles?.bundles?.[0] && token?.token?.derivedMatic) {
             maticPriceUSD = Number(bundles.bundles[0].maticPriceUSD);
             derivedMatic = token.token.derivedMatic;
         } else {
@@ -90,14 +71,7 @@ export function useUSDCPrice(currency: Currency | undefined) {
             price: undefined,
             formatted: 0,
         };
-    }, [
-        currency,
-        bundles?.bundles,
-        chainId,
-        token?.token?.derivedMatic,
-        uniswapToken?.data.token.derivedNative,
-        uniswapBundles?.data.bundles,
-    ]);
+    }, [currency, bundles?.bundles, chainId, token?.token?.derivedMatic]);
 }
 
 export function useUSDCValue(currencyAmount: CurrencyAmount<Currency> | undefined | null) {
