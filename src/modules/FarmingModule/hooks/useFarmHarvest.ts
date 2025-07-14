@@ -5,7 +5,7 @@ import { Deposit } from "@/graphql/generated/graphql";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useWriteFarmingCenterMulticall } from "@/generated";
 import { farmingCenterABI } from "config";
-import { getRewardsCalldata } from "../utils";
+import { getRewardsCalldata, getUnclaimedRewardsCalldata } from "../utils";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 
 export function useFarmHarvest({
@@ -55,6 +55,35 @@ export function useFarmHarvest({
         isLoading: isLoading || isPending,
         isSuccess,
         onHarvest: () => config && onHarvest(config),
+    };
+}
+
+export function useFarmHarvestUnclaimed({ rewards, account }: { rewards: Address[]; account: Address }) {
+    const calldata = getUnclaimedRewardsCalldata({
+        rewards,
+        account,
+    });
+
+    const config = account
+        ? {
+              abi: farmingCenterABI,
+              functionName: "multicall",
+              args: [calldata] as [Address[]],
+              account,
+          }
+        : null;
+
+    const { data, writeContractAsync: onHarvest, isPending } = useWriteFarmingCenterMulticall();
+
+    const { isLoading, isSuccess } = useTransactionAwait(data, {
+        title: `Farm Harvest Unclaimed`,
+        type: TransactionType.FARM,
+    });
+
+    return {
+        isLoading: isLoading || isPending,
+        isSuccess,
+        onHarvestUnclaimed: () => config && onHarvest(config),
     };
 }
 

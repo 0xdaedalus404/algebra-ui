@@ -30,8 +30,8 @@ import { unwrappedToken } from "@/utils/common/unwrappedToken";
 const { ALMPositionCard } = ALMModule.components;
 const { useUserALMVaultsByPool } = ALMModule.hooks;
 
-const { ActiveFarming } = FarmingModule.components;
-const { useActiveFarming, useClosedFarmings } = FarmingModule.hooks;
+const { ActiveFarming, UnclaimedRewards } = FarmingModule.components;
+const { useActiveFarming, useClosedFarmings, useUnclaimedRewards } = FarmingModule.hooks;
 
 const PoolPage = () => {
     const { address: account } = useAccount();
@@ -39,6 +39,8 @@ const PoolPage = () => {
     const { pool: poolId } = useParams() as { pool: Address };
 
     const [selectedPositionId, selectPosition] = useState<string | null>();
+
+    const { unclaimedRewards } = useUnclaimedRewards();
 
     const [, poolEntity] = usePool(poolId);
 
@@ -220,6 +222,12 @@ const PoolPage = () => {
                                 selectedPosition={selectedPosition?.id}
                                 selectPosition={(positionId) => selectPosition((prev) => (prev === positionId ? null : positionId))}
                             />
+                            {unclaimedRewards && Boolean(unclaimedRewards?.rewards.length) && (
+                                <div>
+                                    <h2 className="font-semibold text-xl text-left mt-12">Unclaimed Rewards</h2>
+                                    <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
+                                </div>
+                            )}
                         </>
                     )}
                     {farmingInfo && !isFarmingLoading && !areDepositsLoading && (

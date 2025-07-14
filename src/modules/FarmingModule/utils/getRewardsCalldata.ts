@@ -49,9 +49,27 @@ export function getRewardsCalldata({
     const isSameReward = isSameRewards(rewardToken, bonusRewardToken);
 
     if (isSameReward) {
-        calldata = [collectRewardsCalldata, rewardClaimCalldata, bonusRewardClaimCalldata];
-    } else {
         calldata = [collectRewardsCalldata, rewardClaimCalldata];
+    } else {
+        calldata = [collectRewardsCalldata, rewardClaimCalldata, bonusRewardClaimCalldata];
+    }
+
+    return calldata;
+}
+
+export function getUnclaimedRewardsCalldata({ rewards, account }: { rewards: Address[]; account: Address }): Address[] {
+    const rewardsSet = new Set(rewards);
+
+    const calldata: Address[] = [];
+
+    for (const reward of rewardsSet.keys()) {
+        calldata.push(
+            encodeFunctionData({
+                abi: farmingCenterABI,
+                functionName: "claimReward",
+                args: [reward, account, BigInt(MaxUint128)],
+            })
+        );
     }
 
     return calldata;

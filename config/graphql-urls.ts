@@ -2,8 +2,7 @@ import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 
 // Uses Uniswap analytics data to populate charts and DEX stats (for visual purposes only)
 export const USE_UNISWAP_PLACEHOLDER_DATA = true;
-export const UNsISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/HMuAwufqZ1YCRmzL2SfHTVkzZovC9VL2UAKhjvRqKiR1"; // Base Mainnet
-export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt"; // BNB Mainnet
+export const UNISWAP_GRAPH_URL = "https://gateway.thegraph.com/api/subgraphs/id/Hnjf3ipVMCkQze3jmHp8tpSMgPmtPnXBR38iM4ix1cLt"; // actually it's Thena Fusion BSC Mainnet
 
 export const INFO_GRAPH_URL = {
     [ChainId.BaseSepolia]: "https://api.studio.thegraph.com/query/50593/integral-v12/v1.0.0",
