@@ -1,7 +1,7 @@
 import { infoClient } from "@/graphql/clients";
 import { ApolloProvider as _ApolloProvider } from "@apollo/client";
-import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
+import { DEFAULT_CHAIN_ID } from "config/default-chain";
 
 export default function ApolloProvider({ children }: { children: React.ReactNode }) {
-    return <_ApolloProvider client={infoClient[ChainId.BaseSepolia]}>{children}</_ApolloProvider>;
+    return <_ApolloProvider client={infoClient[DEFAULT_CHAIN_ID]}>{children}</_ApolloProvider>;
 }

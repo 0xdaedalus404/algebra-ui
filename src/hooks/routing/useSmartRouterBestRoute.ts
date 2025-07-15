@@ -13,7 +13,7 @@ import { useAccount, useBlockNumber } from "wagmi";
 
 import { useUserSlippageToleranceWithDefault, useUserState } from "@/state/userStore";
 
-import useDebounce from "../common/useDebounce";
+import useDebounce from "@/hooks/common/useDebounce";
 
 import { useCommonPools } from "./useRoutingPools";
 import usePreviousValue from "@/hooks/uitls/usePreviousValue.ts";
