@@ -18,11 +18,10 @@ import Summary from "../Summary";
 import SelectPair from "../SelectPair";
 import { STABLECOINS, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES, NONFUNGIBLE_POSITION_MANAGER } from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { cn } from "@/utils/common/cn";
-
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
-import { useWriteAlgebraCustomPoolDeployerCreateCustomPool, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
+import { useWriteAlgebraCustomPoolEntryPointCreateCustomPool, useWriteNonfungiblePositionManagerMulticall } from "@/generated";
+import { cn } from "@/utils";
 
 type PoolDeployerType = (typeof CUSTOM_POOL_DEPLOYER_TITLES)[keyof typeof CUSTOM_POOL_DEPLOYER_TITLES];
 
@@ -145,7 +144,7 @@ const CreatePoolForm = () => {
           }
         : undefined;
 
-    const { data: createCustomPoolData, writeContract: createCustomPool } = useWriteAlgebraCustomPoolDeployerCreateCustomPool();
+    const { data: createCustomPoolData, writeContract: createCustomPool } = useWriteAlgebraCustomPoolEntryPointCreateCustomPool();
 
     const { isLoading: isCustomPoolLoading } = useTransactionAwait(createCustomPoolData, {
         title: "Create Custom Pool",

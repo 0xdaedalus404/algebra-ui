@@ -1,8 +1,8 @@
 import { ContractConfig } from "@wagmi/cli";
 import { AppKitNetwork, baseSepolia } from "@reown/appkit/networks";
 import {
-    algebraBasePluginABI,
-    algebraCustomPoolDeployerABI,
+    algebraBasePluginV1ABI,
+    algebraCustomPoolEntryPointABI,
     algebraEternalFarmingABI,
     algebraFactoryABI,
     algebraPoolABI,
@@ -28,14 +28,14 @@ export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia];
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },
     { name: "AlgebraPool", abi: algebraPoolABI },
-    { name: "AlgebraBasePlugin", abi: algebraBasePluginABI },
+    { name: "AlgebraBasePluginV1", abi: algebraBasePluginV1ABI },
     { name: "NonfungiblePositionManager", abi: nonfungiblePositionManagerABI },
     { name: "QuoterV2", abi: quoterV2ABI },
     { name: "SwapRouter", abi: swapRouterABI },
     { name: "AlgebraEternalFarming", abi: algebraEternalFarmingABI },
     { name: "FarmingCenter", abi: farmingCenterABI },
     { name: "LimitOrderManager", abi: limitOrderManagerABI },
-    { name: "AlgebraCustomPoolDeployer", abi: algebraCustomPoolDeployerABI },
+    { name: "AlgebraCustomPoolEntryPoint", abi: algebraCustomPoolEntryPointABI },
     { name: "WrappedNative", abi: wNativeABI },
 ];
 
