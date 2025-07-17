@@ -12,8 +12,8 @@ import { ArrowRight } from "lucide-react";
 import { Address } from "viem";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useMemo } from "react";
-import { Route, Currency, Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Route, Pool, V3Pool } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Currency, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { customPoolDeployerTitleByAddress } from "config";
 
 interface ISwapRouteModal {
@@ -93,7 +93,7 @@ const RouteSplit = ({
     );
 };
 
-const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, children }: ISwapRouteModal) => {
+export const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, children }: ISwapRouteModal) => {
     if (!routes) return null;
 
     return (
@@ -109,7 +109,12 @@ const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, children }
                 </CredenzaHeader>
                 <CredenzaBody className={"flex flex-col gap-4"}>
                     {routes.map((route) => (
-                        <RouteSplit key={`route-split-${route.path.join("-")}`} route={route} fees={fees} tradeType={tradeType} />
+                        <RouteSplit
+                            key={`route-split-${route.pools.map((pool) => (pool as V3Pool).address).join("-")}`}
+                            route={route}
+                            fees={fees}
+                            tradeType={tradeType}
+                        />
                     ))}
                 </CredenzaBody>
                 <CredenzaClose asChild>
@@ -139,5 +144,3 @@ const SwapRouteModal = ({ isOpen, setIsOpen, routes, fees, tradeType, children }
         </Credenza>
     );
 };
-
-export default SwapRouteModal;

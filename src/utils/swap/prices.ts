@@ -1,13 +1,13 @@
-import { Percent } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Percent } from "@cryptoalgebra/custom-pools-sdk";
 
-export const ONE_BIPS = new Percent(BigInt(1), BigInt(10000));
-export const BIPS_BASE = BigInt(10000);
+export const ONE_BIPS = new Percent(1, 10000);
+export const BIPS_BASE = 10000;
 
-export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(BigInt(100), BIPS_BASE); // 1%
-export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(BigInt(300), BIPS_BASE); // 3%
-export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(BigInt(500), BIPS_BASE); // 5%
-export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(BigInt(1000), BIPS_BASE); // 10%
-export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(BigInt(1500), BIPS_BASE); // 15%
+export const ALLOWED_PRICE_IMPACT_LOW: Percent = new Percent(100, BIPS_BASE); // 1%
+export const ALLOWED_PRICE_IMPACT_MEDIUM: Percent = new Percent(300, BIPS_BASE); // 3%
+export const ALLOWED_PRICE_IMPACT_HIGH: Percent = new Percent(500, BIPS_BASE); // 5%
+export const PRICE_IMPACT_WITHOUT_FEE_CONFIRM_MIN: Percent = new Percent(1000, BIPS_BASE); // 10%
+export const BLOCKED_PRICE_IMPACT_NON_EXPERT: Percent = new Percent(1500, BIPS_BASE); // 15%
 
 const IMPACT_TIERS = [BLOCKED_PRICE_IMPACT_NON_EXPERT, ALLOWED_PRICE_IMPACT_HIGH, ALLOWED_PRICE_IMPACT_MEDIUM, ALLOWED_PRICE_IMPACT_LOW];
 

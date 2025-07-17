@@ -36,6 +36,6 @@ export function useAllCurrencyCombinations(currencyA?: Currency, currencyB?: Cur
                           return firstIndexInOtherPairs === i;
                       })
                 : [],
-        [tokenA, tokenB, bases, basePairs, chainId]
+        [tokenA, tokenB, bases, basePairs]
     );
 }

@@ -1,13 +1,6 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef } from "react";
-import { Percent, TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import {
-    Currency,
-    CurrencyAmount,
-    Percent as PercentBN,
-    PoolType,
-    SmartRouter,
-    SwapRouter,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { Currency, CurrencyAmount, Percent, TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { PoolType, SmartRouter, SwapRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useBlockNumber } from "wagmi";
 
@@ -17,6 +10,7 @@ import useDebounce from "@/hooks/common/useDebounce";
 
 import { useCommonPools } from "./useRoutingPools";
 import usePreviousValue from "@/hooks/uitls/usePreviousValue.ts";
+import { DEFAULT_CHAIN_ID } from "config/default-chain";
 
 const REFRESH_TIMEOUT = 15_000;
 
@@ -60,7 +54,7 @@ export function useSmartRouterBestRoute(
         pools: candidatePools,
         loading,
         syncing,
-    } = useCommonPools(amount?.currency, outputCurrency ?? undefined, {
+    } = useCommonPools(amount?.currency as any, (outputCurrency as any) ?? undefined, {
         blockNumber: Number(blockNumber),
         allowInconsistentBlock: true,
         enabled: true,
@@ -73,7 +67,7 @@ export function useSmartRouterBestRoute(
 
     const {
         data: trade,
-        status,
+        isLoading: isLoadingTrade,
         fetchStatus,
         isPlaceholderData,
         error,
@@ -102,15 +96,15 @@ export function useSmartRouterBestRoute(
 
             try {
                 const bestTrade = await SmartRouter.getBestTrade(
-                    deferAmount,
-                    outputCurrency,
+                    deferAmount as any,
+                    outputCurrency as any,
                     isExactIn ? TradeType.EXACT_INPUT : TradeType.EXACT_OUTPUT,
                     {
-                        gasPriceWei: () => SmartRouter.publicClient[outputCurrency.chainId as 84532].getGasPrice(),
+                        gasPriceWei: () => SmartRouter.publicClient[outputCurrency.chainId as typeof DEFAULT_CHAIN_ID].getGasPrice(),
                         maxHops: isMultihop ? 2 : 1,
                         maxSplits: isSplit ? 3 : 0,
                         poolProvider,
-                        quoteProvider: SmartRouter.quoteProvider[outputCurrency.chainId as 84532],
+                        quoteProvider: SmartRouter.quoteProvider[outputCurrency.chainId as typeof DEFAULT_CHAIN_ID],
                         quoterOptimization: true,
                         distributionPercent: 10,
                         signal,
@@ -126,10 +120,7 @@ export function useSmartRouterBestRoute(
                 const { value, calldata } = account
                     ? SwapRouter.swapCallParameters(bestTrade, {
                           recipient: account,
-                          slippageTolerance: new PercentBN(
-                              BigInt(allowedSlippage.numerator.toString()),
-                              BigInt(allowedSlippage.denominator.toString())
-                          ),
+                          slippageTolerance: new Percent(allowedSlippage.numerator.toString(), allowedSlippage.denominator.toString()),
                           deadlineOrPreviousBlockhash: Date.now() + txDeadline * 1000,
                       })
                     : { value: undefined, calldata: undefined };
@@ -165,7 +156,7 @@ export function useSmartRouterBestRoute(
     }, [trade, keepPreviousDataRef]);
 
     const isValidating = fetchStatus === "fetching";
-    const isLoading = status === "pending" || isPlaceholderData;
+    const isLoading = isLoadingTrade || isPlaceholderData;
 
     const refresh = useCallback(async () => {
         await refreshPools();

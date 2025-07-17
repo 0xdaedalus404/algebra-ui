@@ -1,4 +1,4 @@
-import { DEFAULT_CHAIN_ID, STABLECOINS } from "config";
+import { DEFAULT_CHAIN_ID, enabledModules, STABLECOINS } from "config";
 import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
@@ -15,7 +15,6 @@ import {
     TradeType,
     computePoolAddress,
 } from "@cryptoalgebra/custom-pools-sdk";
-import { Currency as CurrencyBN, CurrencyAmount as CurrencyAmountBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import JSBI from "jsbi";
 import { useCallback, useMemo } from "react";
 import { parseUnits, Address } from "viem";
@@ -50,7 +49,6 @@ export interface IDerivedSwapInfo {
     currencies: { [field in SwapFieldType]?: Currency };
     currencyBalances: { [field in SwapFieldType]?: CurrencyAmount<Currency> };
     parsedAmount: CurrencyAmount<Currency> | undefined;
-    parsedAmountBN: CurrencyAmountBN<CurrencyBN> | undefined;
     inputError?: string;
     tradeState: {
         trade: Trade<Currency, Currency, TradeType> | null;
@@ -163,20 +161,13 @@ export function useSwapActionHandlers(): {
     };
 }
 
-export function tryParseAmount<T extends Currency>(
-    value?: string,
-    currency?: T,
-    useBN?: boolean
-): CurrencyAmount<T> | CurrencyAmountBN<CurrencyBN> | undefined {
+export function tryParseAmount<T extends Currency>(value?: string, currency?: T): CurrencyAmount<T> | undefined {
     if (!value || !currency) {
         return undefined;
     }
     try {
         const typedValueParsed = parseUnits(value, currency.decimals).toString();
         if (typedValueParsed !== "0") {
-            if (useBN) {
-                return CurrencyAmountBN.fromRawAmount(currency as CurrencyBN, typedValueParsed) as CurrencyAmountBN<CurrencyBN>;
-            }
             return CurrencyAmount.fromRawAmount(currency as Currency, typedValueParsed) as CurrencyAmount<T>;
         }
     } catch (error) {
@@ -201,15 +192,17 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
     const isExactIn: boolean = independentField === SwapField.INPUT;
 
     const parsedAmount = useMemo(
-        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined, false) as CurrencyAmount<Currency>,
+        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined) as CurrencyAmount<Currency>,
         [typedValue, isExactIn, inputCurrency, outputCurrency]
     );
-    const parsedAmountBN = useMemo(
-        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined, true) as CurrencyAmountBN<CurrencyBN>,
-        [typedValue, isExactIn, inputCurrency, outputCurrency]
+    const bestTradeExactIn = useBestTradeExactIn(
+        isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined,
+        outputCurrency ?? undefined
     );
-    const bestTradeExactIn = useBestTradeExactIn(isExactIn ? parsedAmount : undefined, outputCurrency ?? undefined);
-    const bestTradeExactOut = useBestTradeExactOut(inputCurrency ?? undefined, !isExactIn ? parsedAmount : undefined);
+    const bestTradeExactOut = useBestTradeExactOut(
+        inputCurrency ?? undefined,
+        !isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined
+    );
 
     const trade = (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
 
@@ -288,7 +281,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         currencies,
         currencyBalances,
         parsedAmount,
-        parsedAmountBN,
         inputError,
         tradeState: trade,
         toggledTrade,

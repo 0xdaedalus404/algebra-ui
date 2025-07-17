@@ -1,12 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Currency, CurrencyAmount, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import {
-    Currency as CurrencyBN,
-    CurrencyAmount as CurrencyAmountBN,
-    Percent as PercentBN,
-    SmartRouter,
-    SmartRouterTrade,
-} from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 
 import { DEFAULT_CHAIN_ID, SWAP_ROUTER } from "config";
 import { ApprovalState, ApprovalStateType } from "@/types/approve-state";
@@ -18,7 +12,7 @@ import { formatBalance } from "@/utils/common/formatBalance.ts";
 import { Address, erc20Abi } from "viem";
 import { useWriteContract } from "wagmi";
 
-export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyAmountBN<CurrencyBN> | undefined, spender: Address) {
+export function useApprove(amountToApprove: CurrencyAmount<Currency> | undefined, spender: Address) {
     const token = amountToApprove?.currency?.isToken ? amountToApprove.currency : undefined;
     const [shouldPolling, setShouldPolling] = useState(false);
 
@@ -72,24 +66,20 @@ export function useApprove(amountToApprove: CurrencyAmount<Currency> | CurrencyA
     };
 }
 
-export function useApproveCallbackFromTrade(trade: Trade<Currency, Currency, TradeType> | undefined, allowedSlippage: Percent) {
-    const amountToApprove = useMemo(
-        () => (trade && trade.inputAmount.currency.isToken ? trade.maximumAmountIn(allowedSlippage) : undefined),
-        [trade, allowedSlippage]
-    );
-    return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
-}
-
-export function useApproveCallbackFromSmartTrade(trade: SmartRouterTrade<TradeType> | undefined, allowedSlippage: Percent) {
-    const allowedSlippageBN = useMemo(
-        () => new PercentBN(BigInt(allowedSlippage.numerator.toString()), BigInt(allowedSlippage.denominator.toString())),
-        [allowedSlippage]
-    );
+export function useApproveCallbackFromTrade(
+    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined,
+    allowedSlippage: Percent
+) {
+    const isSmartTrade = trade && "routes" in trade;
 
     const amountToApprove = useMemo(
-        () => (trade && trade.inputAmount.currency.isToken ? SmartRouter.maximumAmountIn(trade, allowedSlippageBN) : undefined),
-        [trade, allowedSlippageBN]
+        () =>
+            trade && trade.inputAmount.currency.isToken
+                ? isSmartTrade
+                    ? SmartRouter.maximumAmountIn(trade, allowedSlippage)
+                    : trade.maximumAmountIn(allowedSlippage)
+                : undefined,
+        [trade, allowedSlippage, isSmartTrade]
     );
-
     return useApprove(amountToApprove, SWAP_ROUTER[amountToApprove?.currency.chainId || DEFAULT_CHAIN_ID]);
 }

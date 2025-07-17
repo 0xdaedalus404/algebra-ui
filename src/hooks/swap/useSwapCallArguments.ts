@@ -11,7 +11,7 @@ export function useSwapCallArguments(trade: Trade<Currency, Currency, TradeType>
     return useMemo(() => {
         if (!trade || !account) return [];
 
-        const swapMethods: any[] = [];
+        const swapMethods = [];
 
         swapMethods.push(
             SwapRouter.swapCallParameters(trade, {

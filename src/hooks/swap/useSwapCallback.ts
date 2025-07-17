@@ -1,6 +1,6 @@
 import { formatBalance } from "@/utils/common/formatBalance";
 import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
-import { useAccount, useChainId } from "wagmi";
+import { useAccount, useChainId, usePublicClient } from "wagmi";
 import { useSwapCallArguments } from "./useSwapCallArguments";
 import { useEffect, useMemo, useState } from "react";
 import { SwapCallbackState } from "@/types/swap-state";
@@ -8,23 +8,24 @@ import { useTransactionAwait } from "../common/useTransactionAwait";
 import { ApprovalStateType } from "@/types/approve-state";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
-import { simulateSwapRouterMulticall, useWriteSwapRouterMulticall } from "@/generated";
-import { wagmiConfig } from "@/providers/WagmiProvider";
+import { useWriteSwapRouterMulticall } from "@/generated";
+import { estimateContractGas } from "viem/actions";
 import { SWAP_ROUTER } from "config/contract-addresses";
+import { swapRouterABI } from "config/abis";
 
 interface SwapCallEstimate {
-    calldata: string;
+    calldata: Address[];
     value: bigint;
 }
 
 interface SuccessfulCall extends SwapCallEstimate {
-    calldata: string;
+    calldata: Address[];
     value: bigint;
     gasEstimate: bigint;
 }
 
 interface FailedCall extends SwapCallEstimate {
-    calldata: string;
+    calldata: Address[];
     value: bigint;
     error: Error;
 }
@@ -35,73 +36,71 @@ export function useSwapCallback(
     approvalState: ApprovalStateType
 ) {
     const { address: account } = useAccount();
-    const chainId = useChainId();
 
-    const [bestCall, setBestCall] = useState<any>();
+    const chainId = useChainId();
+    const client = usePublicClient({ chainId });
+
+    const [bestCall, setBestCall] = useState<SuccessfulCall>();
+    const [callError, setCallError] = useState<Error>();
 
     const swapCalldata = useSwapCallArguments(trade, allowedSlippage);
 
     useEffect(() => {
         async function findBestCall() {
-            if (!swapCalldata || !account) return;
+            if (!swapCalldata || swapCalldata.length === 0 || swapCalldata.every((call) => call.calldata.length === 0)) return;
+            if (!account || !client) return;
 
             setBestCall(undefined);
+            setCallError(undefined);
 
             const calls = await Promise.all(
                 swapCalldata.map(async ({ calldata, value: _value }) => {
                     const value = BigInt(_value);
 
                     try {
-                        const result = await simulateSwapRouterMulticall(wagmiConfig, {
+                        const gasEstimate = await estimateContractGas(client, {
+                            address: SWAP_ROUTER[chainId],
+                            abi: swapRouterABI,
+                            functionName: "multicall",
                             args: [calldata],
                             account,
                             value,
                         });
 
-                        return {
-                            calldata,
-                            value,
-                            gasEstimate: result.request.gas,
-                        };
+                        return { calldata, value, gasEstimate };
                     } catch (error) {
-                        return {
-                            calldata,
-                            value,
-                            error: error as Error,
-                        };
+                        // console.error(error);
+                        return { calldata, value, error: error as Error };
                     }
                 })
             );
 
-            let bestCallOption: SuccessfulCall | SwapCallEstimate | undefined = calls.find(
-                (el, ix, list): el is SuccessfulCall => "gasEstimate" in el && (ix === list.length - 1 || "gasEstimate" in list[ix + 1])
-            );
+            const successfulCalls = calls.filter((call): call is SuccessfulCall => "gasEstimate" in call);
 
-            if (!bestCallOption) {
-                const errorCalls = calls.filter((call): call is FailedCall => "error" in call);
-                if (errorCalls.length > 0) throw errorCalls[errorCalls.length - 1].error;
-                const firstNoErrorCall = calls.find<any>((call): call is any => !("error" in call));
-                if (!firstNoErrorCall) throw new Error("Unexpected error. Could not estimate gas for the swap.");
-                bestCallOption = firstNoErrorCall;
+            if (successfulCalls.length === 0) {
+                const errors = calls.filter((call): call is FailedCall => "error" in call);
+                setCallError(errors[0].error);
+                throw errors.length > 0 ? errors[errors.length - 1].error : new Error("All gas estimations failed.");
             }
+
+            const bestCallOption = successfulCalls.reduce((a, b) => (a.gasEstimate < b.gasEstimate ? a : b));
 
             setBestCall(bestCallOption);
         }
 
-        swapCalldata && findBestCall();
-    }, [swapCalldata, approvalState, account, chainId]);
+        findBestCall();
+    }, [swapCalldata, approvalState, account, chainId, client]);
 
     const swapConfig = useMemo(
         () =>
             bestCall
                 ? {
-                      address: SWAP_ROUTER[chainId],
                       args: [bestCall.calldata] as const,
                       value: BigInt(bestCall.value),
                       gas: (bestCall.gasEstimate * (10000n + 2000n)) / 10000n,
                   }
                 : undefined,
-        [bestCall, chainId]
+        [bestCall]
     );
 
     const { data: swapData, writeContractAsync: swapCallback } = useWriteSwapRouterMulticall();
@@ -126,9 +125,9 @@ export function useSwapCallback(
         return {
             state: SwapCallbackState.VALID,
             callback: () => swapConfig && swapCallback(swapConfig),
-            error: null,
+            error: callError?.message.split(":")[1].split("Contract Call")[0],
             isLoading,
             isSuccess,
         };
-    }, [trade, isLoading, swapCallback, swapConfig, isSuccess]);
+    }, [trade, callError, isLoading, isSuccess, swapConfig, swapCallback]);
 }

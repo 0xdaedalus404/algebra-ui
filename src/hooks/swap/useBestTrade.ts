@@ -112,7 +112,7 @@ export function useBestTradeExactIn(
             priceAfterSwap,
             refetch,
         };
-    }, [amountIn, currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
+    }, [amountIn?.quotient.toString(), currencyOut, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
 
     return trade;
 }
@@ -219,7 +219,7 @@ export function useBestTradeExactOut(
             priceAfterSwap,
             refetch,
         };
-    }, [amountOut, currencyIn, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
+    }, [amountOut?.quotient.toString(), currencyIn, quotesResults, routes, routesLoading, isQuotesLoading, refetch]);
 
     return trade;
 }

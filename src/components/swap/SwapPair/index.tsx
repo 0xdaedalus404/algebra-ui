@@ -7,8 +7,10 @@ import {
     CurrencyAmount,
     getTickToPrice,
     maxAmountSpend,
+    Trade,
     TradeType,
     tryParseAmount,
+    ZERO,
 } from "@cryptoalgebra/custom-pools-sdk";
 import { useCallback, useEffect, useMemo } from "react";
 import TokenCard from "../TokenCard";
@@ -20,7 +22,15 @@ import { usePool } from "@/hooks/pools/usePool";
 import { useChainId } from "wagmi";
 import { Address } from "viem";
 
-const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; smartTrade: SmartRouterTrade<TradeType> | undefined }) => {
+const SwapPair = ({
+    derivedSwap,
+    trade,
+    isTradeLoading,
+}: {
+    derivedSwap: IDerivedSwapInfo;
+    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined;
+    isTradeLoading: boolean | undefined;
+}) => {
     const chainId = useChainId();
 
     const {
@@ -124,7 +134,7 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                           ? parsedAmount
                           : pairPrice && limitOrderPrice
                             ? parsedLimitOrderInput
-                            : smartTrade?.inputAmount,
+                            : trade?.inputAmount,
                   [SwapField.OUTPUT]:
                       independentField === SwapField.OUTPUT
                           ? limitOrderPrice
@@ -138,7 +148,7 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                             ? quoteCurrency && parsedAmount
                                 ? parsedLimitOrderOutput
                                 : undefined
-                            : smartTrade?.outputAmount,
+                            : trade?.outputAmount,
               };
     }, [
         showWrap,
@@ -147,7 +157,7 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         limitOrderPrice,
         parsedLimitOrderInput,
         parsedLimitOrderOutput,
-        smartTrade,
+        trade,
         quoteCurrency,
         limitOrderPriceFocused,
         lastFocusedField,
@@ -160,15 +170,8 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
         maxInputAmount && onUserInput(SwapField.INPUT, maxInputAmount.toExact());
     }, [maxInputAmount, onUserInput]);
 
-    const { formatted: fiatValueInputFormatted } = useUSDCValue(
-        tryParseAmount(parsedAmounts[SwapField.INPUT]?.toSignificant(parsedAmounts[SwapField.INPUT]?.currency.decimals || 6), baseCurrency)
-    );
-    const { formatted: fiatValueOutputFormatted } = useUSDCValue(
-        tryParseAmount(
-            parsedAmounts[SwapField.OUTPUT]?.toSignificant(parsedAmounts[SwapField.OUTPUT]?.currency.decimals || 6),
-            quoteCurrency
-        )
-    );
+    const { formatted: usdValueA } = useUSDCValue(parsedAmounts[SwapField.INPUT]);
+    const { formatted: usdValueB } = useUSDCValue(parsedAmounts[SwapField.OUTPUT]);
 
     const formattedAmounts = {
         [independentField]: typedValue,
@@ -178,6 +181,17 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                 : (parsedAmounts[dependentField]?.toExact() ?? ""),
     };
 
+    const percentDifference = useMemo(() => {
+        if (
+            isTradeLoading ||
+            !trade?.inputAmount.equalTo(parsedAmounts[SwapField.INPUT]?.quotient || ZERO) ||
+            !trade?.outputAmount.equalTo(parsedAmounts[SwapField.OUTPUT]?.quotient || ZERO)
+        )
+            return;
+        if (!usdValueA || !usdValueB) return 0;
+        return ((usdValueB - usdValueA) / usdValueA) * 100;
+    }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
+
     useEffect(() => {
         handleOutputSelect(STABLECOINS[chainId].USDC);
     }, [chainId, handleOutputSelect]);
@@ -185,15 +199,16 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
     return (
         <div className="flex flex-col gap-1 relative">
             <TokenCard
-                value={formattedAmounts[SwapField.INPUT] || ""}
+                value={formattedAmounts[SwapField.INPUT]}
                 currency={baseCurrency}
                 otherCurrency={quoteCurrency}
                 handleTokenSelection={handleInputSelect}
                 handleValueChange={handleTypeInput}
                 handleMaxValue={handleMaxInput}
-                fiatValue={fiatValueInputFormatted ?? undefined}
+                usdValue={usdValueA ?? undefined}
                 showMaxButton={showMaxButton}
                 showBalance={true}
+                isLoading={independentField === SwapField.OUTPUT && isTradeLoading}
             />
             <button
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 p-1.5 bg-card-dark w-fit rounded-full border-[5px] border-card hover:bg-card-hover duration-200"
@@ -202,13 +217,15 @@ const SwapPair = ({ derivedSwap, smartTrade }: { derivedSwap: IDerivedSwapInfo; 
                 <ChevronsUpDownIcon size={16} />
             </button>
             <TokenCard
-                value={formattedAmounts[SwapField.OUTPUT] || ""}
+                value={formattedAmounts[SwapField.OUTPUT]}
                 currency={quoteCurrency}
                 otherCurrency={baseCurrency}
                 handleTokenSelection={handleOutputSelect}
                 handleValueChange={handleTypeOutput}
-                fiatValue={fiatValueOutputFormatted ?? undefined}
+                usdValue={usdValueB ?? undefined}
+                percentDifference={percentDifference}
                 showBalance={true}
+                isLoading={independentField === SwapField.INPUT && isTradeLoading}
             />
         </div>
     );

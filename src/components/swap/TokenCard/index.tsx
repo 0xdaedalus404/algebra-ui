@@ -1,11 +1,11 @@
 import CurrencyLogo from "@/components/common/CurrencyLogo";
 import TokenSelectorModal from "@/components/modals/TokenSelectorModal";
 import { Input } from "@/components/ui/input";
+import { cn, formatAmount } from "@/utils";
 import { formatBalance } from "@/utils/common/formatBalance";
-import { formatUSD } from "@/utils/common/formatUSD";
 import { Currency, Percent } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronRight } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
 
@@ -16,7 +16,9 @@ interface TokenSwapCardProps {
     value: string;
     currency: Currency | null | undefined;
     otherCurrency: Currency | null | undefined;
-    fiatValue?: number;
+    usdValue?: number | null;
+    percentDifference?: number;
+    isLoading?: boolean;
     priceImpact?: Percent;
     showMaxButton?: boolean;
     showBalance?: boolean;
@@ -31,7 +33,9 @@ const TokenCard = ({
     value,
     currency,
     otherCurrency,
-    fiatValue,
+    usdValue,
+    percentDifference,
+    isLoading,
     showMaxButton,
     showBalance = true,
     showNativeToken,
@@ -41,21 +45,82 @@ const TokenCard = ({
 
     const { address: account } = useAccount();
 
-    const { data: balance, isLoading } = useBalance({
+    const { data: balance, isLoading: isBalanceLoading } = useBalance({
         address: account,
         token: currency?.isNative ? undefined : (currency?.wrapped.address as Address),
     });
 
     const balanceString = useMemo(() => {
-        if (isLoading) return "Loading...";
+        if (isBalanceLoading) return "Loading...";
 
         return formatBalance(balance?.formatted || "0");
-    }, [balance, isLoading]);
+    }, [balance, isBalanceLoading]);
 
-    const handleInput = useCallback((value: string) => {
-        if (value === ".") value = "0.";
-        handleValueChange?.(value);
-    }, []);
+    const handleInput = (value: string) => {
+        let _value = value;
+        if (value === ".") {
+            _value = "0.";
+        }
+        handleValueChange?.(_value);
+    };
+
+    const refValue = useRef(value);
+
+    useEffect(() => {
+        if (value !== refValue.current && value !== "") {
+            refValue.current = value;
+        } else if (value === "" && !isLoading) {
+            refValue.current = "";
+        }
+    }, [value, isLoading]);
+
+    const [prevElement, setPrevElement] = useState<React.ReactNode>(null);
+
+    useEffect(() => {
+        if (usdValue !== undefined && usdValue !== 0) {
+            const formattedUsdValue = usdValue ? `≈ $${formatAmount(usdValue, 4)}` : "N/A";
+
+            let formattedPercentDiff: string | undefined = undefined;
+
+            if (percentDifference !== undefined && Number.isFinite(percentDifference)) {
+                if (percentDifference > 0) {
+                    formattedPercentDiff = `(+${percentDifference.toFixed(2)}%)`;
+                } else if (percentDifference > -100 && percentDifference < 100) {
+                    formattedPercentDiff = `(${percentDifference.toFixed(2)}%)`;
+                }
+            }
+
+            const newElement = (
+                <p className="text-text-200">
+                    {formattedUsdValue}
+                    {percentDifference !== undefined && formattedPercentDiff && (
+                        <span
+                            className={
+                                percentDifference > 1
+                                    ? "text-green-500"
+                                    : (percentDifference > 0 && percentDifference < 1) || (percentDifference < 0 && percentDifference > -1)
+                                      ? "text-text-100"
+                                      : percentDifference < -1 && percentDifference > -3
+                                        ? "text-orange-300"
+                                        : percentDifference < -3 && percentDifference > -100
+                                          ? "text-red-400"
+                                          : "text-text-100"
+                            }
+                        >
+                            {` ${formattedPercentDiff}`}
+                        </span>
+                    )}
+                </p>
+            );
+
+            setPrevElement(newElement);
+        }
+
+        if (value === "" && value === refValue.current) {
+            const emptyElement = <p className="text-text-200">≈ $0.00</p>;
+            setPrevElement(emptyElement);
+        }
+    }, [percentDifference, usdValue, value]);
 
     const handleTokenSelect = (newCurrency: Currency) => {
         setIsOpen(false);
@@ -98,18 +163,30 @@ const TokenCard = ({
                 )}
             </div>
 
-            <div className="flex flex-col items-end w-full gap-2">
+            <div className="flex flex-col items-end w-full gap-2 relative">
                 <Input
                     disabled={disabled}
                     type={"text"}
-                    value={value}
+                    value={value || refValue.current}
                     id={`amount-${currency?.symbol}`}
                     onUserInput={(v) => handleInput(v)}
-                    className={`text-right border-none text-xl font-bold w-9/12 p-0 disabled:cursor-default disabled:text-text/80 ring-0!`}
+                    className={cn(
+                        `text-right border-none text-xl font-bold w-9/12 p-0 disabled:cursor-default disabled:text-text/80 ring-0!`,
+                        isLoading ? "animate-pulse" : ""
+                    )}
                     placeholder={"0.0"}
                     maxDecimals={currency?.decimals}
                 />
-                {showBalance && <div className="text-sm">{fiatValue && formatUSD.format(fiatValue)}</div>}
+                {/* {!isLoading ? <Skeleton className="absolute left-2 top-1 z-10 h-8 w-full" /> : null} */}
+                {/* {!isLoading ? <Skeleton className="absolute bottom-0 left-2 z-10 h-6 w-full" /> : null} */}
+                <div
+                    className={cn(
+                        "relative bottom-0 ml-auto flex h-6 min-w-max items-center gap-1 text-sm text-text-200",
+                        isLoading ? "animate-pulse" : ""
+                    )}
+                >
+                    {prevElement}
+                </div>
             </div>
         </div>
     );

@@ -4,22 +4,24 @@ import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 import { IDerivedSwapInfo, useSwapState } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
-import { TradeType } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, Percent, Trade, TradeType } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronDownIcon, ZapIcon } from "lucide-react";
 import { useMemo, useState } from "react";
-import { SmartRouter, SmartRouterTrade, Percent as PercentBN } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import SwapRouteModal from "@/components/modals/SwapRouteModal";
+import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { Button } from "@/components/ui/button.tsx";
 import { useOverrideFee } from "@/hooks/swap/useOverrideFee";
 
+import SmartRouterModule from "@/modules/SmartRouterModule";
+const { SwapRouteModal } = SmartRouterModule.components;
+
 const SwapParams = ({
     derivedSwap,
-    smartTrade,
-    isSmartTradeLoading,
+    trade,
+    isTradeLoading,
 }: {
     derivedSwap: IDerivedSwapInfo;
-    smartTrade: SmartRouterTrade<TradeType> | undefined;
-    isSmartTradeLoading: boolean;
+    trade: SmartRouterTrade<TradeType> | Trade<Currency, Currency, TradeType> | undefined;
+    isTradeLoading: boolean;
 }) => {
     const [isOpen, setIsOpen] = useState(false);
 
@@ -32,20 +34,37 @@ const SwapParams = ({
 
     const { dynamicFeePlugin } = usePoolPlugins(poolAddress);
 
-    const { fee, fees } = useOverrideFee(smartTrade);
+    const { fee, fees } = useOverrideFee(trade);
+
+    const isSmartTrade = trade && "routes" in trade;
 
     const priceImpact = useMemo(() => {
-        if (!smartTrade) return undefined;
-        return SmartRouter.getPriceImpact(smartTrade);
-    }, [smartTrade]);
+        if (!trade) return undefined;
 
-    const allowedSlippageBN = useMemo(() => {
-        return new PercentBN(BigInt(allowedSlippage.numerator.toString()), BigInt(allowedSlippage.denominator.toString()));
-    }, [allowedSlippage.denominator, allowedSlippage.numerator]);
+        if (isSmartTrade) {
+            return SmartRouter.getPriceImpact(trade as SmartRouterTrade<TradeType>);
+        } else {
+            return trade.priceImpact;
+        }
+    }, [trade, isSmartTrade]);
+
+    const minimumAmountOut = useMemo(() => {
+        if (!trade) return undefined;
+
+        if (isSmartTrade) {
+            return trade.tradeType === TradeType.EXACT_INPUT
+                ? `${SmartRouter.minimumAmountOut(trade, allowedSlippage).toSignificant(6)} ${trade.outputAmount.currency.symbol}`
+                : `${SmartRouter.maximumAmountIn(trade, allowedSlippage).toSignificant(6)} ${trade.inputAmount.currency.symbol}`;
+        } else {
+            return trade.tradeType === TradeType.EXACT_INPUT
+                ? `${trade.minimumAmountOut(allowedSlippage).toSignificant(6)} ${trade.outputAmount.currency.symbol}`
+                : `${trade.maximumAmountIn(allowedSlippage).toSignificant(6)} ${trade.inputAmount.currency.symbol}`;
+        }
+    }, [allowedSlippage, isSmartTrade, trade]);
 
     if (wrapType !== WrapType.NOT_APPLICABLE) return;
 
-    return smartTrade ? (
+    return trade ? (
         <div className="rounded">
             <div className="flex justify-between">
                 <button
@@ -67,37 +86,44 @@ const SwapParams = ({
                     </div>
                 </button>
             </div>
-            <div className={`h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg ${isExpanded && "h-[160px]"}`}>
+            <div
+                className={`h-0 duration-300 will-change-[height] overflow-hidden bg-card-dark rounded-lg ${isExpanded && isSmartTrade ? "h-[160px]" : isExpanded && "h-[142px]"}`}
+            >
                 <div className="flex flex-col gap-2.5 px-3 py-2 rounded-xl">
-                    <div className="flex items-center justify-between">
-                        <span className="font-semibold">Route</span>
-                        <span>
-                            <SwapRouteModal
-                                isOpen={isOpen}
-                                setIsOpen={setIsOpen}
-                                routes={smartTrade?.routes}
-                                fees={fees}
-                                tradeType={smartTrade?.tradeType}
-                            >
-                                <Button size={"sm"} onClick={() => setIsOpen(true)}>
-                                    Show
-                                </Button>
-                            </SwapRouteModal>
-                        </span>
-                    </div>
+                    {isSmartTrade ? (
+                        <div className="flex items-center justify-between">
+                            <span className="font-semibold">Route</span>
+                            <span>
+                                <SwapRouteModal
+                                    isOpen={isOpen}
+                                    setIsOpen={setIsOpen}
+                                    routes={trade?.routes}
+                                    fees={fees}
+                                    tradeType={trade?.tradeType}
+                                >
+                                    <Button size={"sm"} onClick={() => setIsOpen(true)}>
+                                        Show
+                                    </Button>
+                                </SwapRouteModal>
+                            </span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-between">
+                            <span className="font-semibold">Route</span>
+                            <span>
+                                {trade?.swaps &&
+                                    [
+                                        trade.swaps[0].inputAmount.currency.symbol,
+                                        ...trade.swaps.map((swap) => swap.outputAmount.currency.symbol),
+                                    ].join(" - ")}
+                            </span>
+                        </div>
+                    )}
                     <div className="flex items-center justify-between">
                         <span className="font-semibold">
-                            {smartTrade.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent"}
+                            {trade.tradeType === TradeType.EXACT_INPUT ? "Minimum received" : "Maximum sent"}
                         </span>
-                        <span>
-                            {smartTrade.tradeType === TradeType.EXACT_INPUT
-                                ? `${SmartRouter.minimumAmountOut(smartTrade, allowedSlippageBN).toSignificant(6)} ${
-                                      smartTrade.outputAmount.currency.symbol
-                                  }`
-                                : `${SmartRouter.maximumAmountIn(smartTrade, allowedSlippageBN).toSignificant(6)} ${
-                                      smartTrade.inputAmount.currency.symbol
-                                  }`}
-                        </span>
+                        <span>{minimumAmountOut}</span>
                     </div>
                     {/*<div className="flex items-center justify-between">*/}
                     {/*    <span className="font-semibold">LP Fee</span>*/}
@@ -116,7 +142,7 @@ const SwapParams = ({
                 </div>
             </div>
         </div>
-    ) : smartTrade !== undefined && isSmartTradeLoading ? (
+    ) : trade !== undefined && isTradeLoading ? (
         <div className="flex justify-center mb-1 bg-card-dark py-3 px-3 rounded-lg">
             <Loader size={17} color="black" />
         </div>
@@ -125,7 +151,7 @@ const SwapParams = ({
     );
 };
 
-const PriceImpact = ({ priceImpact }: { priceImpact: PercentBN | undefined }) => {
+const PriceImpact = ({ priceImpact }: { priceImpact: Percent | undefined }) => {
     const severity = warningSeverity(priceImpact);
 
     const color = severity === 3 || severity === 4 ? "text-red-400" : severity === 2 ? "text-yellow-400" : "currentColor";

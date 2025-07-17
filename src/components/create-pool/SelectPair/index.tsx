@@ -1,8 +1,9 @@
 import TokenCard from "@/components/swap/TokenCard";
+import { useUSDCValue } from "@/hooks/common/useUSDCValue";
 import { IDerivedMintInfo, useMintActionHandlers, useMintState } from "@/state/mintStore";
 import { useSwapActionHandlers } from "@/state/swapStore";
 import { SwapField } from "@/types/swap-field";
-import { Currency } from "@cryptoalgebra/custom-pools-sdk";
+import { Currency, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { ChevronsUpDownIcon } from "lucide-react";
 import { useCallback } from "react";
 
@@ -18,6 +19,9 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
     const { onStartPriceInput } = useMintActionHandlers(mintInfo.noLiquidity);
 
     const { startPriceTypedValue } = useMintState();
+
+    const { formatted: usdValueA } = useUSDCValue(tryParseAmount("1", currencyA));
+    const { formatted: usdValueB } = useUSDCValue(tryParseAmount(startPriceTypedValue, currencyB));
 
     const handleInputSelect = useCallback(
         (inputCurrency: Currency) => {
@@ -44,11 +48,11 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
         <div className="relative flex flex-col gap-2 items-center">
             <TokenCard
                 disabled
-                showBalance={false}
                 value={"1"}
                 currency={currencyA}
                 otherCurrency={currencyB}
                 handleTokenSelection={handleInputSelect}
+                usdValue={usdValueA}
             />
 
             <button
@@ -59,12 +63,12 @@ const SelectPair = ({ mintInfo, currencyA, currencyB }: ISelectPair) => {
             </button>
 
             <TokenCard
-                showBalance={false}
                 value={startPriceTypedValue}
                 handleTokenSelection={handleOutputSelect}
                 currency={currencyB}
                 otherCurrency={currencyA}
                 handleValueChange={handleTypeInput}
+                usdValue={usdValueB}
             />
         </div>
     );

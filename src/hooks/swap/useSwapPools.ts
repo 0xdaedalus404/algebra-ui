@@ -46,10 +46,7 @@ export function useSwapPools(
 
     useEffect(() => {
         async function getPools() {
-            const customPoolDeployerAddresses = [
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainId],
-                CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
-            ].filter((d) => d !== undefined);
+            const customPoolDeployerAddresses = [CUSTOM_POOL_DEPLOYER_ADDRESSES.BASE[chainId]].filter((d) => d !== undefined);
 
             const poolsAddresses = allCurrencyCombinations.flatMap(([tokenA, tokenB]) =>
                 customPoolDeployerAddresses.map((customPoolDeployer) =>

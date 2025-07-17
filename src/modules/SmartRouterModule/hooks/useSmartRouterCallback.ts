@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 import { TransactionType } from "@/state/pendingTransactionsStore";
-import { Currency } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { formatAmount } from "@/utils/common/formatAmount";
 import { useWriteSwapRouterMulticall } from "@/generated";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 
 export function useSmartRouterCallback(
     currencyA: Currency | undefined,

@@ -1,20 +1,25 @@
 export enum AppFeatureModule {
-    LimitOrders = "limitOrders",
+    SmartRouter = "smartRouter",
     Analytics = "analytics",
-    ALM = "alm",
     Farming = "farming",
+    LimitOrders = "limitOrders",
+    ALM = "alm",
 }
 
 export const moduleNameToPath: Record<AppFeatureModule, string> = {
-    [AppFeatureModule.LimitOrders]: "LimitOrdersModule",
+    [AppFeatureModule.SmartRouter]: "SmartRouterModule",
     [AppFeatureModule.Analytics]: "AnalyticsModule",
-    [AppFeatureModule.ALM]: "ALMModule",
     [AppFeatureModule.Farming]: "FarmingModule",
+    [AppFeatureModule.LimitOrders]: "LimitOrdersModule",
+    [AppFeatureModule.ALM]: "ALMModule",
 };
 
+/* configure enabled modules here */
 export const enabledModules: Record<AppFeatureModule, boolean> = {
-    [AppFeatureModule.LimitOrders]: true,
+    [AppFeatureModule.SmartRouter]: true,
+
     [AppFeatureModule.Analytics]: true,
-    [AppFeatureModule.ALM]: true,
     [AppFeatureModule.Farming]: true,
+    [AppFeatureModule.LimitOrders]: true,
+    [AppFeatureModule.ALM]: true,
 };

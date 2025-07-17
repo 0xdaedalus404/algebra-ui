@@ -1,7 +1,9 @@
+import { DEFAULT_CHAIN_ID } from "config";
 import { useCallback, useMemo } from "react";
-import { Currency, OnChainProvider, SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { OnChainProvider, SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
 import { useQuery } from "@tanstack/react-query";
 import { useChainId } from "wagmi";
+import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 
 export interface V3PoolsHookParams {
     key?: string;
@@ -43,8 +45,8 @@ export function useV3CandidatePools(currencyA?: Currency, currencyB?: Currency, 
                 const pools = await SmartRouter.getV3CandidatePools({
                     currencyA,
                     currencyB,
-                    onChainProvider: (() => SmartRouter.publicClient[chainId as 84532]) as OnChainProvider,
-                    subgraphProvider: () => SmartRouter.v3SubgraphClient[chainId as 84532],
+                    onChainProvider: (() => SmartRouter.publicClient[chainId as typeof DEFAULT_CHAIN_ID]) as OnChainProvider,
+                    subgraphProvider: () => SmartRouter.v3SubgraphClient[chainId as typeof DEFAULT_CHAIN_ID],
                     // blockNumber: options?.blockNumber,
                 });
                 console.log("pools", pools);
