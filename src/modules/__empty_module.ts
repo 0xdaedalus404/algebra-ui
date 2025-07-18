@@ -2,9 +2,9 @@
 
 export default {
   hooks: {
+    useAllUserALMAmounts: () => ({}),
     useAllALMVaults: () => ({}),
     useALMVaultsByPool: () => ({}),
-    useAllUserALMAmounts: () => ({}),
     useUserALMVaultsByPool: () => ({}),
     useActiveFarming: () => ({}),
     useClosedFarmings: () => ({}),
@@ -13,10 +13,10 @@ export default {
     useFarmHarvest: () => ({}),
     useFarmHarvestUnclaimed: () => ({}),
     useFarmHarvestAll: () => ({}),
-    useFarmStake: () => ({}),
-    useFarmUnstake: () => ({}),
     useFarmingAPR: () => ({}),
     useFarmingRewardsEarned: () => ({}),
+    useFarmStake: () => ({}),
+    useFarmUnstake: () => ({}),
     useUnclaimedRewards: () => ({}),
     useLimitOrderInfo: () => ({}),
     useV3CandidatePools: () => ({}),
@@ -26,9 +26,9 @@ export default {
     useSmartRouterCallback: () => ({}),
   },
   components: {
-    ALMPositionCard: () => null,
     AddALMLiquidityModal: () => null,
     AddAutomatedLiquidityButton: () => null,
+    ALMPositionCard: () => null,
     CreateAutomatedPosition: () => null,
     RemoveALMLiquidityModal: () => null,
     AnalyticsPoolPage: () => null,
@@ -42,9 +42,9 @@ export default {
     TransactionsTable: () => null,
     ActiveFarming: () => null,
     CardInfo: () => null,
-    FarmTag: () => null,
     FarmingPositionCard: () => null,
     FarmingPositionImg: () => null,
+    FarmTag: () => null,
     HarvestAndExitFarmingCard: () => null,
     SelectPositionFarmModal: () => null,
     UnclaimedRewards: () => null,
@@ -56,6 +56,7 @@ export default {
     SwapTypeSelector: () => null,
     limitOrderColumns: () => null,
     LimitOrdersTable: () => null,
+    SwapRouteModal: () => null,
   },
   utils: {
     getRewardsCalldata: () => undefined,

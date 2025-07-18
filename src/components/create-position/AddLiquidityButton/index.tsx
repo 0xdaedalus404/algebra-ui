@@ -1,6 +1,6 @@
 import Loader from "@/components/common/Loader";
 import { Button } from "@/components/ui/button";
-import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
+import { NONFUNGIBLE_POSITION_MANAGER, DEFAULT_CHAIN_NAME } from "config";
 import { useWriteNonfungiblePositionManagerMulticall } from "@/generated";
 import { useApprove } from "@/hooks/common/useApprove";
 import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
@@ -9,7 +9,7 @@ import { TransactionType } from "@/state/pendingTransactionsStore";
 import { useUserState } from "@/state/userStore";
 import { ApprovalState } from "@/types/approve-state";
 import { Percent, Currency, NonfungiblePositionManager, Field, ZERO } from "@cryptoalgebra/custom-pools-sdk";
-import { useAppKit } from "@reown/appkit/react";
+import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import JSBI from "jsbi";
 import { useMemo } from "react";
 import { Address } from "viem";
@@ -30,7 +30,9 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
 
     const { open } = useAppKit();
 
-    const selectedNetworkId = useChainId();
+    const appChainId = useChainId();
+
+    const { chainId: userChainId } = useAppKitNetwork();
 
     const { txDeadline } = useUserState();
 
@@ -76,7 +78,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
     const addLiquidityConfig =
         calldata && isReady
             ? {
-                  address: NONFUNGIBLE_POSITION_MANAGER[selectedNetworkId],
+                  address: NONFUNGIBLE_POSITION_MANAGER[appChainId],
                   args: calldata && ([calldata as `0x${string}`[]] as const),
                   value: BigInt(value),
               }
@@ -95,7 +97,7 @@ export const AddLiquidityButton = ({ baseCurrency, quoteCurrency, mintInfo, pool
         `/pool/${poolAddress}`
     );
 
-    const isWrongChain = !selectedNetworkId || ![DEFAULT_CHAIN_ID].includes(selectedNetworkId);
+    const isWrongChain = !userChainId || appChainId !== userChainId;
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 

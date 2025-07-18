@@ -5,7 +5,7 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { useDerivedSwapInfo } from "@/state/swapStore";
 import { Token, tryParseTick } from "@cryptoalgebra/custom-pools-sdk";
 import { useAccount, useChainId } from "wagmi";
-import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME, DEFAULT_CHAIN_ID } from "config";
+import { LIMIT_ORDER_MANAGER, CUSTOM_POOL_DEPLOYER_ADDRESSES, DEFAULT_CHAIN_NAME } from "config";
 import { ApprovalState } from "@/types/approve-state";
 import Loader from "@/components/common/Loader";
 import { SwapField } from "@/types/swap-field";
@@ -13,7 +13,7 @@ import { formatCurrency } from "@/utils/common/formatCurrency";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useWriteLimitOrderManagerPlace } from "@/generated";
-import { useAppKit } from "@reown/appkit/react";
+import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 import { useLimitOrderInfo } from "../../hooks";
 
 interface LimitOrderButtonProps {
@@ -43,7 +43,9 @@ export const LimitOrderButton = ({
 
     const { open } = useAppKit();
 
-    const selectedNetworkId = useChainId();
+    const appChainId = useChainId();
+
+    const { chainId: userChainId } = useAppKitNetwork();
 
     const {
         currencies: { [SwapField.INPUT]: inputCurrency },
@@ -73,22 +75,23 @@ export const LimitOrderButton = ({
 
     const { approvalState, approvalCallback } = useApprove(amount, LIMIT_ORDER_MANAGER[chainId]);
 
-    const placeLimitOrderConfig = isReady
-        ? {
-              address: LIMIT_ORDER_MANAGER[chainId],
-              args: [
-                  {
-                      token0: token0.address as Address,
-                      token1: token1.address as Address,
-                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
-                  },
-                  limitOrder.tickLower,
-                  zeroToOne,
-                  BigInt(limitOrder.liquidity.toString()),
-              ] as const,
-              value: amount?.currency.isNative ? BigInt(amount.quotient.toString()) : BigInt(0),
-          }
-        : undefined;
+    const placeLimitOrderConfig =
+        isReady && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+            ? {
+                  address: LIMIT_ORDER_MANAGER[chainId],
+                  args: [
+                      {
+                          token0: token0.address as Address,
+                          token1: token1.address as Address,
+                          deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                      },
+                      limitOrder.tickLower,
+                      zeroToOne,
+                      BigInt(limitOrder.liquidity.toString()),
+                  ] as const,
+                  value: amount?.currency.isNative ? BigInt(amount.quotient.toString()) : BigInt(0),
+              }
+            : undefined;
 
     const { data: placeData, writeContract: placeLimitOrder, isPending } = useWriteLimitOrderManagerPlace();
 
@@ -97,7 +100,7 @@ export const LimitOrderButton = ({
         title: `Buy ${formatCurrency.format(Number(amount?.toSignificant()))} ${amount?.currency.symbol}`,
     });
 
-    const isWrongChain = !selectedNetworkId || ![DEFAULT_CHAIN_ID].includes(selectedNetworkId);
+    const isWrongChain = !userChainId || appChainId !== userChainId;
 
     if (!account) return <Button onClick={() => open()}>Connect Wallet</Button>;
 

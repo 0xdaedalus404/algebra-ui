@@ -12,7 +12,7 @@ import { useSwapCallback } from "@/hooks/swap/useSwapCallback";
 
 import { Button } from "@/components/ui/button";
 import Loader from "@/components/common/Loader";
-import { DEFAULT_CHAIN_ID } from "config/default-chain";
+import { useAppKitNetwork } from "@reown/appkit/react";
 
 interface IFixBrokenPool {
     currencyIn?: Currency;
@@ -27,7 +27,9 @@ const Notification = ({ tick }: { tick?: number }) => (
 );
 
 const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) => {
-    const selectedNetworkId = useChainId();
+    const appChainId = useChainId();
+
+    const { chainId: userChainId } = useAppKitNetwork();
 
     const { address: account } = useAccount();
 
@@ -79,7 +81,7 @@ const FixBrokenPool = ({ currencyIn, currencyOut, deployer }: IFixBrokenPool) =>
         }
     }, [callback]);
 
-    const isWrongChain = !selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId;
+    const isWrongChain = !userChainId || appChainId !== userChainId;
 
     const insufficientBalance = inputBalance && trade ? trade.inputAmount.greaterThan(inputBalance.value.toString()) : undefined;
 

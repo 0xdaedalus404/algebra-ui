@@ -23,6 +23,7 @@ import {
     SWAP_ROUTER,
 } from "./contract-addresses";
 
+/* configure supported networks here */
 export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepolia];
 
 const rawContracts = [

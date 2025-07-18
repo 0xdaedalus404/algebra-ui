@@ -16,7 +16,13 @@ import Loader from "@/components/common/Loader";
 import { PoolState, usePool } from "@/hooks/pools/usePool";
 import Summary from "../Summary";
 import SelectPair from "../SelectPair";
-import { STABLECOINS, CUSTOM_POOL_DEPLOYER_TITLES, CUSTOM_POOL_DEPLOYER_ADDRESSES, NONFUNGIBLE_POSITION_MANAGER } from "config";
+import {
+    STABLECOINS,
+    CUSTOM_POOL_DEPLOYER_TITLES,
+    CUSTOM_POOL_DEPLOYER_ADDRESSES,
+    NONFUNGIBLE_POSITION_MANAGER,
+    enabledModules,
+} from "config";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import FixBrokenPool from "../FixBrokenPool";
 import { Address } from "viem";
@@ -67,7 +73,7 @@ const CreatePoolForm = () => {
             : undefined;
 
     const customPoolsAddresses =
-        areCurrenciesSelected && !isSameToken
+        enabledModules.customPools && areCurrenciesSelected && !isSameToken
             ? [CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainid]]
                   .filter((deployer): deployer is Address => deployer !== undefined)
                   .map(
@@ -106,8 +112,8 @@ const CreatePoolForm = () => {
                 value: undefined,
             };
 
-        return NonfungiblePositionManager.createCallParameters(mintInfo.pool, customPoolDeployerAddresses[poolDeployer]);
-    }, [customPoolDeployerAddresses, mintInfo.pool, poolDeployer]);
+        return NonfungiblePositionManager.createCallParameters(mintInfo.pool);
+    }, [mintInfo.pool]);
 
     const { data: createBasePoolData, writeContract: createBasePool, isPending } = useWriteNonfungiblePositionManagerMulticall();
 
@@ -131,18 +137,19 @@ const CreatePoolForm = () => {
 
     const isCustomPoolDeployerReady = account && mintInfo.pool && poolDeployer !== CUSTOM_POOL_DEPLOYER_TITLES.BASE;
 
-    const createCustomPoolConfig = isCustomPoolDeployerReady
-        ? {
-              address: customPoolDeployerAddresses[poolDeployer],
-              args: [
-                  customPoolDeployerAddresses[poolDeployer],
-                  account,
-                  mintInfo.pool?.token0.address as Address,
-                  mintInfo.pool?.token1.address as Address,
-                  "0x0",
-              ] as const,
-          }
-        : undefined;
+    const createCustomPoolConfig =
+        isCustomPoolDeployerReady && customPoolDeployerAddresses[poolDeployer]
+            ? {
+                  address: customPoolDeployerAddresses[poolDeployer],
+                  args: [
+                      customPoolDeployerAddresses[poolDeployer],
+                      account,
+                      mintInfo.pool?.token0.address as Address,
+                      mintInfo.pool?.token1.address as Address,
+                      "0x0",
+                  ] as const,
+              }
+            : undefined;
 
     const { data: createCustomPoolData, writeContract: createCustomPool } = useWriteAlgebraCustomPoolEntryPointCreateCustomPool();
 
@@ -199,20 +206,22 @@ const CreatePoolForm = () => {
                 <Summary currencyA={currencyA} currencyB={currencyB} />
             )}
 
-            <div className="text-left font-bold">
-                <div>Plugin</div>
-                <div className="grid grid-cols-2 w-full gap-4 my-2">
-                    {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
-                        <button
-                            key={v}
-                            onClick={() => handlePoolDeployerChange(v)}
-                            className={cn("px-3 py-2 rounded-lg border", poolDeployer === v ? "border-primary-button" : "")}
-                        >
-                            {v}
-                        </button>
-                    ))}
+            {enabledModules.customPools ? (
+                <div className="text-left font-bold">
+                    <div>Plugin</div>
+                    <div className="grid grid-cols-2 w-full gap-4 my-2">
+                        {Object.entries(CUSTOM_POOL_DEPLOYER_TITLES).map(([, v]) => (
+                            <button
+                                key={v}
+                                onClick={() => handlePoolDeployerChange(v)}
+                                className={cn("px-3 py-2 rounded-lg border", poolDeployer === v ? "border-primary-button" : "")}
+                            >
+                                {v}
+                            </button>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            ) : null}
 
             <Button className="mt-2" disabled={isDisabled} onClick={handleCreatePool}>
                 {isLoading ? (

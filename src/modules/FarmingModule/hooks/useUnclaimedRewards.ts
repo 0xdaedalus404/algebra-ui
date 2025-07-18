@@ -1,6 +1,7 @@
 import { useAccount } from "wagmi";
 import { useClients } from "@/hooks/graphql/useClients";
 import { useUnclaimedRewardsQuery } from "@/graphql/generated/graphql";
+import { Address } from "viem";
 
 export function useUnclaimedRewards() {
     const { address: account } = useAccount();
@@ -9,10 +10,11 @@ export function useUnclaimedRewards() {
 
     const { data: unclaimedRewards, loading } = useUnclaimedRewardsQuery({
         variables: {
-            owner: account,
+            owner: account as Address,
         },
         client: farmingClient,
         skip: !account,
+        pollInterval: 10_000,
     });
 
     return {

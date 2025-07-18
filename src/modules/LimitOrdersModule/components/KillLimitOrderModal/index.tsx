@@ -29,21 +29,23 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
         };
     }, [positionLO.amount0, positionLO.amount1, value, zeroToOne]);
 
-    const killConfig = {
-        address: LIMIT_ORDER_MANAGER[chainId],
-        args: [
-            {
-                token0: pool.token0.address as Address,
-                token1: pool.token1.address as Address,
-                deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
-            },
-            ticks.tickLower,
-            ticks.tickUpper,
-            BigInt(liquidityToRemove),
-            zeroToOne,
-            owner,
-        ] as const,
-    };
+    const killConfig = CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
+        ? {
+              address: LIMIT_ORDER_MANAGER[chainId],
+              args: [
+                  {
+                      token0: pool.token0.address as Address,
+                      token1: pool.token1.address as Address,
+                      deployer: CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                  },
+                  ticks.tickLower,
+                  ticks.tickUpper,
+                  BigInt(liquidityToRemove),
+                  zeroToOne,
+                  owner,
+              ] as const,
+          }
+        : undefined;
 
     const { data: killData, writeContract: kill } = useWriteLimitOrderManagerKill();
 
@@ -122,7 +124,7 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
                         token1={pool.token1}
                     />
 
-                    <Button disabled={value[0] === 0 || isKillLoading} onClick={() => kill && kill(killConfig)}>
+                    <Button disabled={value[0] === 0 || isKillLoading} onClick={() => killConfig && kill(killConfig)}>
                         {isKillLoading ? <Loader /> : "Withdraw Liquidity"}
                     </Button>
                 </div>

@@ -31,10 +31,12 @@ export const UnclaimedRewards = ({ unclaimedRewards }: UnclaimedRewardsProps) =>
     };
 
     return (
-        <div className="flex flex-col gap-8 bg-card border border-card-border/60 rounded-3xl mt-8 p-8">
+        <div className="flex flex-col gap-6 bg-card border border-card-border/60 rounded-xl mt-3 p-6">
+            <h2 className="font-semibold text-xl text-left">Unclaimed Rewards</h2>
+
             <div className="flex gap-4">
                 {unclaimedRewards.map((reward) => (
-                    <UnclaimedReward amount={reward.amount} reward={reward.rewardAddress as Address} />
+                    <UnclaimedReward key={reward.id} amount={reward.amount} reward={reward.rewardAddress as Address} />
                 ))}
             </div>
             <Button disabled={isLoading} onClick={handleHarvestUnclaimed} className="w-full">
@@ -49,7 +51,7 @@ const UnclaimedReward = ({ amount, reward }: { amount: string; reward: Address }
     const unclaimedAmount = formatAmount(formatUnits(BigInt(amount), rewardCurrency?.decimals || 18), 2);
 
     return (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 bg-card-dark w-full p-3 rounded-lg">
             <CurrencyLogo size={32} currency={rewardCurrency} />
             <p>{`${unclaimedAmount} ${rewardCurrency?.symbol || ""}`}</p>
         </div>

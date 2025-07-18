@@ -223,10 +223,7 @@ const PoolPage = () => {
                                 selectPosition={(positionId) => selectPosition((prev) => (prev === positionId ? null : positionId))}
                             />
                             {unclaimedRewards && Boolean(unclaimedRewards?.rewards.length) && (
-                                <div>
-                                    <h2 className="font-semibold text-xl text-left mt-12">Unclaimed Rewards</h2>
-                                    <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
-                                </div>
+                                <UnclaimedRewards unclaimedRewards={unclaimedRewards && unclaimedRewards.rewards} />
                             )}
                         </>
                     )}

@@ -11,8 +11,8 @@ import { Address } from "viem";
 import { TransactionCard } from "../TransactionCard";
 import { useAccount, useChainId } from "wagmi";
 import { usePendingTransactions, usePendingTransactionsStore } from "@/state/pendingTransactionsStore";
-import { DEFAULT_CHAIN_ID, DEFAULT_CHAIN_NAME } from "config";
-import { useAppKit } from "@reown/appkit/react";
+import { DEFAULT_CHAIN_NAME } from "config";
+import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 
 const Header = () => (
     <header className="sticky top-0 py-4 z-10 grid grid-cols-3 bg-background h-full max-h-18 justify-between items-center gap-4">
@@ -38,7 +38,9 @@ const Algebra = () => (
 const Account = () => {
     const { open } = useAppKit();
 
-    const selectedNetworkId = useChainId();
+    const appChainId = useChainId();
+
+    const { chainId: userChainId } = useAppKitNetwork();
 
     const { pendingTransactions } = usePendingTransactionsStore();
 
@@ -51,7 +53,7 @@ const Account = () => {
             ? Object.entries(pendingTransactions[account]).filter(([, transaction]) => transaction.loading).length
             : 0;
 
-    if (!selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId)
+    if (!userChainId || appChainId !== userChainId)
         return (
             <div className="flex justify-end">
                 <Button

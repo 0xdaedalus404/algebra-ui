@@ -1,4 +1,5 @@
 export enum AppFeatureModule {
+    CustomPools = "customPools",
     SmartRouter = "smartRouter",
     Analytics = "analytics",
     Farming = "farming",
@@ -7,6 +8,7 @@ export enum AppFeatureModule {
 }
 
 export const moduleNameToPath: Record<AppFeatureModule, string> = {
+    [AppFeatureModule.CustomPools]: "CustomPoolsModule",
     [AppFeatureModule.SmartRouter]: "SmartRouterModule",
     [AppFeatureModule.Analytics]: "AnalyticsModule",
     [AppFeatureModule.Farming]: "FarmingModule",
@@ -16,6 +18,7 @@ export const moduleNameToPath: Record<AppFeatureModule, string> = {
 
 /* configure enabled modules here */
 export const enabledModules: Record<AppFeatureModule, boolean> = {
+    [AppFeatureModule.CustomPools]: true,
     [AppFeatureModule.SmartRouter]: true,
 
     [AppFeatureModule.Analytics]: true,

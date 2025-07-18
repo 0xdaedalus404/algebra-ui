@@ -7,11 +7,12 @@ import { useTransactionAwait } from "@/hooks/common/useTransactionAwait";
 import { TransactionType } from "@/state/pendingTransactionsStore";
 import { Address } from "viem";
 import { useChainId } from "wagmi";
-import { DEFAULT_CHAIN_ID, LIMIT_ORDER_MANAGER } from "config";
+import { LIMIT_ORDER_MANAGER } from "config";
 import { KillLimitOrderModal } from "..";
 import Loader from "@/components/common/Loader";
 import { HeaderItem } from "@/components/common/Table/common";
 import CurrencyLogo from "@/components/common/CurrencyLogo";
+import { useAppKitNetwork } from "@reown/appkit/react";
 
 interface Epoch {
     id: string;
@@ -145,9 +146,11 @@ const LimitOrderStatus = ({ ticks, amounts }: { ticks: Ticks; amounts: Amounts }
 };
 
 const Action = (props: LimitOrderInfo) => {
-    const selectedNetworkId = useChainId();
+    const appChainId = useChainId();
 
-    if (!selectedNetworkId || DEFAULT_CHAIN_ID !== selectedNetworkId) return;
+    const { chainId: userChainId } = useAppKitNetwork();
+
+    if (!userChainId || appChainId !== userChainId) return;
 
     if (props.killed) return;
 

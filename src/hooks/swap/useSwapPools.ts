@@ -15,7 +15,7 @@ import { CUSTOM_POOL_DEPLOYER_ADDRESSES } from "config/custom-pool-deployer";
 export function useSwapPools(
     currencyIn?: Currency,
     currencyOut?: Currency,
-    deployer?: Address
+    deployer?: Address | null
 ): {
     pools: {
         tokens: [Token, Token];

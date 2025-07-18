@@ -41,7 +41,7 @@ export const LimitOrder = () => {
     const [wasInverted, setWasInverted] = useState(false);
 
     const limitOrderPoolAddress =
-        token0 && token1 && !showWrap
+        token0 && token1 && !showWrap && CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
             ? (computeCustomPoolAddress({
                   tokenA: token0,
                   tokenB: token1,

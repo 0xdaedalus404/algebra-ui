@@ -33,8 +33,10 @@ export const LimitOrdersList = () => {
         client: infoClient,
     });
 
+    const customPoolDeployer = CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId];
+
     const formattedLimitOrders = useMemo(() => {
-        if (!limitOrders || !poolForLimitOrders?.pools) return [];
+        if (!limitOrders || !poolForLimitOrders?.pools || !customPoolDeployer) return [];
 
         const pools: { [key: string]: Pool } = poolForLimitOrders.pools.reduce(
             (acc, { id, token0, token1, sqrtPrice, liquidity, tick, tickSpacing }) => ({
@@ -44,7 +46,7 @@ export const LimitOrdersList = () => {
                     new Token(chainId, token1.id, Number(token1.decimals), token1.symbol, token1.name),
                     INITIAL_POOL_FEE,
                     sqrtPrice,
-                    CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                    customPoolDeployer,
                     liquidity,
                     Number(tick),
                     Number(tickSpacing)
@@ -90,7 +92,7 @@ export const LimitOrdersList = () => {
                             pool.token1,
                             pool.fee,
                             zeroToOne ? TickMath.MAX_SQRT_RATIO : TickMath.MIN_SQRT_RATIO,
-                            CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId],
+                            customPoolDeployer,
                             pool.liquidity,
                             zeroToOne ? TickMath.MAX_TICK - 1 : TickMath.MIN_TICK,
                             pool.tickSpacing
