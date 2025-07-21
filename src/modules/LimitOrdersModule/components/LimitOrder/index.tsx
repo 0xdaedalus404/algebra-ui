@@ -119,22 +119,30 @@ export const LimitOrder = () => {
             };
         }
 
-        const _priceTick = invertPrice
-            ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
-            : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
+        const priceTick = invertPrice
+            ? wasInverted
+                ? tryParseTick(token0, token1, sellPrice.toString(), tickSpacing)
+                : tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+            : wasInverted
+              ? tryParseTick(token1, token0, sellPrice.toString(), tickSpacing)
+              : tryParseTick(token0, token1, sellPrice.toString(), tickSpacing);
 
-        if (_priceTick === undefined) {
+        if (priceTick === undefined) {
             return { blockCreation: true, message: "Unable to calculate price tick" };
         }
 
-        const priceTick = wasInverted ? -_priceTick : _priceTick;
-
-        if (currencies.INPUT.wrapped.equals(token0) && priceTick < tick) {
-            return { blockCreation: true, message: "Sell price must be above current price when selling token0" };
+        if (currencies.INPUT.wrapped.equals(token0.wrapped) && priceTick <= tick) {
+            return {
+                blockCreation: true,
+                message: "Sell price must be above current price when selling token0",
+            };
         }
 
-        if (currencies.INPUT.wrapped.equals(token1) && priceTick + tickSpacing >= tick) {
-            return { blockCreation: true, message: "Sell price must be below current price when selling token1" };
+        if (currencies.INPUT.wrapped.equals(token1.wrapped) && priceTick >= tick) {
+            return {
+                blockCreation: true,
+                message: "Sell price must be below current price when selling token1",
+            };
         }
 
         return { blockCreation: false, message: "" };

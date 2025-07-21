@@ -24,10 +24,10 @@ export const KillLimitOrderModal = ({ pool, ticks, liquidity, zeroToOne, owner, 
         const amount1 = (Number(positionLO.amount1.toExact()) * value[0]) / 100;
 
         return {
-            amount0Parsed: zeroToOne ? amount0.toString() : amount1.toString(),
-            amount1Parsed: zeroToOne ? amount1.toString() : amount0.toString(),
+            amount0Parsed: amount0.toString(),
+            amount1Parsed: amount1.toString(),
         };
-    }, [positionLO.amount0, positionLO.amount1, value, zeroToOne]);
+    }, [positionLO.amount0, positionLO.amount1, value]);
 
     const killConfig = CUSTOM_POOL_DEPLOYER_ADDRESSES.ALL_INCLUSIVE[chainId]
         ? {

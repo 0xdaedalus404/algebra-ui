@@ -21,6 +21,7 @@ import { CUSTOM_POOL_DEPLOYER_ADDRESSES, enabledModules, STABLECOINS } from "con
 import { usePool } from "@/hooks/pools/usePool";
 import { useChainId } from "wagmi";
 import { Address } from "viem";
+import JSBI from "jsbi";
 
 const SwapPair = ({
     derivedSwap,
@@ -191,6 +192,17 @@ const SwapPair = ({
         if (!usdValueA || !usdValueB) return 0;
         return ((usdValueB - usdValueA) / usdValueA) * 100;
     }, [isTradeLoading, trade?.inputAmount, trade?.outputAmount, parsedAmounts, usdValueA, usdValueB]);
+
+    useEffect(() => {
+        if (!parsedAmounts[SwapField.INPUT] || !currencyBalances[SwapField.INPUT]) return;
+
+        const inputAmountJSBI = JSBI.BigInt(parsedAmounts[SwapField.INPUT]!.quotient.toString());
+        const balanceAmountJSBI = JSBI.BigInt(currencyBalances[SwapField.INPUT]!.quotient.toString());
+
+        if (JSBI.lessThan(balanceAmountJSBI, inputAmountJSBI)) {
+            derivedSwap.inputError = `Insufficient ${parsedAmounts[SwapField.INPUT]!.currency.symbol} balance`;
+        }
+    }, [currencyBalances, derivedSwap, parsedAmounts]);
 
     useEffect(() => {
         handleOutputSelect(STABLECOINS[chainId].USDC);
