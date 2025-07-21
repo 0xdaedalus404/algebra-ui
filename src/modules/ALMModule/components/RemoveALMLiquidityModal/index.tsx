@@ -110,7 +110,6 @@ export const RemoveALMLiquidityModal = ({ userVault, poolAddress }: RemoveALMLiq
     useEffect(() => {
         if (!isSuccess) return;
 
-        console.log("refetchUserVaults");
         refetchUserVaults();
     }, [isSuccess]);
 

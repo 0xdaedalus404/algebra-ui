@@ -4,7 +4,7 @@ import { useCurrency } from "@/hooks/common/useCurrency";
 import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { TradeStateType } from "@/types/trade-state";
+import { TradeState, TradeStateType } from "@/types/trade-state";
 import {
     ADDRESS_ZERO,
     Currency,
@@ -14,12 +14,18 @@ import {
     Trade,
     TradeType,
     computePoolAddress,
+    tryParseAmount,
 } from "@cryptoalgebra/custom-pools-sdk";
 import JSBI from "jsbi";
 import { useCallback, useMemo } from "react";
-import { parseUnits, Address } from "viem";
+import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
 import { create } from "zustand";
+import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
+
+import SmartRouterModule from "@/modules/SmartRouterModule";
+import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+const { useSmartRouterBestRoute } = SmartRouterModule.hooks;
 
 interface SwapState {
     readonly independentField: SwapFieldType;
@@ -55,13 +61,15 @@ export interface IDerivedSwapInfo {
         state: TradeStateType;
         fee?: bigint[] | null;
     };
-    toggledTrade: Trade<Currency, Currency, TradeType> | undefined;
+    toggledTrade: Trade<Currency, Currency, TradeType> | SmartRouterTrade<TradeType> | undefined;
+    smartTradeCallOptions: { calldata: Address | undefined; value: Address | undefined };
     tickAfterSwap: number | null | undefined;
     allowedSlippage: Percent;
     poolFee: number | undefined;
     tick: number | undefined;
     tickSpacing: number | undefined;
     poolAddress: Address | undefined;
+    parsedAmounts: { [field in SwapFieldType]?: CurrencyAmount<Currency> };
     isExactIn: boolean;
 }
 
@@ -161,21 +169,6 @@ export function useSwapActionHandlers(): {
     };
 }
 
-export function tryParseAmount<T extends Currency>(value?: string, currency?: T): CurrencyAmount<T> | undefined {
-    if (!value || !currency) {
-        return undefined;
-    }
-    try {
-        const typedValueParsed = parseUnits(value, currency.decimals).toString();
-        if (typedValueParsed !== "0") {
-            return CurrencyAmount.fromRawAmount(currency as Currency, typedValueParsed) as CurrencyAmount<T>;
-        }
-    } catch (error) {
-        console.debug(`Failed to parse input amount: "${value}"`, error);
-    }
-    return undefined;
-}
-
 export function useDerivedSwapInfo(): IDerivedSwapInfo {
     const { address: account } = useAccount();
 
@@ -184,6 +177,10 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         typedValue,
         [SwapField.INPUT]: { currencyId: inputCurrencyId },
         [SwapField.OUTPUT]: { currencyId: outputCurrencyId },
+        [SwapField.LIMIT_ORDER_PRICE]: limitOrderPrice,
+        limitOrderPriceFocused,
+        lastFocusedField,
+        wasInverted,
     } = useSwapState();
 
     const inputCurrency = useCurrency(inputCurrencyId);
@@ -192,7 +189,7 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
     const isExactIn: boolean = independentField === SwapField.INPUT;
 
     const parsedAmount = useMemo(
-        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined) as CurrencyAmount<Currency>,
+        () => tryParseAmount(typedValue, (isExactIn ? inputCurrency : outputCurrency) ?? undefined),
         [typedValue, isExactIn, inputCurrency, outputCurrency]
     );
     const bestTradeExactIn = useBestTradeExactIn(
@@ -202,6 +199,14 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
     const bestTradeExactOut = useBestTradeExactOut(
         inputCurrency ?? undefined,
         !isExactIn && !enabledModules.smartRouter ? parsedAmount : undefined
+    );
+
+    /* Smart Router trade */
+    const smartTrade = useSmartRouterBestRoute(
+        parsedAmount,
+        isExactIn ? outputCurrency : inputCurrency,
+        isExactIn,
+        enabledModules.smartRouter
     );
 
     const trade = (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
@@ -245,14 +250,37 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         inputError = inputError ?? `Select a token`;
     }
 
-    const toggledTrade = trade.trade ?? undefined;
+    const toggledTrade = smartTrade.trade?.bestTrade ?? trade.trade ?? undefined;
+
+    const isSmartTrade = toggledTrade && "routes" in toggledTrade;
+
+    const smartTradeCallOptions = {
+        calldata: smartTrade.trade?.calldata,
+        value: smartTrade.trade?.value,
+    };
+
+    if (isSmartTrade) {
+        smartTrade.isLoading
+            ? trade.state === TradeState.LOADING
+            : smartTrade.error
+              ? trade.state === TradeState.INVALID
+              : smartTrade.syncing
+                ? trade.state === TradeState.SYNCING
+                : smartTrade.trade?.bestTrade
+                  ? trade.state === TradeState.VALID
+                  : trade.state === TradeState.NO_ROUTE_FOUND;
+    }
 
     const tickAfterSwap =
         trade.priceAfterSwap && TickMath.getTickAtSqrtRatio(JSBI.BigInt(trade.priceAfterSwap[trade.priceAfterSwap.length - 1].toString()));
 
     const allowedSlippage = useSwapSlippageTolerance(toggledTrade);
 
-    const [balanceIn, amountIn] = [currencyBalances[SwapField.INPUT], toggledTrade?.maximumAmountIn(allowedSlippage)];
+    const maximumAmountIn = isSmartTrade
+        ? SmartRouter.maximumAmountIn(toggledTrade, allowedSlippage)
+        : toggledTrade?.maximumAmountIn(allowedSlippage);
+
+    const [balanceIn, amountIn] = [currencyBalances[SwapField.INPUT], maximumAmountIn];
 
     if (balanceIn && amountIn && balanceIn.lessThan(amountIn)) {
         inputError = `Insufficient ${amountIn.currency.symbol} balance`;
@@ -277,6 +305,78 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         address: poolAddress,
     });
 
+    const { wrapType } = useWrapCallback(currencies[SwapField.INPUT], currencies[SwapField.OUTPUT], typedValue);
+
+    const showWrap: boolean = wrapType !== WrapType.NOT_APPLICABLE;
+
+    const { parsedLimitOrderInput, parsedLimitOrderOutput } = useMemo(() => {
+        if (!limitOrderPrice || !parsedAmount || !outputCurrency || !inputCurrency) return {};
+
+        try {
+            const parsedAmountNumber = parseFloat(parsedAmount.toExact());
+            const limitPriceNumber = parseFloat(limitOrderPrice);
+
+            if (independentField === SwapField.INPUT) {
+                const outputAmount = !wasInverted ? parsedAmountNumber * limitPriceNumber : parsedAmountNumber / limitPriceNumber;
+                return {
+                    parsedLimitOrderInput: parsedAmount,
+                    parsedLimitOrderOutput: tryParseAmount(outputAmount.toFixed(outputCurrency.decimals), outputCurrency),
+                };
+            } else {
+                const inputAmount = !wasInverted ? parsedAmountNumber / limitPriceNumber : parsedAmountNumber * limitPriceNumber;
+
+                return {
+                    parsedLimitOrderInput: tryParseAmount(inputAmount.toFixed(inputCurrency.decimals), inputCurrency),
+                    parsedLimitOrderOutput: parsedAmount,
+                };
+            }
+        } catch (error) {
+            console.error("Error calculating limit order amounts:", error);
+            return {};
+        }
+    }, [limitOrderPrice, parsedAmount, outputCurrency, inputCurrency, independentField, wasInverted]);
+
+    const parsedAmounts = useMemo(() => {
+        return showWrap
+            ? {
+                  [SwapField.INPUT]: parsedAmount,
+                  [SwapField.OUTPUT]: parsedAmount,
+              }
+            : {
+                  [SwapField.INPUT]:
+                      independentField === SwapField.INPUT
+                          ? parsedAmount
+                          : limitOrderPrice
+                            ? parsedLimitOrderInput
+                            : toggledTrade?.inputAmount,
+                  [SwapField.OUTPUT]:
+                      independentField === SwapField.OUTPUT
+                          ? limitOrderPrice
+                              ? outputCurrency && parsedAmount
+                                  ? !limitOrderPriceFocused && lastFocusedField === SwapField.LIMIT_ORDER_PRICE
+                                      ? parsedLimitOrderOutput
+                                      : parsedAmount
+                                  : undefined
+                              : parsedAmount
+                          : limitOrderPrice
+                            ? outputCurrency && parsedAmount
+                                ? parsedLimitOrderOutput
+                                : undefined
+                            : toggledTrade?.outputAmount,
+              };
+    }, [
+        showWrap,
+        independentField,
+        parsedAmount,
+        limitOrderPrice,
+        parsedLimitOrderInput,
+        parsedLimitOrderOutput,
+        toggledTrade,
+        outputCurrency,
+        limitOrderPriceFocused,
+        lastFocusedField,
+    ]);
+
     return {
         currencies,
         currencyBalances,
@@ -284,6 +384,7 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         inputError,
         tradeState: trade,
         toggledTrade,
+        smartTradeCallOptions,
         tickAfterSwap,
         allowedSlippage,
         poolFee: globalState && globalState[2],
@@ -291,5 +392,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         tickSpacing: tickSpacing,
         poolAddress,
         isExactIn,
+        parsedAmounts,
     };
 }
