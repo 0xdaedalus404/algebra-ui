@@ -1,22 +1,19 @@
 import { DEFAULT_CHAIN_ID, enabledModules, STABLECOINS } from "config";
 import { useReadAlgebraPoolGlobalState, useReadAlgebraPoolTickSpacing } from "@/generated";
 import { useCurrency } from "@/hooks/common/useCurrency";
-import { useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
+import { BestTradeExactIn, BestTradeExactOut, useBestTradeExactIn, useBestTradeExactOut } from "@/hooks/swap/useBestTrade";
 import useSwapSlippageTolerance from "@/hooks/swap/useSwapSlippageTolerance";
 import { SwapField, SwapFieldType } from "@/types/swap-field";
-import { TradeState, TradeStateType } from "@/types/trade-state";
 import {
     ADDRESS_ZERO,
     Currency,
     CurrencyAmount,
     Percent,
-    TickMath,
     Trade,
     TradeType,
     computePoolAddress,
     tryParseAmount,
 } from "@cryptoalgebra/custom-pools-sdk";
-import JSBI from "jsbi";
 import { useCallback, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount, useBalance } from "wagmi";
@@ -25,7 +22,8 @@ import useWrapCallback, { WrapType } from "@/hooks/swap/useWrapCallback";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
 import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-const { useSmartRouterBestRoute } = SmartRouterModule.hooks;
+import { SmartRouterBestTrade } from "@/modules/SmartRouterModule/types";
+const { useSmartRouterBestTrade } = SmartRouterModule.hooks;
 
 interface SwapState {
     readonly independentField: SwapFieldType;
@@ -56,14 +54,9 @@ export interface IDerivedSwapInfo {
     currencyBalances: { [field in SwapFieldType]?: CurrencyAmount<Currency> };
     parsedAmount: CurrencyAmount<Currency> | undefined;
     inputError?: string;
-    tradeState: {
-        trade: Trade<Currency, Currency, TradeType> | null;
-        state: TradeStateType;
-        fee?: bigint[] | null;
-    };
-    toggledTrade: Trade<Currency, Currency, TradeType> | SmartRouterTrade<TradeType> | undefined;
+    tradeState: SmartRouterBestTrade | BestTradeExactIn | BestTradeExactOut;
+    toggledTrade: Trade<Currency, Currency, TradeType> | SmartRouterTrade<TradeType> | null | undefined;
     smartTradeCallOptions: { calldata: Address | undefined; value: Address | undefined };
-    tickAfterSwap: number | null | undefined;
     allowedSlippage: Percent;
     poolFee: number | undefined;
     tick: number | undefined;
@@ -202,14 +195,14 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
     );
 
     /* Smart Router trade */
-    const smartTrade = useSmartRouterBestRoute(
+    const smartTrade = useSmartRouterBestTrade(
         parsedAmount,
         isExactIn ? outputCurrency : inputCurrency,
         isExactIn,
         enabledModules.smartRouter
     );
 
-    const trade = (isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined;
+    const trade = enabledModules.smartRouter ? smartTrade : ((isExactIn ? bestTradeExactIn : bestTradeExactOut) ?? undefined);
 
     const [addressA, addressB] = [
         inputCurrency?.isNative ? undefined : inputCurrency?.address || "",
@@ -250,29 +243,13 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         inputError = inputError ?? `Select a token`;
     }
 
-    const toggledTrade = smartTrade.trade?.bestTrade ?? trade.trade ?? undefined;
-
+    const toggledTrade = trade.trade && "bestTrade" in trade.trade ? trade.trade?.bestTrade : trade.trade;
     const isSmartTrade = toggledTrade && "routes" in toggledTrade;
 
     const smartTradeCallOptions = {
-        calldata: smartTrade.trade?.calldata,
-        value: smartTrade.trade?.value,
+        calldata: trade.trade && "bestTrade" in trade.trade ? trade.trade?.calldata : undefined,
+        value: trade.trade && "bestTrade" in trade.trade ? trade.trade?.value : undefined,
     };
-
-    if (isSmartTrade) {
-        smartTrade.isLoading
-            ? trade.state === TradeState.LOADING
-            : smartTrade.error
-              ? trade.state === TradeState.INVALID
-              : smartTrade.syncing
-                ? trade.state === TradeState.SYNCING
-                : smartTrade.trade?.bestTrade
-                  ? trade.state === TradeState.VALID
-                  : trade.state === TradeState.NO_ROUTE_FOUND;
-    }
-
-    const tickAfterSwap =
-        trade.priceAfterSwap && TickMath.getTickAtSqrtRatio(JSBI.BigInt(trade.priceAfterSwap[trade.priceAfterSwap.length - 1].toString()));
 
     const allowedSlippage = useSwapSlippageTolerance(toggledTrade);
 
@@ -385,7 +362,6 @@ export function useDerivedSwapInfo(): IDerivedSwapInfo {
         tradeState: trade,
         toggledTrade,
         smartTradeCallOptions,
-        tickAfterSwap,
         allowedSlippage,
         poolFee: globalState && globalState[2],
         tick: globalState && globalState[1],

@@ -17,7 +17,7 @@ const SwapPair = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
 
     const { currencyBalances, parsedAmounts, currencies, toggledTrade: trade, tradeState } = derivedSwap;
 
-    const isTradeLoading = tradeState.state === TradeState.LOADING;
+    const isTradeLoading = tradeState.state === TradeState.LOADING || tradeState.state === TradeState.SYNCING;
 
     const baseCurrency = currencies[SwapField.INPUT];
     const quoteCurrency = currencies[SwapField.OUTPUT];

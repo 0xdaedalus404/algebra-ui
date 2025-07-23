@@ -10,8 +10,8 @@ import { SwapField } from "@/types/swap-field";
 import { warningSeverity } from "@/utils/swap/prices";
 import { useCallback, useMemo } from "react";
 import { useAccount, useChainId } from "wagmi";
-import { SmartRouter, SmartRouterTrade } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
-import { TradeType, tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
+import { SmartRouter } from "@cryptoalgebra/router-custom-pools-and-sliding-fee";
+import { tryParseAmount } from "@cryptoalgebra/custom-pools-sdk";
 import { useAppKit, useAppKitNetwork } from "@reown/appkit/react";
 
 import SmartRouterModule from "@/modules/SmartRouterModule";
@@ -91,7 +91,7 @@ const SwapButton = ({ derivedSwap }: { derivedSwap: IDerivedSwapInfo }) => {
         if (!trade) return undefined;
 
         if (isSmartTrade) {
-            return SmartRouter.getPriceImpact(trade as SmartRouterTrade<TradeType>);
+            return SmartRouter.getPriceImpact(trade);
         } else {
             return trade.priceImpact;
         }
