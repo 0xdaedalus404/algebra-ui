@@ -7,19 +7,27 @@ interface FarmingPositionCardProps {
     status: string;
     className?: string;
     onClick?: () => void;
+    isDepositEligible: boolean;
 }
 
-export const FarmingPositionCard = ({ position, status, className, onClick }: FarmingPositionCardProps) => {
+export const FarmingPositionCard = ({ position, status, className, onClick, isDepositEligible }: FarmingPositionCardProps) => {
     return (
-        <div
-            onClick={onClick}
+        <button
+            disabled={!isDepositEligible}
+            onClick={() => !isDepositEligible || onClick?.()}
             className={cn(
-                "w-fit p-4 cursor-pointer flex gap-4 bg-card-dark rounded-xl border border-border/60 hover:border-border transition-all ease-in-out duration-200",
-                className
+                "relative w-fit flex gap-4 p-4 bg-card-dark cursor-pointer hover:border-border rounded-xl border border-border/60  transition-all ease-in-out duration-200",
+                className,
+                !isDepositEligible ? "pointer-events-none" : ""
             )}
         >
+            {!isDepositEligible && (
+                <div className="absolute left-0 top-0 z-10 flex items-center text-sm justify-center w-full h-full bg-black/70 rounded-xl">
+                    Unsupported range. <br /> Too narrow
+                </div>
+            )}
             <FarmingPositionImg positionId={BigInt(position.id)} size={12} />
-            <div className="flex flex-col">
+            <div className="flex flex-col z-0">
                 <p>Position #{position.id}</p>
                 <div>
                     <div className={cn("flex gap-2 items-center", status === "In range" ? "text-green-300" : "text-red-300")}>
@@ -28,6 +36,6 @@ export const FarmingPositionCard = ({ position, status, className, onClick }: Fa
                     </div>
                 </div>
             </div>
-        </div>
+        </button>
     );
 };

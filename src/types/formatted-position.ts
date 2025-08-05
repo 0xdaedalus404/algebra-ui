@@ -5,4 +5,5 @@ export interface FormattedPosition {
     liquidityUSD: number;
     feesUSD: number | null;
     apr: number;
+    rangeLength: number;
 }
