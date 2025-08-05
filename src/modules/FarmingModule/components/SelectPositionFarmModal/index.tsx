@@ -72,6 +72,8 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                                     (fposition) => Number(fposition.id) === Number(position.id)
                                 );
                                 if (!currentFormattedPosition) return;
+                                const isDepositEligible = currentFormattedPosition.rangeLength >= Number(farming.farming.minRangeLength);
+
                                 return (
                                     <FarmingPositionCard
                                         key={position.id}
@@ -81,6 +83,7 @@ export function SelectPositionFarmModal({ positions, farming, positionsData, isH
                                         )}
                                         onClick={() => handleSelectPosition(position)}
                                         position={position}
+                                        isDepositEligible={isDepositEligible}
                                         status={currentFormattedPosition.outOfRange ? "Out of range" : "In range"}
                                     />
                                 );

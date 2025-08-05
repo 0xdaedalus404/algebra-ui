@@ -162,11 +162,13 @@ const PoolPage = () => {
                         feesUSD: null,
                         apr: Math.abs(vault.vault.apr),
                         inFarming: false,
+                        rangeLength: 0,
                     }) as FormattedPosition
             ) || [];
 
         const positionsData = filteredPositions.map(({ positionId, position }, idx) => {
             const currentPosition = deposits?.deposits?.find((deposit) => Number(deposit.id) === Number(positionId));
+            const rangeLength = Number(position.tickUpper) - Number(position.tickLower);
             return {
                 id: positionId.toString(),
                 isClosed: JSBI.EQ(position.liquidity, ZERO),
@@ -179,6 +181,7 @@ const PoolPage = () => {
                 feesUSD: formatFeesUSD(idx),
                 apr: formatAPR(idx),
                 inFarming: Boolean(currentPosition?.eternalFarming),
+                rangeLength,
             } as FormattedPosition;
         });
 
