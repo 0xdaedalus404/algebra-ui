@@ -23,6 +23,7 @@ import {
     SWAP_ROUTER,
 } from "./contract-addresses";
 import { defineChain } from "viem";
+import { algebraVirtualPoolABI } from "./abis/farming/algebraVirtualPool";
 
 const baseSepoliaChain = /*#__PURE__*/ defineChain({
     id: 84532,
@@ -67,6 +68,7 @@ const rawContracts = [
     { name: "SwapRouter", abi: swapRouterABI },
     { name: "AlgebraEternalFarming", abi: algebraEternalFarmingABI },
     { name: "FarmingCenter", abi: farmingCenterABI },
+    { name: "AlgebraVirtualPool", abi: algebraVirtualPoolABI },
     { name: "LimitOrderManager", abi: limitOrderManagerABI },
     { name: "AlgebraCustomPoolEntryPoint", abi: algebraCustomPoolEntryPointABI },
     { name: "WrappedNative", abi: wNativeABI },
