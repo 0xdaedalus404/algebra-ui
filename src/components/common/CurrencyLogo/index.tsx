@@ -2,7 +2,7 @@ import { Currency } from "@cryptoalgebra/custom-pools-sdk";
 import React from "react";
 import USDTLogo from "@/assets/tokens/usdt.png";
 import USDCLogo from "@/assets/tokens/usdc.svg";
-import EtherLogo from "@/assets/tokens/ether.svg";
+import SonicLogo from "@/assets/tokens/sonic.svg";
 import { cn } from "@/utils/common/cn";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Address } from "viem";
@@ -15,27 +15,16 @@ interface CurrencyLogoProps {
 }
 
 export const specialTokens: { [key: Address]: { symbol: string; logo: string } } = {
-    ["0xe7f1725e7734ce288f8367e1bb143e90bb3f0512"]: {
-        symbol: "ETH",
-        logo: EtherLogo,
+
+    ["0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38"]: {
+        symbol: "S",
+        logo: SonicLogo,
     },
-    ["0x4200000000000000000000000000000000000006"]: {
-        symbol: "ETH",
-        logo: EtherLogo,
-    },
-    ["0x2bf1004d9e80ca087bd1e089d75bc8c471995ac1"]: {
+    ["0x6047828dc181963ba44974801ff68e538da5eaf9"]: {
         symbol: "USDT",
         logo: USDTLogo,
     },
-    ["0xfde4c96c8593536e31f229ea8f37b2ada2699bb2"]: {
-        symbol: "USDT",
-        logo: USDTLogo,
-    },
-    ["0x833589fcd6edb6e08f4c7c32d4f71b54bda02913"]: {
-        symbol: "USDC",
-        logo: USDCLogo,
-    },
-    ["0xabac6f23fdf1313fc2e9c9244f666157ccd32990"]: {
+    ["0x29219dd400f2bf60e5a23d13be72b486d4038894"]: {
         symbol: "USDC",
         logo: USDCLogo,
     },
@@ -51,7 +40,6 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
         );
 
     const address = currency.wrapped.address.toLowerCase() as Address;
-
     const classString = cn(`w-[${size}px] h-[${size}px] min-w-[${size}px] min-h-[${size}px] bg-card-dark rounded-full`, className);
 
     if (address in specialTokens) {
@@ -68,7 +56,7 @@ const CurrencyLogo = ({ currency, size, className, style = {} }: CurrencyLogoPro
     }
 
     if (currency.isNative) {
-        return <img src={EtherLogo} alt={"ETH"} width={size} height={size} className={classString} style={style} />;
+        return <img src={SonicLogo} alt={"S"} width={size} height={size} className={classString} style={style} />;
     }
 
     return (
