@@ -25,39 +25,39 @@ import {
 import { defineChain } from "viem";
 import { algebraVirtualPoolABI } from "./abis/farming/algebraVirtualPool";
 
-const baseSepoliaChain = /*#__PURE__*/ defineChain({
-    id: 84532,
-    network: "baseSepolia",
-    name: "Base Sepolia",
-    nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+const sonicChain = /*#__PURE__*/ defineChain({
+    id: 146,
+    network: "sonic",
+    name: "Sonic Mainnet",
+    nativeCurrency: { name: "Sonic", symbol: "S", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://go.getblock.io/f0ef645128ca4adba22ed615f524640a"],
         },
         public: {
-            http: ["https://base-sepolia-rpc.publicnode.com"],
+            http: ["https://sonic.therpc.io"],
         },
     },
     blockExplorers: {
         default: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "SonicScan",
+            url: "https://sonicscan.org",
         },
         etherscan: {
-            name: "Basescan",
-            url: "https://sepolia.basescan.org",
+            name: "SonicScan",
+            url: "https://sonicscan.org",
         },
     },
     contracts: {
         multicall3: {
-            address: "0xca11bde05977b3631167028862be2a173976ca11",
-            blockCreated: 1059647,
+            address: "0xca11bde05977b3631167028862be2a173976ca11", // Standard multicall3 address
+            blockCreated: 1,
         },
     },
 });
 
 /* configure supported networks here */
-export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [baseSepoliaChain];
+export const wagmiNetworks: [AppKitNetwork, ...AppKitNetwork[]] = [sonicChain];
 
 const rawContracts = [
     { name: "AlgebraFactory", abi: algebraFactoryABI },

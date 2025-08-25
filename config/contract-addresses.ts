@@ -2,29 +2,29 @@ import { ChainId } from "@cryptoalgebra/custom-pools-sdk";
 import { Address } from "viem";
 
 export const ALGEBRA_FACTORY: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0xcD58521ecaC7724d1752F941C56490c27bAe9ab0",
+    [ChainId.SonicMainnet]: "0x6e92291925907eFf19B41f3acC98523683830601",
 };
 
 export const QUOTER_V2: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x1c219ba68A9100E4F3475A624cf225ADA02c0F1B",
+    [ChainId.SonicMainnet]: "0x2408B9A699fB58097d001581CBCa8A488DD5B63A",
 };
 
 export const SWAP_ROUTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x3400D4f83c528A0E19c380d92DD100eA51d8980c",
+    [ChainId.SonicMainnet]: "0x08cDb93F8682b85B3a92284AB4b4f605f3BeA509",
 };
 
 export const NONFUNGIBLE_POSITION_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x5baD56bfBABEC1A5A7848399762f54566FA22557",
+    [ChainId.SonicMainnet]: "0x6980b324C7768a4ADeE71E424bAB7720875B6963",
 };
 
 export const ALGEBRA_ETERNAL_FARMING: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x1C5E8C41B5B119dc8fc5ac8e53692E323a6D78D7",
+    [ChainId.SonicMainnet]: "0xaA18645B7F8511573361e0E5Ea4a4c4dc5E0c29e",
 };
 
 export const FARMING_CENTER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x4Ce15380bA2573954e67298209B8DF84222bc62E",
+    [ChainId.SonicMainnet]: "0xcD51e811c8c4836d7D08776B0a563144C806e8B2",
 };
 
 export const LIMIT_ORDER_MANAGER: Record<number, Address> = {
-    [ChainId.BaseSepolia]: "0x05F9E353559da6f2Bfe9A0980D5C3e84eA5d4238",
+    [ChainId.SonicMainnet]: "0x0000000000000000000000000000000000000000",
 };
