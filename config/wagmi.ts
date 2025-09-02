@@ -32,10 +32,10 @@ const sonicChain = /*#__PURE__*/ defineChain({
     nativeCurrency: { name: "Sonic", symbol: "S", decimals: 18 },
     rpcUrls: {
         default: {
-            http: ["https://go.getblock.io/f0ef645128ca4adba22ed615f524640a"],
+            http: ["https://rpc.soniclabs.com"],
         },
         public: {
-            http: ["https://sonic.therpc.io"],
+            http: ["https://rpc.soniclabs.com"],
         },
     },
     blockExplorers: {
